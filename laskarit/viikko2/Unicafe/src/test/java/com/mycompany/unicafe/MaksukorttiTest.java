@@ -41,13 +41,17 @@ public class MaksukorttiTest {
         kortti.otaRahaa(20);
         assertEquals(10, kortti.saldo());
     }
-    
+
     @Test
-    public void trueJosRahatRiittaaMuutenFalse(){
-        assertTrue(kortti.otaRahaa(5)==true);
-        assertTrue(kortti.otaRahaa(15)==false);
+    public void trueJosRahatRiittaaMuutenFalse() {
+        assertTrue(kortti.otaRahaa(5) == true);
+        assertTrue(kortti.otaRahaa(15) == false);
     }
-    
-  
-    
+
+    @Test
+    public void toStringToimii() {
+        kortti.lataaRahaa(990);
+        assertEquals("saldo: 10.0", kortti.toString());
+    }
+
 }
