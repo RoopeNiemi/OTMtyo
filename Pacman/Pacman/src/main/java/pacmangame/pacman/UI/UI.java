@@ -48,8 +48,8 @@ public class UI extends Application {
     public void start(Stage primaryStage) throws Exception {
         Graph map = new Graph(loadMap("map1.txt"));
         Player player = new Player(20, 20);
-        this.width = map.getGraphMatrix().length * 20;
-        this.height = map.getGraphMatrix()[0].length * 20;
+        this.width = map.getGraphMatrix()[0].length * 20;
+        this.height = map.getGraphMatrix().length * 20;
         Canvas c = new Canvas(width, height);
         BorderPane window = new BorderPane();
         window.setCenter(c);
@@ -102,6 +102,14 @@ public class UI extends Application {
                 }
                 prev = now;
                 player.move();
+                if (player.getX() <= 0 && player.getY() == map.getGraphMatrix()[9][0].getY()) {
+                    player.setX(map.getGraphMatrix()[9][17].getX()+17.5);
+                    return;
+                }
+                if (player.getX() >= map.getGraphMatrix()[9][17].getX()+17 && player.getY() == map.getGraphMatrix()[9][0].getY() && player.getMovementDirection() == Direction.RIGHT) {
+                    player.setX(map.getGraphMatrix()[9][0].getX());
+                    return;
+                }
                 if (map.checkTurn(player.getX(), player.getY(), player.getQueuedDirection())) {
                     player.setMovementDirection(player.getQueuedDirection());
                     player.setQueuedDirection(Direction.NOT_MOVING);

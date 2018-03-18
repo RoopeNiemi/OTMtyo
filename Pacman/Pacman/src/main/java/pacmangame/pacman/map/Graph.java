@@ -52,6 +52,7 @@ public class Graph {
 
                     break;
                 case UP:
+
                     if (y == this.graphMatrix[yCrd][xCrd].getY() && x == this.graphMatrix[yCrd][xCrd].getX()) {
                         if (yCrd > 0 && this.graphMatrix[yCrd - 1][xCrd].getValue() == 1) {
                             return true;
@@ -64,6 +65,10 @@ public class Graph {
                     }
                     break;
                 case LEFT:
+
+                    if (yCrd == 9 && xCrd == 0) {
+                        return true;
+                    }
                     if (x == this.graphMatrix[yCrd][xCrd].getX() && y == this.graphMatrix[yCrd][xCrd].getY()) {
                         if (xCrd > 0 && this.graphMatrix[yCrd][xCrd - 1].getValue() == 1) {
                             return true;
@@ -77,6 +82,9 @@ public class Graph {
 
                     break;
                 case RIGHT:
+                    if (yCrd == 9 && xCrd == 17) {
+                        return true;
+                    }
                     if (x == this.graphMatrix[yCrd][xCrd].getX() && y == this.graphMatrix[yCrd][xCrd].getY()) {
                         if (xCrd < this.graphMatrix[0].length - 1 && this.graphMatrix[yCrd][xCrd + 1].getValue() == 1) {
                             return true;
