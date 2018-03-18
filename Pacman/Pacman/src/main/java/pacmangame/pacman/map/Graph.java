@@ -13,9 +13,9 @@ import pacmangame.pacman.characters.Direction;
  * @author User
  */
 public class Graph {
-     private int width, height;
-    private Tile[][] graphMatrix;
 
+    private int width, height;
+    private Tile[][] graphMatrix;
 
     public Graph(List<String> map) {
         this.width = map.get(1).length();
@@ -77,7 +77,7 @@ public class Graph {
 
                     break;
                 case RIGHT:
-                    if (x == this.graphMatrix[yCrd][xCrd].getX()&&y == this.graphMatrix[yCrd][xCrd].getY()) {
+                    if (x == this.graphMatrix[yCrd][xCrd].getX() && y == this.graphMatrix[yCrd][xCrd].getY()) {
                         if (xCrd < this.graphMatrix[0].length - 1 && this.graphMatrix[yCrd][xCrd + 1].getValue() == 1) {
                             return true;
                         }

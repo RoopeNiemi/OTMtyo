@@ -10,5 +10,5 @@ package pacmangame.pacman.characters;
  * @author User
  */
 public enum Direction {
-       UP,DOWN,LEFT,RIGHT,NOT_MOVING;
+    UP, DOWN, LEFT, RIGHT, NOT_MOVING;
 }

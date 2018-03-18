@@ -28,8 +28,8 @@ import pacmangame.pacman.map.Tile;
  */
 public class UI extends Application {
 
-    private double WIDTH = 400;
-    private double HEIGHT = 400;
+    private double width = 400;
+    private double height = 400;
     private boolean keyIsPressed = false;
 
     private List<String> loadMap(String path) {
@@ -48,9 +48,9 @@ public class UI extends Application {
     public void start(Stage primaryStage) throws Exception {
         Graph map = new Graph(loadMap("map1.txt"));
         Player player = new Player(20, 20);
-        this.WIDTH = map.getGraphMatrix().length * 20;
-        this.HEIGHT = map.getGraphMatrix()[0].length * 20;
-        Canvas c = new Canvas(WIDTH, HEIGHT);
+        this.width = map.getGraphMatrix().length * 20;
+        this.height = map.getGraphMatrix()[0].length * 20;
+        Canvas c = new Canvas(width, height);
         BorderPane window = new BorderPane();
         window.setCenter(c);
 
@@ -122,7 +122,7 @@ public class UI extends Application {
 
     public void paintGame(GraphicsContext gc, Graph map) {
         gc.setFill(Color.WHITE);
-        gc.fillRect(0, 0, WIDTH, HEIGHT);
+        gc.fillRect(0, 0, width, height);
         for (int i = 0; i < map.getGraphMatrix().length; i++) {
             for (int j = 0; j < map.getGraphMatrix()[0].length; j++) {
                 Tile tile = map.getGraphMatrix()[i][j];

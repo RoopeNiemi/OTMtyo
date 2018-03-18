@@ -1,10 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <actions>
-        <action>
-            <actionName>CUSTOM-testikattavuus</actionName>
-            <displayName>testikattavuus</displayName>
-            <goals>
-                <goal>jacoco:report</goal>
-            </goals>
-        </action>
-    </actions>
+    <action>
+        <actionName>CUSTOM-testikattavuus</actionName>
+        <displayName>testikattavuus</displayName>
+        <goals>
+            <goal>jacoco:report</goal>
+        </goals>
+    </action>
+    <action>
+        <actionName>CUSTOM-checkstyle</actionName>
+        <displayName>Checkstyle</displayName>
+        <goals>
+            <goal>jxr:jxr</goal>
+            <goal>checkstyle:checkstyle</goal>
+        </goals>
+    </action>
+</actions>
