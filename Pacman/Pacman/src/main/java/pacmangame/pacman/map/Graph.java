@@ -5,8 +5,12 @@
  */
 package pacmangame.pacman.map;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
+import java.util.stream.Collectors;
 import pacmangame.pacman.characters.Direction;
+import pacmangame.pacman.characters.Monster;
 
 /**
  *
@@ -16,6 +20,7 @@ public class Graph {
 
     private int width, height;
     private Tile[][] graphMatrix;
+    private ArrayList<Tile> movableTiles = new ArrayList<Tile>();
 
     public Graph(List<String> map) {
         this.width = map.get(1).length();
@@ -30,6 +35,12 @@ public class Graph {
                 this.graphMatrix[i][j].setPathFrom(null);
             }
         }
+    }
+    
+
+
+    public ArrayList<Tile> getMovableTiles() {
+        return this.movableTiles;
     }
 
     public boolean checkTurn(double x, double y, Direction dir) {
@@ -104,12 +115,15 @@ public class Graph {
     }
 
     private void initGraph(List<String> map) {
+        movableTiles.clear();
         double tileWidth = 20;
         for (int i = 0; i < map.size(); i++) {
             char[] characters = map.get(i).toCharArray();
             for (int j = 0; j < characters.length; j++) {
                 if (characters[j] == '1') {
-                    graphMatrix[i][j] = new Tile(j * tileWidth, i * tileWidth, tileWidth, 1);
+                    Tile t = new Tile(j * tileWidth, i * tileWidth, tileWidth, 1);
+                    graphMatrix[i][j] = t;
+                    movableTiles.add(t);
                 } else {
                     graphMatrix[i][j] = new Tile(j * tileWidth, i * tileWidth, tileWidth, 0);
                 }

@@ -65,7 +65,7 @@ public class Monster {
                 return false;
             } else {
                 System.out.println("nextpath poll");
-                this.behaviourFactor++;
+
                 this.nextTile = this.nextPath.pollFirst();
             }
         }
@@ -84,6 +84,7 @@ public class Monster {
         }
         if (this.x == tileX && this.y == tileY) {
             System.out.println("nexttile null");
+            this.behaviourFactor++;
             this.nextTile = null;
 
         }

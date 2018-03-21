@@ -18,7 +18,7 @@ public class Player {
     private Color color = Color.YELLOW;
     private Direction movementDirection = Direction.NOT_MOVING;
     private Direction queuedDirection = Direction.NOT_MOVING;
-    private double movementSpeed = 2.5;
+    private double movementSpeed = 1;
 
     public Player(double x, double y) {
         this.x = x;

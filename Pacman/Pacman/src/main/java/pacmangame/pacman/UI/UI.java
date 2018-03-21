@@ -5,10 +5,6 @@
  */
 package pacmangame.pacman.UI;
 
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.scene.Scene;
@@ -16,9 +12,12 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import pacmangame.pacman.characters.Direction;
+import pacmangame.pacman.characters.Monster;
 import pacmangame.pacman.characters.Player;
+import pacmangame.pacman.logic.GameLogic;
 import pacmangame.pacman.map.Graph;
 import pacmangame.pacman.map.Tile;
 
@@ -31,23 +30,11 @@ public class UI extends Application {
     private double width = 400;
     private double height = 400;
     private boolean keyIsPressed = false;
-
-    private List<String> loadMap(String path) {
-        InputStream is = getClass().getClassLoader().getResourceAsStream(path);
-        Scanner fileScanner = new Scanner(is);
-        List<String> map = new ArrayList<>();
-        while (fileScanner.hasNextLine()) {
-            String line = fileScanner.nextLine();
-            System.out.println(line);
-            map.add(line);
-        }
-        return map;
-    }
+    private GameLogic game = new GameLogic();
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        Graph map = new Graph(loadMap("map1.txt"));
-        Player player = new Player(20, 20);
+        Graph map = game.getGraph();
         this.width = map.getGraphMatrix()[0].length * 20;
         this.height = map.getGraphMatrix().length * 20;
         Canvas c = new Canvas(width, height);
@@ -55,6 +42,11 @@ public class UI extends Application {
         window.setCenter(c);
 
         Scene scene = new Scene(window);
+        scene.setOnMouseClicked(event -> {
+            if (game.getGameOver()) {
+                game.init();
+            }
+        });
         scene.setOnKeyPressed(event -> {
             if (this.keyIsPressed) {
                 return;
@@ -65,22 +57,22 @@ public class UI extends Application {
                 switch (event.getCode()) {
                     case RIGHT:
 
-                        player.setQueuedDirection(Direction.RIGHT);
+                        game.getPlayer().setQueuedDirection(Direction.RIGHT);
 
                         break;
                     case LEFT:
 
-                        player.setQueuedDirection(Direction.LEFT);
+                        game.getPlayer().setQueuedDirection(Direction.LEFT);
 
                         break;
                     case UP:
 
-                        player.setQueuedDirection(Direction.UP);
+                        game.getPlayer().setQueuedDirection(Direction.UP);
 
                         break;
                     case DOWN:
 
-                        player.setQueuedDirection(Direction.DOWN);
+                        game.getPlayer().setQueuedDirection(Direction.DOWN);
 
                         break;
 
@@ -100,26 +92,16 @@ public class UI extends Application {
                 if (now - prev < 25000000) {
                     return;
                 }
-                prev = now;
-                player.move();
-                if (player.getX() <= 0 && player.getY() == map.getGraphMatrix()[9][0].getY()) {
-                    player.setX(map.getGraphMatrix()[9][17].getX()+17.5);
-                    return;
+                if (!game.getGameOver()) {
+                    prev = now;
+                    if (!game.isInProgress()) {
+                        game.movePlayer();
+                        game.updateMonsters();
+                        paintGame(c.getGraphicsContext2D(), game.getGraph());
+                    }
+                } else {
+                    drawGameOverText(c.getGraphicsContext2D());
                 }
-                if (player.getX() >= map.getGraphMatrix()[9][17].getX()+17 && player.getY() == map.getGraphMatrix()[9][0].getY() && player.getMovementDirection() == Direction.RIGHT) {
-                    player.setX(map.getGraphMatrix()[9][0].getX());
-                    return;
-                }
-                if (map.checkTurn(player.getX(), player.getY(), player.getQueuedDirection())) {
-                    player.setMovementDirection(player.getQueuedDirection());
-                    player.setQueuedDirection(Direction.NOT_MOVING);
-                }
-                if (!map.checkTurn(player.getX(), player.getY(), player.getMovementDirection())) {
-                    player.setMovementDirection(Direction.NOT_MOVING);
-                }
-
-                paintGame(c.getGraphicsContext2D(), map);
-                drawPlayer(c.getGraphicsContext2D(), player);
             }
         }.start();
         primaryStage.setScene(scene);
@@ -134,7 +116,7 @@ public class UI extends Application {
         for (int i = 0; i < map.getGraphMatrix().length; i++) {
             for (int j = 0; j < map.getGraphMatrix()[0].length; j++) {
                 Tile tile = map.getGraphMatrix()[i][j];
-                if (tile.getValue() == 1.0) {
+                if (tile.getValue() == 1) {
                     gc.setFill(Color.BLACK);
                     gc.fillRect(tile.getX(), tile.getY(), tile.getWidth(), tile.getWidth());
                 } else {
@@ -143,11 +125,51 @@ public class UI extends Application {
                 }
             }
         }
+        drawPlayer(gc);
+        drawMonsters(gc);
     }
 
-    public void drawPlayer(GraphicsContext gc, Player player) {
-        gc.setFill(player.getColor());
-        gc.fillOval(player.getX(), player.getY(), player.getWidth(), player.getWidth());
+    public void drawPlayer(GraphicsContext gc) {
+        gc.setFill(game.getPlayer().getColor());
+        gc.fillOval(game.getPlayer().getX(), game.getPlayer().getY(), game.getPlayer().getWidth(), game.getPlayer().getWidth());
+    }
+
+    public void drawMonsters(GraphicsContext gc) {
+        Monster toDraw = game.getBlue();
+        gc.setFill(toDraw.getColor());
+        if (toDraw.getBehaviourState()) {
+            gc.setFill(Color.DARKBLUE);
+        }
+        gc.fillOval(toDraw.getX(), toDraw.getY(), toDraw.getWidth(), toDraw.getWidth());
+
+        toDraw = game.getRed();
+        gc.setFill(toDraw.getColor());
+        if (toDraw.getBehaviourState()) {
+            gc.setFill(Color.DARKBLUE);
+        }
+        gc.fillOval(toDraw.getX(), toDraw.getY(), toDraw.getWidth(), toDraw.getWidth());
+
+        toDraw = game.getYellow();
+        gc.setFill(toDraw.getColor());
+        if (toDraw.getBehaviourState()) {
+            gc.setFill(Color.DARKBLUE);
+        }
+        gc.fillOval(toDraw.getX(), toDraw.getY(), toDraw.getWidth(), toDraw.getWidth());
+
+        toDraw = game.getOrange();
+        gc.setFill(toDraw.getColor());
+        if (toDraw.getBehaviourState()) {
+            gc.setFill(Color.DARKBLUE);
+        }
+
+        gc.fillOval(toDraw.getX(), toDraw.getY(), toDraw.getWidth(), toDraw.getWidth());
+    }
+
+    public void drawGameOverText(GraphicsContext gc) {
+        gc.setFont(new Font(50));
+        gc.setFill(Color.RED);
+
+        gc.fillText("GAME OVER", width / 4, height / 2);
     }
 
     public static void main(String[] args) {
