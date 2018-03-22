@@ -43,6 +43,7 @@ public class Monster {
 
     public void changeBehaviour() {
         this.behaviourState = !this.behaviourState;
+        this.nextPath.clear();
     }
 
     public double getBehaviourFactor() {

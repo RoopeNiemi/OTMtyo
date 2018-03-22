@@ -207,11 +207,9 @@ public class GameLogic {
     }
 
     private void checkCollision(Monster monster, Tile monsterTile, Tile playerTile) {
-        if (monsterTile == playerTile) {
-            gameOver();
-        }
-        if (Math.abs(this.player.getX() - monster.getX()) <= 10) {
-            if (Math.abs(this.player.getY() - monster.getY()) <= 10) {
+     
+        if (Math.abs(this.player.getX() - monster.getX()) <= 15) {
+            if (Math.abs(this.player.getY() - monster.getY()) <= 15) {
                 gameOver();
             }
         }
@@ -221,37 +219,6 @@ public class GameLogic {
         return this.currentMap.getGraphMatrix()[(int) Math.floor(this.player.getY() / 20)][(int) Math.floor(player.getX() / 20)];
     }
 
-    public Tile findAdjacentTile(int playerX, int playerY) {
-        Tile adjacentTile = this.currentMap.getGraphMatrix()[playerY][playerX];;
-        switch (player.getMovementDirection()) {
-            case UP:
-                if (this.currentMap.getGraphMatrix()[playerY + 1][playerX].getValue() == 1) {
-                    adjacentTile = this.currentMap.getGraphMatrix()[playerY + 1][playerX];
-                } else {
-                    adjacentTile = this.currentMap.getGraphMatrix()[playerY - 1][playerX];
-                }
-            case DOWN:
-                if (this.currentMap.getGraphMatrix()[playerY - 1][playerX].getValue() == 1) {
-                    adjacentTile = this.currentMap.getGraphMatrix()[playerY - 1][playerX];
-                } else {
-                    adjacentTile = this.currentMap.getGraphMatrix()[playerY + 1][playerX];
-                }
-            case LEFT:
-                if (playerX > 0 && this.currentMap.getGraphMatrix()[playerY][playerX - 1].getValue() == 1) {
-                    adjacentTile = this.currentMap.getGraphMatrix()[playerY][playerX - 1];
-                } else {
-                    adjacentTile = this.currentMap.getGraphMatrix()[playerY][playerX + 1];
-                }
-            case RIGHT:
-                if (playerX < 17 && this.currentMap.getGraphMatrix()[playerY][playerX + 1].getValue() == 1) {
-                    adjacentTile = this.currentMap.getGraphMatrix()[playerY][playerX + 1];
-                } else {
-                    adjacentTile = this.currentMap.getGraphMatrix()[playerY][playerX - 1];
-                }
-
-        }
-        return adjacentTile;
-    }
 
     public int manhattanDistance(Tile monsterTile, Tile playerTile) {
         return 0;
