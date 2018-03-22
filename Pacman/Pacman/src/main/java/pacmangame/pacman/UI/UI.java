@@ -65,29 +65,19 @@ public class UI extends Application {
 
                 switch (event.getCode()) {
                     case RIGHT:
-
                         game.getPlayer().setQueuedDirection(Direction.RIGHT);
-
                         break;
                     case LEFT:
-
                         game.getPlayer().setQueuedDirection(Direction.LEFT);
-
                         break;
                     case UP:
-
                         game.getPlayer().setQueuedDirection(Direction.UP);
-
                         break;
                     case DOWN:
-
                         game.getPlayer().setQueuedDirection(Direction.DOWN);
-
                         break;
-
                 }
             }
-            System.out.println("Direction set");
         });
         scene.setOnKeyReleased(event -> {
             this.keyIsPressed = false;
@@ -108,7 +98,6 @@ public class UI extends Application {
                         game.updateMonsters();
                         paintGame(c.getGraphicsContext2D(), game.getGraph());
                         pointLabel.setText("Points: " + game.getPointAmount());
-
                     }
                 } else {
                     drawGameOverText(c.getGraphicsContext2D());
@@ -126,7 +115,6 @@ public class UI extends Application {
         gc.fillRect(0, 0, width, height + 30);
         gc.setFill(Color.WHITE);
         gc.setFont(new Font(30));
-        
         gc.fillText(this.pointLabel.getText(), 20, 30);
         for (int i = 0; i < map.getGraphMatrix().length; i++) {
             for (int j = 0; j < map.getGraphMatrix()[0].length; j++) {
@@ -155,7 +143,6 @@ public class UI extends Application {
         if (null != currentDirection) {
             switch (currentDirection) {
                 case RIGHT:
-
                     break;
                 case LEFT:
                     currentAngle += 180;
@@ -170,7 +157,6 @@ public class UI extends Application {
                     break;
             }
         }
-
         gc.fillArc(game.getPlayer().getX(), game.getPlayer().getY() + scoreBoardHeight, game.getPlayer().getWidth(), game.getPlayer().getWidth(), currentAngle, 360 - game.getPlayer().getMouthAngle() * 2, ArcType.ROUND);
     }
 
@@ -208,7 +194,6 @@ public class UI extends Application {
     public void drawGameOverText(GraphicsContext gc) {
         gc.setFont(new Font(50));
         gc.setFill(Color.RED);
-
         gc.fillText("GAME OVER", width / 4, height / 2 + scoreBoardHeight);
     }
 

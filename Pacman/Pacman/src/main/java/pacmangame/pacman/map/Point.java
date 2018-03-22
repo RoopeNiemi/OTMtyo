@@ -65,8 +65,6 @@ public class Point {
         }
         return true;
     }
-    
-    
 
     public double getUpperLeftX() {
         return this.centreX - this.widthAndHeight / 2;

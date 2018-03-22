@@ -120,4 +120,12 @@ public class Player {
         }
     }
 
+    public double getCentreX() {
+        return this.x + (this.width / 2);
+    }
+
+    public double getCentreY() {
+        return this.y + (this.width / 2);
+    }
+
 }

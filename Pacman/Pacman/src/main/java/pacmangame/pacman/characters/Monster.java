@@ -17,6 +17,7 @@ import java.util.Stack;
 public class Monster {
 
     private double x, y, width, movementSpeed, behaviourChangeThreshold, behaviourFactor;
+    private int pathSize;
     private Color color;
     private Tile nextTile = null;
     private ArrayDeque<Tile> nextPath = new ArrayDeque<>();
@@ -30,6 +31,7 @@ public class Monster {
         this.movementSpeed = movementSpeed;
         this.behaviourChangeThreshold = behaviourThreshold;
         this.behaviourFactor = 0;
+        this.pathSize = (int) behaviourThreshold;
 
     }
 
@@ -44,6 +46,16 @@ public class Monster {
     public void changeBehaviour() {
         this.behaviourState = !this.behaviourState;
         this.nextPath.clear();
+        resetBehaviourFactor();
+        if (this.behaviourState) {
+            this.pathSize /= 2;
+        } else {
+            this.pathSize *= 2;
+        }
+    }
+
+    public int getPathSize() {
+        return this.pathSize;
     }
 
     public double getBehaviourFactor() {
@@ -59,21 +71,15 @@ public class Monster {
     }
 
     public boolean move() {
-        System.out.println("nexttile check");
         if (this.nextTile == null) {
-            System.out.println("nextpath check");
             if (this.nextPath.isEmpty()) {
                 return false;
             } else {
-                System.out.println("nextpath poll");
-
                 this.nextTile = this.nextPath.pollFirst();
             }
         }
-
         double tileX = nextTile.getX();
         double tileY = nextTile.getY();
-        System.out.println("move dir");
         if (tileX > this.x) {
             this.x += this.movementSpeed;
         } else if (tileX < this.x) {
@@ -84,12 +90,9 @@ public class Monster {
             this.y -= this.movementSpeed;
         }
         if (this.x == tileX && this.y == tileY) {
-            System.out.println("nexttile null");
             this.behaviourFactor++;
             this.nextTile = null;
-
         }
-
         return true;
     }
 
@@ -135,6 +138,14 @@ public class Monster {
 
     public void setNextTile(Tile nextTile) {
         this.nextTile = nextTile;
+    }
+
+    public double getCentreX() {
+        return this.x + (this.width / 2);
+    }
+
+    public double getCentreY() {
+        return this.y + (this.width / 2);
     }
 
 }

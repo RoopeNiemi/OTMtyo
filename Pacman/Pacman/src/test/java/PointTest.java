@@ -55,18 +55,19 @@ public class PointTest {
     public void hasRightWidthWhenTypePoint() {
         assertTrue(pointOne.getWidthAndHeight() == 2);
     }
+
     @Test
-    public void hasRightWidthWhenTypeFruit(){
-        assertTrue(pointThree.getWidthAndHeight()==6);
+    public void hasRightWidthWhenTypeFruit() {
+        assertTrue(pointThree.getWidthAndHeight() == 6);
     }
-    
+
     @Test
-    public void pointsAreEqualWhenSameCoordinates(){
+    public void pointsAreEqualWhenSameCoordinates() {
         assertTrue(pointOne.equals(pointTwo));
     }
-    
+
     @Test
-    public void pointsAreDifferentWhenDifferentCoordinates(){
+    public void pointsAreDifferentWhenDifferentCoordinates() {
         pointThree.setType(Type.POINT);
         assertTrue(!pointOne.equals(pointThree));
     }
