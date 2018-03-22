@@ -63,7 +63,7 @@ public class Graph {
                         if (this.graphMatrix[i][j - 1].getValue() == 1) {
                             double tileX = t.getX();
                             tileCentreY = t.getY() + t.getWidth() / 2;
-                            p=new Point(tileX,tileCentreY,Type.POINT);
+                            p = new Point(tileX, tileCentreY, Type.POINT);
                             points.add(p);
                             t.addTilePoint(p);
                         }

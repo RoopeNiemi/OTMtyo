@@ -14,15 +14,37 @@ import javafx.scene.paint.Color;
 public class Player {
 
     private double width = 20;
+    private double mouthAngle = 0;
+    private boolean angleChangeDirection = true;
     private double x, y;
     private Color color = Color.YELLOW;
     private Direction movementDirection = Direction.NOT_MOVING;
     private Direction queuedDirection = Direction.NOT_MOVING;
+    private Direction previousDirection = Direction.NOT_MOVING;
     private double movementSpeed = 1;
 
     public Player(double x, double y) {
         this.x = x;
         this.y = y;
+    }
+
+    public double getMouthAngle() {
+        return this.mouthAngle;
+    }
+
+    private void changeAngle() {
+        if (this.angleChangeDirection) {
+            mouthAngle += 15;
+        } else {
+            mouthAngle -= 15;
+        }
+        if (mouthAngle >= 60 || mouthAngle <= 0) {
+            angleChangeDirection = !angleChangeDirection;
+        }
+    }
+
+    public Direction getPreviousDirection() {
+        return this.previousDirection;
     }
 
     public Direction getMovementDirection() {
@@ -34,6 +56,9 @@ public class Player {
     }
 
     public void setMovementDirection(Direction movementDirection) {
+        if (this.movementDirection != Direction.NOT_MOVING) {
+            this.previousDirection = this.movementDirection;
+        }
         this.movementDirection = movementDirection;
     }
 
@@ -75,6 +100,7 @@ public class Player {
 
     public void move() {
         if (Direction.NOT_MOVING != this.movementDirection) {
+            changeAngle();
             switch (this.movementDirection) {
                 case DOWN:
                     this.y += movementSpeed;

@@ -68,8 +68,8 @@ public class GameLogic {
     public boolean isInProgress() {
         return this.inProgress;
     }
-    
-    public int getPointAmount(){
+
+    public int getPointAmount() {
         return this.points;
     }
 
@@ -89,8 +89,14 @@ public class GameLogic {
             return;
         }
         monster.getNextPath().clear();
-        while (!path.isEmpty() && monster.getNextPath().size() < monster.getBehaviourChangeThreshold()) {
-            monster.getNextPath().addLast(path.pop());
+        if (!monster.getBehaviourState()) {
+            while (!path.isEmpty() && monster.getNextPath().size() < monster.getBehaviourChangeThreshold()) {
+                monster.getNextPath().addLast(path.pop());
+            }
+        } else {
+            while (!path.isEmpty() && monster.getNextPath().size() < monster.getBehaviourChangeThreshold() / 2) {
+                monster.getNextPath().addLast(path.pop());
+            }
         }
         this.inProgress = false;
     }
@@ -118,20 +124,17 @@ public class GameLogic {
     private void checkPointSituation() {
         double playerCentreX = player.getX() + player.getWidth() / 2;
         double playerCentreY = player.getY() + player.getWidth() / 2;
-
         if (playerCentreX <= 359) {
             Tile playerTile = getTile(playerCentreX, playerCentreY);
             Stack<Point> deletedPoints = new Stack();
             for (int i = 0; i < playerTile.getTilesPoints().size(); i++) {
-                if (Math.abs(playerCentreX - playerTile.getTilesPoints().get(i).getCentreX()) <= 5 && 
-                        Math.abs(playerCentreY - playerTile.getTilesPoints().get(i).getCentreY()) <= 5) {
-                        deletedPoints.push(playerTile.getTilesPoints().get(i));
+                if (Math.abs(playerCentreX - playerTile.getTilesPoints().get(i).getCentreX()) <= 5
+                        && Math.abs(playerCentreY - playerTile.getTilesPoints().get(i).getCentreY()) <= 5) {
+                    deletedPoints.push(playerTile.getTilesPoints().get(i));
                 }
             }
-            
-            
-            while(!deletedPoints.isEmpty()){
-                Point p=deletedPoints.pop();
+            while (!deletedPoints.isEmpty()) {
+                Point p = deletedPoints.pop();
                 playerTile.getTilesPoints().remove(p);
                 points++;
                 this.currentMap.getPointsList().remove(p);
@@ -160,7 +163,7 @@ public class GameLogic {
             this.red.resetBehaviourFactor();
         }
         if (!this.red.getBehaviourState()) {
-            updateMonster(this.red, getRandomDestinationTile(this.red));
+            updateMonster(this.red, getPlayerTile());
 
         } else {
             updateMonster(this.red, getPlayerTile());
@@ -241,10 +244,9 @@ public class GameLogic {
 
     private void checkCollision(Monster monster, Tile monsterTile, Tile playerTile) {
 
-        if (Math.abs(this.player.getX() - monster.getX()) <= 15) {
-            if (Math.abs(this.player.getY() - monster.getY()) <= 15) {
-                gameOver();
-            }
+        if (Math.abs((this.player.getX() + this.player.getWidth() / 2) - (monster.getX() + monster.getWidth() / 2)) <= 15
+                && Math.abs((this.player.getY() + this.player.getWidth() / 2) - (monster.getY() + monster.getWidth() / 2)) <= 15) {
+            gameOver();
         }
     }
 
@@ -252,9 +254,6 @@ public class GameLogic {
         return this.currentMap.getGraphMatrix()[(int) Math.floor(this.player.getY() / 20)][(int) Math.floor(player.getX() / 20)];
     }
 
-    public int manhattanDistance(Tile monsterTile, Tile playerTile) {
-        return 0;
-    }
 
     public Player getPlayer() {
         return this.player;

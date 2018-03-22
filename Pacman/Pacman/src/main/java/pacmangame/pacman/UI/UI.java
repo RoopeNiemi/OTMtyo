@@ -5,6 +5,7 @@
  */
 package pacmangame.pacman.UI;
 
+import java.awt.geom.Arc2D;
 import java.util.ArrayList;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
@@ -14,7 +15,9 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.ArcType;
 import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
 import pacmangame.pacman.characters.Direction;
 import pacmangame.pacman.characters.Monster;
@@ -31,10 +34,11 @@ import pacmangame.pacman.map.Type;
 public class UI extends Application {
 
     private double width = 400;
+    private double scoreBoardHeight = 40;
     private double height = 400;
     private boolean keyIsPressed = false;
     private GameLogic game = new GameLogic();
-    private Label pointLabel=new Label("Points: 0");
+    private Label pointLabel = new Label("Points: 0");
 
     @Override
     public void start(Stage primaryStage) throws Exception {
@@ -42,7 +46,7 @@ public class UI extends Application {
         Graph map = game.getGraph();
         this.width = map.getGraphMatrix()[0].length * 20;
         this.height = map.getGraphMatrix().length * 20;
-        Canvas c = new Canvas(width, height);
+        Canvas c = new Canvas(width, height + scoreBoardHeight);
         BorderPane window = new BorderPane();
         window.setCenter(c);
 
@@ -103,8 +107,8 @@ public class UI extends Application {
                         game.movePlayer();
                         game.updateMonsters();
                         paintGame(c.getGraphicsContext2D(), game.getGraph());
-                        pointLabel.setText("Points: "+game.getPointAmount());
-                        primaryStage.setTitle("Pacman            Points: "+game.getPointAmount());
+                        pointLabel.setText("Points: " + game.getPointAmount());
+
                     }
                 } else {
                     drawGameOverText(c.getGraphicsContext2D());
@@ -113,33 +117,61 @@ public class UI extends Application {
         }.start();
         primaryStage.setScene(scene);
 
-        primaryStage.setTitle("Pacman            Points: 0");
+        primaryStage.setTitle("Pacman");
         primaryStage.show();
     }
 
     public void paintGame(GraphicsContext gc, Graph map) {
+        gc.setFill(Color.BLACK);
+        gc.fillRect(0, 0, width, height + 30);
         gc.setFill(Color.WHITE);
-        gc.fillRect(0, 0, width, height);
+        gc.setFont(new Font(30));
+        
+        gc.fillText(this.pointLabel.getText(), 20, 30);
         for (int i = 0; i < map.getGraphMatrix().length; i++) {
             for (int j = 0; j < map.getGraphMatrix()[0].length; j++) {
                 Tile tile = map.getGraphMatrix()[i][j];
                 if (tile.getValue() == 1) {
                     gc.setFill(Color.BLACK);
-                    gc.fillRect(tile.getX(), tile.getY(), tile.getWidth(), tile.getWidth());
+                    gc.fillRect(tile.getX(), tile.getY() + scoreBoardHeight, tile.getWidth(), tile.getWidth());
                 } else {
                     gc.setFill(Color.GRAY);
-                    gc.fillRect(tile.getX(), tile.getY(), tile.getWidth(), tile.getWidth());
+                    gc.fillRect(tile.getX(), tile.getY() + scoreBoardHeight, tile.getWidth(), tile.getWidth());
                 }
             }
         }
-          drawPoints(gc);
+        drawPoints(gc);
         drawPlayer(gc);
         drawMonsters(gc);
     }
 
     public void drawPlayer(GraphicsContext gc) {
         gc.setFill(game.getPlayer().getColor());
-        gc.fillOval(game.getPlayer().getX(), game.getPlayer().getY(), game.getPlayer().getWidth(), game.getPlayer().getWidth());
+        double currentAngle = game.getPlayer().getMouthAngle();
+        Direction currentDirection = game.getPlayer().getMovementDirection();
+        if (currentDirection == Direction.NOT_MOVING) {
+            currentDirection = game.getPlayer().getPreviousDirection();
+        }
+        if (null != currentDirection) {
+            switch (currentDirection) {
+                case RIGHT:
+
+                    break;
+                case LEFT:
+                    currentAngle += 180;
+                    break;
+                case UP:
+                    currentAngle += 90;
+                    break;
+                case DOWN:
+                    currentAngle -= 90;
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        gc.fillArc(game.getPlayer().getX(), game.getPlayer().getY() + scoreBoardHeight, game.getPlayer().getWidth(), game.getPlayer().getWidth(), currentAngle, 360 - game.getPlayer().getMouthAngle() * 2, ArcType.ROUND);
     }
 
     public void drawMonsters(GraphicsContext gc) {
@@ -148,21 +180,21 @@ public class UI extends Application {
         if (toDraw.getBehaviourState()) {
             gc.setFill(Color.DARKBLUE);
         }
-        gc.fillOval(toDraw.getX(), toDraw.getY(), toDraw.getWidth(), toDraw.getWidth());
+        gc.fillOval(toDraw.getX(), toDraw.getY() + scoreBoardHeight, toDraw.getWidth(), toDraw.getWidth());
 
         toDraw = game.getRed();
         gc.setFill(toDraw.getColor());
         if (toDraw.getBehaviourState()) {
             gc.setFill(Color.DARKBLUE);
         }
-        gc.fillOval(toDraw.getX(), toDraw.getY(), toDraw.getWidth(), toDraw.getWidth());
+        gc.fillOval(toDraw.getX(), toDraw.getY() + scoreBoardHeight, toDraw.getWidth(), toDraw.getWidth());
 
         toDraw = game.getYellow();
         gc.setFill(toDraw.getColor());
         if (toDraw.getBehaviourState()) {
             gc.setFill(Color.DARKBLUE);
         }
-        gc.fillOval(toDraw.getX(), toDraw.getY(), toDraw.getWidth(), toDraw.getWidth());
+        gc.fillOval(toDraw.getX(), toDraw.getY() + scoreBoardHeight, toDraw.getWidth(), toDraw.getWidth());
 
         toDraw = game.getOrange();
         gc.setFill(toDraw.getColor());
@@ -170,21 +202,21 @@ public class UI extends Application {
             gc.setFill(Color.DARKBLUE);
         }
 
-        gc.fillOval(toDraw.getX(), toDraw.getY(), toDraw.getWidth(), toDraw.getWidth());
+        gc.fillOval(toDraw.getX(), toDraw.getY() + scoreBoardHeight, toDraw.getWidth(), toDraw.getWidth());
     }
 
     public void drawGameOverText(GraphicsContext gc) {
         gc.setFont(new Font(50));
         gc.setFill(Color.RED);
 
-        gc.fillText("GAME OVER", width / 4, height / 2);
+        gc.fillText("GAME OVER", width / 4, height / 2 + scoreBoardHeight);
     }
-    
-    public void drawPoints(GraphicsContext gc){
-        ArrayList<Point> points=game.getGraph().getPointsList();
-        gc.setFill(new Point(0,0,Type.POINT).getColor());
-        for(int i=0;i<points.size();i++){
-            gc.fillOval(points.get(i).getUpperLeftX(), points.get(i).getUpperLeftY(), points.get(i).getWidthAndHeight(), points.get(i).getWidthAndHeight());
+
+    public void drawPoints(GraphicsContext gc) {
+        ArrayList<Point> points = game.getGraph().getPointsList();
+        gc.setFill(new Point(0, 0, Type.POINT).getColor());
+        for (int i = 0; i < points.size(); i++) {
+            gc.fillOval(points.get(i).getUpperLeftX(), points.get(i).getUpperLeftY() + scoreBoardHeight, points.get(i).getWidthAndHeight(), points.get(i).getWidthAndHeight());
         }
     }
 

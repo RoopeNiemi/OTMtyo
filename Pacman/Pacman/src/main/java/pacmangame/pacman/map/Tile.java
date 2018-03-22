@@ -12,7 +12,7 @@ import java.util.ArrayList;
  * @author User
  */
 public class Tile {
-    
+
     private double x, y, width, value;
     private Tile pathFrom = null;
     private ArrayList<Point> tilesPoints;
@@ -22,20 +22,21 @@ public class Tile {
         this.y = y;
         this.width = width;
         this.value = value;
-        this.tilesPoints=new ArrayList<>();
+        this.tilesPoints = new ArrayList<>();
     }
 
-    public void addTilePoint(Point p){
+    public void addTilePoint(Point p) {
         this.tilesPoints.add(p);
     }
-    public ArrayList<Point> getTilesPoints(){
+
+    public ArrayList<Point> getTilesPoints() {
         return this.tilesPoints;
     }
-    
-    public void setTilesPoints(ArrayList<Point> newPoints){
-        this.tilesPoints=newPoints;
+
+    public void setTilesPoints(ArrayList<Point> newPoints) {
+        this.tilesPoints = newPoints;
     }
-    
+
     public double getX() {
         return x;
     }

@@ -10,5 +10,5 @@ package pacmangame.pacman.map;
  * @author nroope
  */
 public enum Type {
-    POINT,FRUIT;
+    POINT, FRUIT;
 }
