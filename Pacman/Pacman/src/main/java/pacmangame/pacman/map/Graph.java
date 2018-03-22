@@ -21,6 +21,7 @@ public class Graph {
     private int width, height;
     private Tile[][] graphMatrix;
     private ArrayList<Tile> movableTiles = new ArrayList<Tile>();
+    private ArrayList<Point> points = new ArrayList<>();
 
     public Graph(List<String> map) {
         this.width = map.get(1).length();
@@ -36,8 +37,42 @@ public class Graph {
             }
         }
     }
-    
 
+    public void generatePointsAndFruits() {
+        for (int i = 0; i < this.graphMatrix.length; i++) {
+            for (int j = 0; j < this.graphMatrix[0].length; j++) {
+                Tile t = this.graphMatrix[i][j];
+                if (t.getValue() == 1) {
+                    //Tile centre x and y
+                    double tileCentreX = t.getX() + t.getWidth() / 2;
+                    double tileCentreY = t.getY() + t.getWidth() / 2;
+                    Point p = new Point(tileCentreX, tileCentreY, Type.POINT);
+                    points.add(p);
+                    t.addTilePoint(p);
+
+                    if (i > 0) {
+                        if (this.graphMatrix[i - 1][j].getValue() == 1) {
+                            tileCentreX = t.getX() + t.getWidth() / 2;
+                            double tileY = t.getY();
+                            p = new Point(tileCentreX, tileY, Type.POINT);
+                            points.add(p);
+                            t.addTilePoint(p);
+                        }
+                    }
+                    if (j > 0) {
+                        if (this.graphMatrix[i][j - 1].getValue() == 1) {
+                            double tileX = t.getX();
+                            tileCentreY = t.getY() + t.getWidth() / 2;
+                            p=new Point(tileX,tileCentreY,Type.POINT);
+                            points.add(p);
+                            t.addTilePoint(p);
+                        }
+                    }
+                }
+            }
+        }
+
+    }
 
     public ArrayList<Tile> getMovableTiles() {
         return this.movableTiles;
@@ -114,6 +149,10 @@ public class Graph {
         return false;
     }
 
+    public ArrayList<Point> getPointsList() {
+        return this.points;
+    }
+
     private void initGraph(List<String> map) {
         movableTiles.clear();
         double tileWidth = 20;
@@ -129,6 +168,8 @@ public class Graph {
                 }
             }
         }
+        this.points.clear();
+        generatePointsAndFruits();
     }
 
     public Tile[][] getGraphMatrix() {

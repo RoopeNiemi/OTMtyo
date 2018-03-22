@@ -5,6 +5,8 @@
  */
 package pacmangame.pacman.map;
 
+import java.util.ArrayList;
+
 /**
  *
  * @author User
@@ -13,15 +15,26 @@ public class Tile {
     
     private double x, y, width, value;
     private Tile pathFrom = null;
+    private ArrayList<Point> tilesPoints;
 
     public Tile(double x, double y, double width, double value) {
         this.x = x;
         this.y = y;
         this.width = width;
         this.value = value;
+        this.tilesPoints=new ArrayList<>();
     }
 
+    public void addTilePoint(Point p){
+        this.tilesPoints.add(p);
+    }
+    public ArrayList<Point> getTilesPoints(){
+        return this.tilesPoints;
+    }
     
+    public void setTilesPoints(ArrayList<Point> newPoints){
+        this.tilesPoints=newPoints;
+    }
     
     public double getX() {
         return x;

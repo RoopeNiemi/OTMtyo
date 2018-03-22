@@ -5,21 +5,24 @@
  */
 package pacmangame.pacman.UI;
 
+import java.util.ArrayList;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import pacmangame.pacman.characters.Direction;
 import pacmangame.pacman.characters.Monster;
-import pacmangame.pacman.characters.Player;
 import pacmangame.pacman.logic.GameLogic;
 import pacmangame.pacman.map.Graph;
+import pacmangame.pacman.map.Point;
 import pacmangame.pacman.map.Tile;
+import pacmangame.pacman.map.Type;
 
 /**
  *
@@ -31,9 +34,11 @@ public class UI extends Application {
     private double height = 400;
     private boolean keyIsPressed = false;
     private GameLogic game = new GameLogic();
+    private Label pointLabel=new Label("Points: 0");
 
     @Override
     public void start(Stage primaryStage) throws Exception {
+        this.pointLabel.setText("Points: 0");
         Graph map = game.getGraph();
         this.width = map.getGraphMatrix()[0].length * 20;
         this.height = map.getGraphMatrix().length * 20;
@@ -98,6 +103,8 @@ public class UI extends Application {
                         game.movePlayer();
                         game.updateMonsters();
                         paintGame(c.getGraphicsContext2D(), game.getGraph());
+                        pointLabel.setText("Points: "+game.getPointAmount());
+                        primaryStage.setTitle("Pacman            Points: "+game.getPointAmount());
                     }
                 } else {
                     drawGameOverText(c.getGraphicsContext2D());
@@ -106,7 +113,7 @@ public class UI extends Application {
         }.start();
         primaryStage.setScene(scene);
 
-        primaryStage.setTitle("Pacman");
+        primaryStage.setTitle("Pacman            Points: 0");
         primaryStage.show();
     }
 
@@ -125,6 +132,7 @@ public class UI extends Application {
                 }
             }
         }
+          drawPoints(gc);
         drawPlayer(gc);
         drawMonsters(gc);
     }
@@ -170,6 +178,14 @@ public class UI extends Application {
         gc.setFill(Color.RED);
 
         gc.fillText("GAME OVER", width / 4, height / 2);
+    }
+    
+    public void drawPoints(GraphicsContext gc){
+        ArrayList<Point> points=game.getGraph().getPointsList();
+        gc.setFill(new Point(0,0,Type.POINT).getColor());
+        for(int i=0;i<points.size();i++){
+            gc.fillOval(points.get(i).getUpperLeftX(), points.get(i).getUpperLeftY(), points.get(i).getWidthAndHeight(), points.get(i).getWidthAndHeight());
+        }
     }
 
     public static void main(String[] args) {

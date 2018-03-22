@@ -7,6 +7,7 @@ package pacmangame.pacman.logic;
 
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
 import java.util.Scanner;
@@ -17,6 +18,7 @@ import pacmangame.pacman.characters.Monster;
 import pacmangame.pacman.characters.Player;
 import pacmangame.pacman.characters.Direction;
 import pacmangame.pacman.map.Graph;
+import pacmangame.pacman.map.Point;
 import pacmangame.pacman.map.Tile;
 import pacmangame.pacman.pathfinding.Pathfinder;
 
@@ -27,7 +29,7 @@ import pacmangame.pacman.pathfinding.Pathfinder;
 public class GameLogic {
 
     private Player player = new Player(20, 20);
-    private Monster red = new Monster(120, 80, 1, Color.RED, 10);
+    private Monster red = new Monster(120, 80, 1, Color.RED, 15);
     private Monster yellow = new Monster(120, 60, 1, Color.YELLOW, 12);
     private Monster blue = new Monster(140, 80, 1, Color.CYAN, 10);
     private Monster orange = new Monster(140, 60, 1, Color.ORANGE, 11);
@@ -35,18 +37,20 @@ public class GameLogic {
     private boolean gameOver = false;
     private Graph currentMap = new Graph(loadMap("map1.txt"));
     private boolean inProgress = false;
+    private int points = 0;
 
     public GameLogic() {
 
     }
 
     public void init() {
+        this.points = 0;
         this.currentMap = new Graph(loadMap("map1.txt"));
         this.player = new Player(20, 20);
-        this.red = new Monster(120, 80, 1, Color.RED, 5);
+        this.red = new Monster(120, 80, 1, Color.RED, 15);
         this.yellow = new Monster(120, 60, 1, Color.YELLOW, 12);
         this.blue = new Monster(140, 80, 1, Color.CYAN, 10);
-        this.orange = new Monster(140, 60, 1, Color.ORANGE, 8);
+        this.orange = new Monster(140, 60, 1, Color.ORANGE, 11);
         this.pathfinder = new Pathfinder();
         this.gameOver = false;
     }
@@ -63,6 +67,10 @@ public class GameLogic {
 
     public boolean isInProgress() {
         return this.inProgress;
+    }
+    
+    public int getPointAmount(){
+        return this.points;
     }
 
     private void gameOver() {
@@ -89,6 +97,7 @@ public class GameLogic {
 
     public void movePlayer() {
         this.player.move();
+        checkPointSituation();
         if (player.getX() <= 0 && player.getY() == this.currentMap.getGraphMatrix()[9][0].getY()) {
             player.setX(this.currentMap.getGraphMatrix()[9][17].getX() + 19);
             return;
@@ -103,6 +112,30 @@ public class GameLogic {
         }
         if (!this.currentMap.checkTurn(player.getX(), player.getY(), player.getMovementDirection())) {
             player.setMovementDirection(Direction.NOT_MOVING);
+        }
+    }
+
+    private void checkPointSituation() {
+        double playerCentreX = player.getX() + player.getWidth() / 2;
+        double playerCentreY = player.getY() + player.getWidth() / 2;
+
+        if (playerCentreX <= 359) {
+            Tile playerTile = getTile(playerCentreX, playerCentreY);
+            Stack<Point> deletedPoints = new Stack();
+            for (int i = 0; i < playerTile.getTilesPoints().size(); i++) {
+                if (Math.abs(playerCentreX - playerTile.getTilesPoints().get(i).getCentreX()) <= 5 && 
+                        Math.abs(playerCentreY - playerTile.getTilesPoints().get(i).getCentreY()) <= 5) {
+                        deletedPoints.push(playerTile.getTilesPoints().get(i));
+                }
+            }
+            
+            
+            while(!deletedPoints.isEmpty()){
+                Point p=deletedPoints.pop();
+                playerTile.getTilesPoints().remove(p);
+                points++;
+                this.currentMap.getPointsList().remove(p);
+            }
         }
     }
 
@@ -207,7 +240,7 @@ public class GameLogic {
     }
 
     private void checkCollision(Monster monster, Tile monsterTile, Tile playerTile) {
-     
+
         if (Math.abs(this.player.getX() - monster.getX()) <= 15) {
             if (Math.abs(this.player.getY() - monster.getY()) <= 15) {
                 gameOver();
@@ -218,7 +251,6 @@ public class GameLogic {
     public Tile getPlayerTile() {
         return this.currentMap.getGraphMatrix()[(int) Math.floor(this.player.getY() / 20)][(int) Math.floor(player.getX() / 20)];
     }
-
 
     public int manhattanDistance(Tile monsterTile, Tile playerTile) {
         return 0;

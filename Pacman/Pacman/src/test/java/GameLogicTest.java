@@ -118,6 +118,18 @@ public class GameLogicTest {
         logic.init();
         assertTrue(!logic.getGameOver());
     }
+    
+    @Test
+    public void initMapResetsPoints(){
+        int points=logic.getPointAmount();
+        logic.getPlayer().setMovementDirection(Direction.DOWN);
+        logic.movePlayer();
+        logic.movePlayer();
+        logic.movePlayer();
+        assertTrue(logic.getPointAmount()!=points);
+        logic.init();
+        assertTrue(logic.getPointAmount()==points);
+    }
 
     @Test
     public void monstersMoveWithAnotherBehaviourState() {
@@ -133,7 +145,6 @@ public class GameLogicTest {
         assertTrue(logic.getOrange().getX() != orangeX || logic.getOrange().getY() != orangeY);
         assertTrue(logic.getBlue().getX() != blueX || logic.getBlue().getY() != blueY);
         assertTrue(logic.getYellow().getX() != yellowX || logic.getYellow().getY() != yellowY);
-
     }
 
     @Test
@@ -146,5 +157,19 @@ public class GameLogicTest {
         logic.getPlayer().setMovementDirection(Direction.RIGHT);
         logic.movePlayer();
         assertTrue(logic.getPlayer().getX() == 0);
+    }
+    
+    @Test
+    public void pointsAreGainedAndRemovedFromMapWhenCollidingWithPlayer(){
+        int points=logic.getPointAmount();
+        int currentPointsOnMap=logic.getGraph().getPointsList().size();
+        logic.getPlayer().setMovementDirection(Direction.DOWN);
+        logic.movePlayer();
+        logic.movePlayer();
+        logic.movePlayer();
+        logic.movePlayer();
+        assertTrue(currentPointsOnMap> logic.getGraph().getPointsList().size());
+        assertTrue(points<logic.getPointAmount());
+        
     }
 }
