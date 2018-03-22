@@ -65,11 +65,10 @@ public class GameLogicTest {
 
     @Test
     public void logicMovesPlayer() {
-        double x = logic.getPlayer().getX();
-        double y = logic.getPlayer().getY();
+
         logic.getPlayer().setMovementDirection(Direction.DOWN);
         logic.movePlayer();
-        assertTrue(logic.getPlayer().getY() != y);
+        assertTrue(logic.getPlayer().getY() != playerY);
     }
 
     @Test
@@ -136,16 +135,16 @@ public class GameLogicTest {
         assertTrue(logic.getYellow().getX() != yellowX || logic.getYellow().getY() != yellowY);
 
     }
-    
+
     @Test
-    public void transferringPlayerToTheOtherSideOfMapWorks(){
+    public void transferringPlayerToTheOtherSideOfMapWorks() {
         logic.getPlayer().setX(0);
         logic.getPlayer().setY(180);
         logic.getPlayer().setMovementDirection(Direction.LEFT);
         logic.movePlayer();
-        assertTrue(logic.getPlayer().getX()==359);
+        assertTrue(logic.getPlayer().getX() == 359);
         logic.getPlayer().setMovementDirection(Direction.RIGHT);
         logic.movePlayer();
-        assertTrue(logic.getPlayer().getX()==0);
+        assertTrue(logic.getPlayer().getX() == 0);
     }
 }
