@@ -5,12 +5,9 @@
  */
 package pacmangame.pacman.logic;
 
-import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
-import java.util.Scanner;
 import java.util.Stack;
 import java.util.stream.Collectors;
 import javafx.scene.paint.Color;
@@ -18,6 +15,7 @@ import pacmangame.pacman.characters.Monster;
 import pacmangame.pacman.characters.Player;
 import pacmangame.pacman.characters.Direction;
 import pacmangame.pacman.map.Graph;
+import pacmangame.pacman.map.MapLoader;
 import pacmangame.pacman.map.Point;
 import pacmangame.pacman.map.Tile;
 import pacmangame.pacman.pathfinding.Pathfinder;
@@ -35,17 +33,19 @@ public class GameLogic {
     private Monster orange = new Monster(140, 60, 1, Color.ORANGE, 11);
     private Pathfinder pathfinder = new Pathfinder();
     private boolean gameOver = false;
-    private Graph currentMap = new Graph(loadMap("map1.txt"));
+    private MapLoader mapLoader;
+    private Graph currentMap;
     private boolean inProgress = false;
     private int points = 0;
 
-    public GameLogic() {
-
+    public GameLogic(MapLoader mapLoader) {
+        this.currentMap = new Graph(mapLoader.nextMap());
+        this.mapLoader=mapLoader;
     }
 
     public void init() {
         this.points = 0;
-        this.currentMap = new Graph(loadMap("map1.txt"));
+        this.currentMap = new Graph(mapLoader.nextMap());
         this.player = new Player(20, 20);
         this.red = new Monster(120, 80, 1, Color.RED, 15);
         this.yellow = new Monster(120, 60, 1, Color.YELLOW, 12);
@@ -53,16 +53,7 @@ public class GameLogic {
         this.orange = new Monster(140, 60, 1, Color.ORANGE, 11);
         this.pathfinder = new Pathfinder();
         this.gameOver = false;
-    }
-
-    private List<String> loadMap(String path) {
-        InputStream is = getClass().getClassLoader().getResourceAsStream(path);
-        Scanner fileScanner = new Scanner(is);
-        List<String> map = new ArrayList<>();
-        while (fileScanner.hasNextLine()) {
-            map.add(fileScanner.nextLine());
-        }
-        return map;
+        this.inProgress = false;
     }
 
     public boolean isInProgress() {
@@ -220,8 +211,12 @@ public class GameLogic {
 
     private void checkCollision(Monster monster) {
         if (Math.abs(this.player.getCentreX() - monster.getCentreX()) <= 15 && Math.abs(this.player.getCentreY() - monster.getCentreY()) <= 15) {
-            gameOver();
+            this.player.loseHitPoint();
+            if (this.player.getRemainingLife() <= 0) {
+                gameOver();
+            }
         }
+
     }
 
     public Player getPlayer() {

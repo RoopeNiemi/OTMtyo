@@ -12,6 +12,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import pacmangame.pacman.characters.Direction;
 import pacmangame.pacman.logic.GameLogic;
+import pacmangame.pacman.map.MapLoader;
 import pacmangame.pacman.map.Tile;
 
 /**
@@ -36,7 +37,7 @@ public class GameLogicTest {
 
     @Before
     public void setUp() {
-        logic = new GameLogic();
+        logic = new GameLogic(new MapLoader());
         redX = logic.getRed().getX();
         redY = logic.getRed().getY();
 
@@ -83,11 +84,14 @@ public class GameLogicTest {
     }
 
     @Test
-    public void collisionSetGameOverToTrue() {
+    public void collisionReducesPlayerHitPoints() {
         logic.getRed().setX(logic.getPlayer().getX());
         logic.getRed().setY(logic.getPlayer().getY());
         logic.updateMonsters();
-        assertTrue(logic.getGameOver());
+        while(logic.getPlayer().getLostHitPoint()){
+            logic.getPlayer().loseHitPoint();
+        }
+        assertTrue(logic.getPlayer().getRemainingLife()==2);
     }
 
     @Test

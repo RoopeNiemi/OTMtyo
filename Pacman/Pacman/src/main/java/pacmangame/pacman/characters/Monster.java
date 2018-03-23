@@ -48,8 +48,10 @@ public class Monster {
         this.nextPath.clear();
         resetBehaviourFactor();
         if (this.behaviourState) {
+            this.behaviourFactor*=2;
             this.pathSize /= 2;
         } else {
+            this.behaviourFactor/=2;
             this.pathSize *= 2;
         }
     }

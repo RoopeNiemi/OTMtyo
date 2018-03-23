@@ -23,6 +23,7 @@ import pacmangame.pacman.characters.Direction;
 import pacmangame.pacman.characters.Monster;
 import pacmangame.pacman.logic.GameLogic;
 import pacmangame.pacman.map.Graph;
+import pacmangame.pacman.map.MapLoader;
 import pacmangame.pacman.map.Point;
 import pacmangame.pacman.map.Tile;
 import pacmangame.pacman.map.Type;
@@ -37,15 +38,19 @@ public class UI extends Application {
     private double scoreBoardHeight = 40;
     private double height = 400;
     private boolean keyIsPressed = false;
-    private GameLogic game = new GameLogic();
+    private MapLoader mapLoader=new MapLoader();
+    private GameLogic game = new GameLogic(mapLoader);
     private Label pointLabel = new Label("Points: 0");
+    private Label lifeLabel = new Label("HP: 3");
+    private Graph currentMap;
 
     @Override
     public void start(Stage primaryStage) throws Exception {
         this.pointLabel.setText("Points: 0");
-        Graph map = game.getGraph();
-        this.width = map.getGraphMatrix()[0].length * 20;
-        this.height = map.getGraphMatrix().length * 20;
+        this.lifeLabel.setText("HP: 3");
+        currentMap = game.getGraph();
+        this.width = currentMap.getGraphMatrix()[0].length * 20;
+        this.height = currentMap.getGraphMatrix().length * 20;
         Canvas c = new Canvas(width, height + scoreBoardHeight);
         BorderPane window = new BorderPane();
         window.setCenter(c);
@@ -53,7 +58,8 @@ public class UI extends Application {
         Scene scene = new Scene(window);
         scene.setOnMouseClicked(event -> {
             if (game.getGameOver()) {
-                game.init();
+                game = new GameLogic(mapLoader);
+                currentMap = game.getGraph();
             }
         });
         scene.setOnKeyPressed(event -> {
@@ -91,16 +97,28 @@ public class UI extends Application {
                 if (now - prev < 25000000) {
                     return;
                 }
-                if (!game.getGameOver()) {
+                if (!game.getGameOver() && !game.getPlayer().getLostHitPoint()) {
                     prev = now;
                     if (!game.isInProgress()) {
+                        lifeLabel.setText("HP: " + game.getPlayer().getRemainingLife());
                         game.movePlayer();
                         game.updateMonsters();
                         paintGame(c.getGraphicsContext2D(), game.getGraph());
-                        pointLabel.setText("Points: " + game.getPointAmount());
+
                     }
+
                 } else {
-                    drawGameOverText(c.getGraphicsContext2D());
+                    if (game.getPlayer().getLostHitPoint()) {
+                        game.getPlayer().loseHitPoints();
+                        paintGame(c.getGraphicsContext2D(), currentMap);
+                        pointLabel.setText("Points: " + game.getPointAmount());
+                    } else {
+                        if (game.getGameOver()) {
+                            lifeLabel.setText("HP: 0");
+                            paintGame(c.getGraphicsContext2D(), currentMap);
+                            drawGameOverText(c.getGraphicsContext2D());
+                        }
+                    }
                 }
             }
         }.start();
@@ -114,8 +132,9 @@ public class UI extends Application {
         gc.setFill(Color.BLACK);
         gc.fillRect(0, 0, width, height + 30);
         gc.setFill(Color.WHITE);
-        gc.setFont(new Font(30));
+        gc.setFont(new Font(20));
         gc.fillText(this.pointLabel.getText(), 20, 30);
+        gc.fillText(this.lifeLabel.getText(), 150, 30);
         for (int i = 0; i < map.getGraphMatrix().length; i++) {
             for (int j = 0; j < map.getGraphMatrix()[0].length; j++) {
                 Tile tile = map.getGraphMatrix()[i][j];
