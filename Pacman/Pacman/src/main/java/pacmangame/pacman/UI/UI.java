@@ -13,6 +13,7 @@ import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Label;
+import javafx.scene.image.Image;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.ArcType;
@@ -22,6 +23,7 @@ import javafx.stage.Stage;
 import pacmangame.pacman.characters.Direction;
 import pacmangame.pacman.characters.Monster;
 import pacmangame.pacman.logic.GameLogic;
+import pacmangame.pacman.logic.PlayerResetTimer;
 import pacmangame.pacman.map.Graph;
 import pacmangame.pacman.map.MapLoader;
 import pacmangame.pacman.map.Point;
@@ -34,12 +36,17 @@ import pacmangame.pacman.map.Type;
  */
 public class UI extends Application {
 
+    private final Image redImage = new Image(getClass().getResourceAsStream("/red.png"));
+    private final Image orangeImage = new Image(getClass().getResourceAsStream("/orange.png"));
+    private final Image blueImage = new Image(getClass().getResourceAsStream("/blue.png"));
+    private final Image yellowImage = new Image(getClass().getResourceAsStream("/yellow.png"));
+    private PlayerResetTimer timer = new PlayerResetTimer();
     private double width = 400;
     private double scoreBoardHeight = 40;
     private double height = 400;
     private boolean keyIsPressed = false;
-    private MapLoader mapLoader=new MapLoader();
-    private GameLogic game = new GameLogic(mapLoader);
+    private MapLoader mapLoader = new MapLoader();
+    private GameLogic game = new GameLogic(mapLoader,timer);
     private Label pointLabel = new Label("Points: 0");
     private Label lifeLabel = new Label("HP: 3");
     private Graph currentMap;
@@ -58,7 +65,7 @@ public class UI extends Application {
         Scene scene = new Scene(window);
         scene.setOnMouseClicked(event -> {
             if (game.getGameOver()) {
-                game = new GameLogic(mapLoader);
+                game = new GameLogic(mapLoader,timer);
                 currentMap = game.getGraph();
             }
         });
@@ -97,6 +104,9 @@ public class UI extends Application {
                 if (now - prev < 25000000) {
                     return;
                 }
+                if(timer.addTime(25000000)){
+                    game.getPlayer().setMortality(true);
+                }
                 if (!game.getGameOver() && !game.getPlayer().getLostHitPoint()) {
                     prev = now;
                     if (!game.isInProgress()) {
@@ -109,7 +119,7 @@ public class UI extends Application {
 
                 } else {
                     if (game.getPlayer().getLostHitPoint()) {
-                        game.getPlayer().loseHitPoints();
+                        game.getPlayer().loseHitPoints(timer);
                         paintGame(c.getGraphicsContext2D(), currentMap);
                         pointLabel.setText("Points: " + game.getPointAmount());
                     } else {
@@ -181,33 +191,16 @@ public class UI extends Application {
 
     public void drawMonsters(GraphicsContext gc) {
         Monster toDraw = game.getBlue();
-        gc.setFill(toDraw.getColor());
-        if (toDraw.getBehaviourState()) {
-            gc.setFill(Color.DARKBLUE);
-        }
-        gc.fillOval(toDraw.getX(), toDraw.getY() + scoreBoardHeight, toDraw.getWidth(), toDraw.getWidth());
+        gc.drawImage(blueImage, toDraw.getX(), toDraw.getY() + scoreBoardHeight);
 
         toDraw = game.getRed();
-        gc.setFill(toDraw.getColor());
-        if (toDraw.getBehaviourState()) {
-            gc.setFill(Color.DARKBLUE);
-        }
-        gc.fillOval(toDraw.getX(), toDraw.getY() + scoreBoardHeight, toDraw.getWidth(), toDraw.getWidth());
+        gc.drawImage(redImage, toDraw.getX(), toDraw.getY() + scoreBoardHeight);
 
         toDraw = game.getYellow();
-        gc.setFill(toDraw.getColor());
-        if (toDraw.getBehaviourState()) {
-            gc.setFill(Color.DARKBLUE);
-        }
-        gc.fillOval(toDraw.getX(), toDraw.getY() + scoreBoardHeight, toDraw.getWidth(), toDraw.getWidth());
+        gc.drawImage(yellowImage, toDraw.getX(), toDraw.getY() + scoreBoardHeight);
 
         toDraw = game.getOrange();
-        gc.setFill(toDraw.getColor());
-        if (toDraw.getBehaviourState()) {
-            gc.setFill(Color.DARKBLUE);
-        }
-
-        gc.fillOval(toDraw.getX(), toDraw.getY() + scoreBoardHeight, toDraw.getWidth(), toDraw.getWidth());
+        gc.drawImage(orangeImage, toDraw.getX(), toDraw.getY() + scoreBoardHeight);
     }
 
     public void drawGameOverText(GraphicsContext gc) {

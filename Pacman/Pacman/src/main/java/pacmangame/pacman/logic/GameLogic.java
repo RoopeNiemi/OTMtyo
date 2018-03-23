@@ -37,10 +37,12 @@ public class GameLogic {
     private Graph currentMap;
     private boolean inProgress = false;
     private int points = 0;
+    private PlayerResetTimer timer;
 
-    public GameLogic(MapLoader mapLoader) {
+    public GameLogic(MapLoader mapLoader, PlayerResetTimer timer) {
         this.currentMap = new Graph(mapLoader.nextMap());
-        this.mapLoader=mapLoader;
+        this.mapLoader = mapLoader;
+        this.timer = timer;
     }
 
     public void init() {
@@ -72,11 +74,11 @@ public class GameLogic {
         return this.gameOver;
     }
 
-    private void findMonsterPath(Monster monster, Tile monsterTile, Tile playerTile) {
+    private void findMonsterPath(Monster monster, Tile monsterTile, Tile destinationTile) {
         this.inProgress = true;
-        Stack<Tile> path = pathfinder.findPath(monsterTile, this.currentMap.getGraphMatrix(), playerTile);
+        Stack<Tile> path = pathfinder.findPath(monsterTile, this.currentMap.getGraphMatrix(), destinationTile);
         if (path.size() < 1) {
-            monster.setNextTile(playerTile);
+            monster.setNextTile(destinationTile);
             return;
         }
         monster.getNextPath().clear();
@@ -210,8 +212,12 @@ public class GameLogic {
     }
 
     private void checkCollision(Monster monster) {
+        if (!this.player.getMortality()) {
+            return;
+        }
         if (Math.abs(this.player.getCentreX() - monster.getCentreX()) <= 15 && Math.abs(this.player.getCentreY() - monster.getCentreY()) <= 15) {
-            this.player.loseHitPoint();
+            this.player.loseHitPoint(timer);
+            findMonsterPath(monster, getTile(monster.getX(), monster.getY()), getRandomDestinationTile(monster));
             if (this.player.getRemainingLife() <= 0) {
                 gameOver();
             }

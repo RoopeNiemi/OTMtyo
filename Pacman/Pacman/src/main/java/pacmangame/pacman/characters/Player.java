@@ -6,6 +6,7 @@
 package pacmangame.pacman.characters;
 
 import javafx.scene.paint.Color;
+import pacmangame.pacman.logic.PlayerResetTimer;
 
 /**
  *
@@ -22,25 +23,34 @@ public class Player {
     private Direction queuedDirection = Direction.NOT_MOVING;
     private Direction previousDirection = Direction.NOT_MOVING;
     private double movementSpeed = 1;
-    private boolean lostHitPoint=false;
-    private int hitPointsLeft=3;
+    private boolean lostHitPoint = false;
+    private int hitPointsLeft = 3;
+    private boolean mortality = true;
 
     public Player(double x, double y) {
         this.x = x;
         this.y = y;
     }
-    
-    public int getRemainingLife(){
+
+    public void setMortality(boolean mortality) {
+        this.mortality = mortality;
+    }
+
+    public boolean getMortality() {
+        return this.mortality;
+    }
+
+    public int getRemainingLife() {
         return this.hitPointsLeft;
     }
-    
-    public boolean getLostHitPoint(){
+
+    public boolean getLostHitPoint() {
         return this.lostHitPoint;
     }
-    
-    public void loseHitPoint(){
-        this.lostHitPoint=true;
-        loseHitPoints();
+
+    public void loseHitPoint(PlayerResetTimer timer) {
+        this.lostHitPoint = true;
+        loseHitPoints(timer);
     }
 
     public double getMouthAngle() {
@@ -57,19 +67,21 @@ public class Player {
             angleChangeDirection = !angleChangeDirection;
         }
     }
-    
-    public void loseHitPoints(){
-        this.mouthAngle+=0.2;
-        if(this.mouthAngle>=180){
-            if(this.hitPointsLeft>0){
-                this.x=20;
-                this.y=20;
-                this.mouthAngle=1;
-                this.movementDirection=Direction.NOT_MOVING;
-                this.queuedDirection=Direction.NOT_MOVING;
+
+    public void loseHitPoints(PlayerResetTimer timer) {
+        this.mouthAngle += 0.2;
+        if (this.mouthAngle >= 180) {
+            if (this.hitPointsLeft > 0) {
+                this.x = 20;
+                this.y = 20;
+                this.mouthAngle = 1;
+                this.movementDirection = Direction.NOT_MOVING;
+                this.queuedDirection = Direction.NOT_MOVING;
             }
             this.hitPointsLeft--;
-            this.lostHitPoint=false;
+            this.lostHitPoint = false;
+            this.mortality = false;
+            timer.activate();
         }
     }
 
@@ -103,7 +115,7 @@ public class Player {
     public double getX() {
         return x;
     }
-    
+
     public double getWidth() {
         return this.width;
     }
