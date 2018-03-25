@@ -17,7 +17,7 @@ import java.util.Scanner;
 public class MapLoader {
 
     private int currentMapNumber = 1;
-    private int numberOfMaps = 2;
+    private int numberOfMaps = 3;
 
     public List<String> loadMap() {
         String path = "map" + currentMapNumber + ".txt";

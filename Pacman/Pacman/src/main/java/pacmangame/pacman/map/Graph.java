@@ -71,17 +71,16 @@ public class Graph {
                 }
             }
         }
-        int temp = points.size() / 5;
-        int oneFifth = points.size() / 5;
+        int temp = 0;
+        int oneFourth = points.size() / 4;
         points.get(temp).setType(Type.FRUIT);
-        temp += oneFifth;
+        temp += oneFourth;
         points.get(temp).setType(Type.FRUIT);
-        temp += oneFifth;
+        temp += oneFourth;
         points.get(temp).setType(Type.FRUIT);
-        temp += oneFifth;
+        temp += oneFourth;
         points.get(temp).setType(Type.FRUIT);
-        temp += oneFifth;
-
+        temp += oneFourth;
     }
 
     public ArrayList<Tile> getMovableTiles() {

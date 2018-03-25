@@ -52,6 +52,17 @@ public class UI extends Application {
     private Label lifeLabel = new Label("HP: 3");
     private Graph currentMap;
 
+    private void resetMap() {
+        game = new GameLogic(mapLoader, timer);
+        currentMap = game.getGraph();
+    }
+
+    private void changeMap() {
+        mapLoader.nextMap();
+        game = new GameLogic(mapLoader, timer);
+        currentMap = game.getGraph();
+    }
+
     @Override
     public void start(Stage primaryStage) throws Exception {
         this.pointLabel.setText("Points: 0");
@@ -66,8 +77,7 @@ public class UI extends Application {
         Scene scene = new Scene(window);
         scene.setOnMouseClicked(event -> {
             if (game.getGameOver()) {
-                game = new GameLogic(mapLoader, timer);
-                currentMap = game.getGraph();
+                resetMap();
             }
         });
         scene.setOnKeyPressed(event -> {
@@ -112,7 +122,7 @@ public class UI extends Application {
                     game.getPlayer().setMortality(true);
 
                 }
-                if (!game.getGameOver() && !game.getPlayer().getLostHitPoint()) {
+                if (!game.getGameOver() && !game.getPlayer().getLostHitPoint() && !game.getComplete()) {
                     prev = now;
                     if (!game.isInProgress()) {
                         lifeLabel.setText("HP: " + game.getPlayer().getRemainingLife());
@@ -124,6 +134,9 @@ public class UI extends Application {
                     }
 
                 } else {
+                    if (game.getComplete()) {
+                        changeMap();
+                    }
                     if (game.getPlayer().getLostHitPoint()) {
                         game.getPlayer().loseHitPoints(timer);
                         paintGame(c.getGraphicsContext2D(), currentMap);
@@ -137,6 +150,7 @@ public class UI extends Application {
                     }
                 }
             }
+
         }.start();
         primaryStage.setScene(scene);
 

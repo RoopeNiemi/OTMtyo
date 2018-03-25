@@ -23,6 +23,8 @@ public class Monster {
     private ArrayDeque<Tile> nextPath = new ArrayDeque<>();
     private boolean behaviourState;
     private boolean isInPanic = false;
+    private double startingMovementSpeed;
+    private boolean panicInProgess = false;
 
     public Monster(double x, double y, double movementSpeed, Color color, double behaviourThreshold, boolean startBehaviour) {
         this.x = x;
@@ -30,6 +32,7 @@ public class Monster {
         this.width = 20;
         this.color = color;
         this.movementSpeed = movementSpeed;
+        startingMovementSpeed = movementSpeed;
         this.behaviourChangeThreshold = behaviourThreshold;
         this.behaviourFactor = 0;
         this.pathSize = (int) behaviourThreshold;
@@ -42,6 +45,19 @@ public class Monster {
 
     public void setPanic(boolean panic) {
         this.isInPanic = panic;
+    }
+
+    private void correctPosition() {
+        if (nextTile.getX() > this.x) {
+            this.x += 0.5;
+        } else if (nextTile.getX() < this.x) {
+            this.x -= 0.5;
+        }
+        if (nextTile.getY() > this.y) {
+            this.y += 0.5;
+        } else if (nextTile.getY() < this.y) {
+            this.y -= 0.5;
+        }
     }
 
     public boolean getBehaviourState() {
@@ -86,9 +102,16 @@ public class Monster {
             this.behaviourFactor++;
             this.nextTile = null;
         }
+        if (!this.panicInProgess && this.isInPanic) {
+            this.panicInProgess = true;
+        }
     }
 
     public boolean move() {
+        if (this.panicInProgess && this.isInPanic) {
+            this.panicInProgess = false;
+            return false;
+        }
         if (this.nextTile == null) {
             if (this.nextPath.isEmpty()) {
                 return false;

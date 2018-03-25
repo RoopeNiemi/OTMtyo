@@ -39,6 +39,7 @@ public class GameLogic {
     private boolean inProgress = false;
     private int points = 0;
     private PlayerResetTimer timer;
+    private boolean complete = false;
 
     public GameLogic(MapLoader mapLoader, PlayerResetTimer timer) {
         this.currentMap = new Graph(mapLoader.loadMap());
@@ -57,6 +58,10 @@ public class GameLogic {
         this.pathfinder = new Pathfinder();
         this.gameOver = false;
         this.inProgress = false;
+    }
+
+    public boolean getComplete() {
+        return this.complete;
     }
 
     public boolean isInProgress() {
@@ -131,6 +136,9 @@ public class GameLogic {
                 points++;
                 this.currentMap.getPointsList().remove(p);
             }
+        }
+        if (currentMap.getPointsList().isEmpty()) {
+            this.complete = true;
         }
     }
 
