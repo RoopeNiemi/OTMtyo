@@ -29,7 +29,16 @@ public class PlayerResetTimer {
         return false;
     }
 
+    public long getThreshold() {
+        return this.timerThreshold;
+    }
+
+    public void setThreshold(long newThreshold) {
+        this.timerThreshold = newThreshold;
+    }
+
     public void activate() {
+        this.time=0;
         this.active = true;
     }
 

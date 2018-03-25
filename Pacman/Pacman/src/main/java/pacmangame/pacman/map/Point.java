@@ -25,7 +25,7 @@ public class Point {
         if (type == Type.POINT) {
             this.widthAndHeight = 2;
         } else {
-            this.widthAndHeight = 6;
+            this.widthAndHeight = 8;
         }
     }
 
@@ -112,6 +112,12 @@ public class Point {
 
     public void setType(Type type) {
         this.type = type;
+        if(type==Type.POINT){
+            this.widthAndHeight=2;
+        }
+        else{
+            this.widthAndHeight=8;
+        }
     }
 
 }

@@ -40,24 +40,43 @@ public class Pathfinder {
             }
             int tilePosX = (int) Math.floor(tile.getX() / 20);
             int tilePosY = (int) Math.floor(tile.getY() / 20);
+            
+            //Fixed position, transition to  [9][17]
+            if (tilePosX == 0 && tilePosY == 9) {
+                if (!this.visited.contains(map[9][17])) {
+                    checkPathAvailability(map[9][17], tile);
+                    tileQueue.addLast(map[9][17]);
+                }
+            }
+            //Fixed position, transition to [9][0]
+            if (tilePosX == 17 && tilePosY == 9) {
+                if (!this.visited.contains(map[9][0])) {
+                    checkPathAvailability(map[9][0], tile);
+                    tileQueue.addLast(map[9][0]);
+                }
+            }
+            //Left side tile is unvisited and has value 1
             if (tilePosX > 0 && map[tilePosY][tilePosX - 1].getValue() == 1.0) {
                 if (!this.visited.contains(map[tilePosY][tilePosX - 1])) {
                     checkPathAvailability(map[tilePosY][tilePosX - 1], tile);
                     tileQueue.addLast(map[tilePosY][tilePosX - 1]);
                 }
             }
+            //Right side tile is unvisited and has value 1
             if (tilePosX < map[0].length - 1 && map[tilePosY][tilePosX + 1].getValue() == 1.0) {
                 if (!this.visited.contains(map[tilePosY][tilePosX + 1])) {
                     checkPathAvailability(map[tilePosY][tilePosX + 1], tile);
                     tileQueue.addLast(map[tilePosY][tilePosX + 1]);
                 }
             }
+            //Up side tile is unvisited and has value 1
             if (tilePosY > 0 && map[tilePosY - 1][tilePosX].getValue() == 1.0) {
                 if (!this.visited.contains(map[tilePosY - 1][tilePosX])) {
                     checkPathAvailability(map[tilePosY - 1][tilePosX], tile);
                     tileQueue.addLast(map[tilePosY - 1][tilePosX]);
                 }
             }
+            // Down side tile is unvisited and has value 1
             if (tilePosY < map.length - 1 && map[tilePosY + 1][tilePosX].getValue() == 1.0) {
                 if (!this.visited.contains(map[tilePosY + 1][tilePosX])) {
                     checkPathAvailability(map[tilePosY + 1][tilePosX], tile);

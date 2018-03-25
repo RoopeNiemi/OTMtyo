@@ -38,7 +38,7 @@ public class MonsterTest {
 
     @Before
     public void setUp() {
-        monster = new Monster(40, 40, 2.5, Color.CORAL, 2);
+        monster = new Monster(40, 40, 2.5, Color.CORAL, 2,false);
         givenPath = new ArrayDeque<>();
         givenPath.addLast(new Tile(60, 40, 20, 1));
         givenPath.addLast(new Tile(40, 60, 20, 1));

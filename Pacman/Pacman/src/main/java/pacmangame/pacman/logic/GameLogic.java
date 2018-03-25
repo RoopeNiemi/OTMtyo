@@ -18,6 +18,7 @@ import pacmangame.pacman.map.Graph;
 import pacmangame.pacman.map.MapLoader;
 import pacmangame.pacman.map.Point;
 import pacmangame.pacman.map.Tile;
+import pacmangame.pacman.map.Type;
 import pacmangame.pacman.pathfinding.Pathfinder;
 
 /**
@@ -26,11 +27,11 @@ import pacmangame.pacman.pathfinding.Pathfinder;
  */
 public class GameLogic {
 
-    private Player player = new Player(20, 20);
-    private Monster red = new Monster(120, 80, 1, Color.RED, 15);
-    private Monster yellow = new Monster(120, 60, 1, Color.YELLOW, 12);
-    private Monster blue = new Monster(140, 80, 1, Color.CYAN, 10);
-    private Monster orange = new Monster(140, 60, 1, Color.ORANGE, 11);
+    private Player player = new Player(180, 280);
+    private Monster red = new Monster(160, 140, 1, Color.RED, 15, false);
+    private Monster yellow = new Monster(180, 140, 1, Color.YELLOW, 12, false);
+    private Monster blue = new Monster(160, 160, 1, Color.CYAN, 10, false);
+    private Monster orange = new Monster(180, 160, 1, Color.ORANGE, 11, false);
     private Pathfinder pathfinder = new Pathfinder();
     private boolean gameOver = false;
     private MapLoader mapLoader;
@@ -40,19 +41,19 @@ public class GameLogic {
     private PlayerResetTimer timer;
 
     public GameLogic(MapLoader mapLoader, PlayerResetTimer timer) {
-        this.currentMap = new Graph(mapLoader.nextMap());
+        this.currentMap = new Graph(mapLoader.loadMap());
         this.mapLoader = mapLoader;
         this.timer = timer;
     }
 
     public void init() {
         this.points = 0;
-        this.currentMap = new Graph(mapLoader.nextMap());
-        this.player = new Player(20, 20);
-        this.red = new Monster(120, 80, 1, Color.RED, 15);
-        this.yellow = new Monster(120, 60, 1, Color.YELLOW, 12);
-        this.blue = new Monster(140, 80, 1, Color.CYAN, 10);
-        this.orange = new Monster(140, 60, 1, Color.ORANGE, 11);
+        this.currentMap = new Graph(mapLoader.loadMap());
+        this.player = new Player(180, 280);
+        this.red = new Monster(160, 140, 1, Color.RED, 15, false);
+        this.yellow = new Monster(180, 140, 1, Color.YELLOW, 12, false);
+        this.blue = new Monster(160, 0, 1, Color.CYAN, 10, false);
+        this.orange = new Monster(180, 60, 1, Color.ORANGE, 11, false);
         this.pathfinder = new Pathfinder();
         this.gameOver = false;
         this.inProgress = false;
@@ -115,6 +116,13 @@ public class GameLogic {
             for (Point currentPoint : playerTile.getTilesPoints()) {
                 if (playerCollidesWithPoint(currentPoint)) {
                     deletedPoints.push(currentPoint);
+                    if (currentPoint.getType() == Type.FRUIT) {
+                        //Monsters panic, slow down
+                        setAllMonsterPanicState(true);
+                        this.timer.setThreshold(9000000000L);
+                        this.timer.activate();
+                        this.player.setMortality(false);
+                    }
                 }
             }
             while (!deletedPoints.isEmpty()) {
@@ -126,22 +134,15 @@ public class GameLogic {
         }
     }
 
+    public void setAllMonsterPanicState(boolean bool) {
+        this.red.setPanic(bool);
+        this.orange.setPanic(bool);
+        this.blue.setPanic(bool);
+        this.yellow.setPanic(bool);
+    }
+
     private boolean playerCollidesWithPoint(Point point) {
         return (Math.abs(player.getCentreX() - point.getCentreX()) <= 5 && Math.abs(player.getCentreY() - point.getCentreY()) <= 5);
-    }
-
-    public Tile getTile(double x, double y) {
-        int xK = (int) Math.floor(x / 20);
-        int yK = (int) Math.floor(y / 20);
-        return this.currentMap.getGraphMatrix()[yK][xK];
-    }
-
-    public Tile getBottomRightTile() {
-        return this.currentMap.getGraphMatrix()[16][16];
-    }
-
-    public Tile getTopRightTile() {
-        return this.currentMap.getGraphMatrix()[1][16];
     }
 
     private void checkMonsterBehaviourState(Monster monster) {
@@ -160,21 +161,21 @@ public class GameLogic {
         }
         //ORANGE MONSTER
         checkMonsterBehaviourState(this.orange);
-        if (!this.orange.getBehaviourState()) {
-            updateMonster(this.orange, getRandomDestinationTile(this.orange));
-        } else {
+        if (this.orange.getBehaviourState()) {
             updateMonster(this.orange, getTile(this.player.getX(), this.player.getY()));
+        } else {
+            updateMonster(this.orange, getRandomDestinationTile(this.orange));
         }
         //BLUE MONSTER
         checkMonsterBehaviourState(this.blue);
-        if (!this.blue.getBehaviourState()) {
+        if (this.blue.getBehaviourState()) {
             chooseFromThreeTiles(this.blue, getBottomRightTile(), getTopRightTile(), getRandomDestinationTile(this.blue));
         } else {
             updateMonster(this.blue, getTile(this.player.getX(), this.player.getY()));
         }
         //YELLOW MONSTER
         checkMonsterBehaviourState(this.yellow);
-        if (!this.yellow.getBehaviourState()) {
+        if (this.yellow.getBehaviourState()) {
             chooseFromThreeTiles(this.yellow, getTopRightTile(), getBottomRightTile(), getRandomDestinationTile(this.yellow));
         } else {
             updateMonster(this.yellow, getTile(this.player.getX(), this.player.getY()));
@@ -204,8 +205,13 @@ public class GameLogic {
         if (this.gameOver) {
             return;
         }
+
         if (monster.getNextTile() == null && monster.getNextPath().isEmpty()) {
-            findMonsterPath(monster, getTile(monster.getX(), monster.getY()), destinationTile);
+            if (monster.getPanic()) {
+                findMonsterPath(monster, getTile(monster.getX(), monster.getY()), getRandomDestinationTile(monster));
+            } else {
+                findMonsterPath(monster, getTile(monster.getX(), monster.getY()), destinationTile);
+            }
         }
         monster.move();
         checkCollision(monster);
@@ -222,7 +228,23 @@ public class GameLogic {
                 gameOver();
             }
         }
+    }
 
+    public Tile getTile(double x, double y) {
+        int xK = (int) Math.floor(x / 20);
+        if (xK < 0) {
+            xK = 0;
+        }
+        int yK = (int) Math.floor(y / 20);
+        return this.currentMap.getGraphMatrix()[yK][xK];
+    }
+
+    public Tile getBottomRightTile() {
+        return this.currentMap.getGraphMatrix()[16][16];
+    }
+
+    public Tile getTopRightTile() {
+        return this.currentMap.getGraphMatrix()[1][16];
     }
 
     public Player getPlayer() {

@@ -16,10 +16,10 @@ import java.util.Scanner;
  */
 public class MapLoader {
 
-    private int currentMapNumber = 0;
-    private int numberOfMaps=1;
+    private int currentMapNumber = 1;
+    private int numberOfMaps = 2;
 
-    private List<String> loadMap() {
+    public List<String> loadMap() {
         String path = "map" + currentMapNumber + ".txt";
         InputStream is = getClass().getClassLoader().getResourceAsStream(path);
         Scanner fileScanner = new Scanner(is);
@@ -30,11 +30,9 @@ public class MapLoader {
         return map;
     }
 
-    public List<String> nextMap() {
+    public void nextMap() {
         if (currentMapNumber < numberOfMaps) {
             currentMapNumber++;
-            return loadMap();
         }
-        return loadMap();
     }
 }

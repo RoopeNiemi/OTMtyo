@@ -58,7 +58,7 @@ public class PointTest {
 
     @Test
     public void hasRightWidthWhenTypeFruit() {
-        assertTrue(pointThree.getWidthAndHeight() == 6);
+        assertTrue(pointThree.getWidthAndHeight() == 8);
     }
 
     @Test

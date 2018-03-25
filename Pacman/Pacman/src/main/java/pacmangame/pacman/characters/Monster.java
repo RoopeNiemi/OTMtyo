@@ -21,9 +21,10 @@ public class Monster {
     private Color color;
     private Tile nextTile = null;
     private ArrayDeque<Tile> nextPath = new ArrayDeque<>();
-    private boolean behaviourState = false;
+    private boolean behaviourState;
+    private boolean isInPanic = false;
 
-    public Monster(double x, double y, double movementSpeed, Color color, double behaviourThreshold) {
+    public Monster(double x, double y, double movementSpeed, Color color, double behaviourThreshold, boolean startBehaviour) {
         this.x = x;
         this.y = y;
         this.width = 20;
@@ -32,7 +33,15 @@ public class Monster {
         this.behaviourChangeThreshold = behaviourThreshold;
         this.behaviourFactor = 0;
         this.pathSize = (int) behaviourThreshold;
+        this.behaviourState = startBehaviour;
+    }
 
+    public boolean getPanic() {
+        return this.isInPanic;
+    }
+
+    public void setPanic(boolean panic) {
+        this.isInPanic = panic;
     }
 
     public boolean getBehaviourState() {
@@ -48,10 +57,10 @@ public class Monster {
         this.nextPath.clear();
         resetBehaviourFactor();
         if (this.behaviourState) {
-            this.behaviourFactor*=2;
+            this.behaviourChangeThreshold *= 2;
             this.pathSize /= 2;
         } else {
-            this.behaviourFactor/=2;
+            this.behaviourChangeThreshold /= 2;
             this.pathSize *= 2;
         }
     }
@@ -72,6 +81,13 @@ public class Monster {
         return this.behaviourChangeThreshold;
     }
 
+    public void checkPosition() {
+        if (this.x == nextTile.getX() && this.y == nextTile.getY()) {
+            this.behaviourFactor++;
+            this.nextTile = null;
+        }
+    }
+
     public boolean move() {
         if (this.nextTile == null) {
             if (this.nextPath.isEmpty()) {
@@ -79,6 +95,30 @@ public class Monster {
             } else {
                 this.nextTile = this.nextPath.pollFirst();
             }
+        }
+        double currentTileX = Math.floor(this.x / 20);
+        if (currentTileX < 0) {
+            currentTileX = 0;
+        }
+
+        double currentTileY = Math.floor(y / 20);
+        if (nextTile.getX() == 0 && nextTile.getY() == 180 && currentTileX == 17) {
+            if (this.x < 359) {
+                x += this.movementSpeed;
+            } else {
+                this.x = 0;
+            }
+            checkPosition();
+            return true;
+        }
+        if (nextTile.getX() == 340 && nextTile.getY() == 180 && currentTileX == 0) {
+            if (this.x > -20) {
+                x -= this.movementSpeed;
+            } else {
+                this.x = 359;
+            }
+            checkPosition();
+            return true;
         }
         double tileX = nextTile.getX();
         double tileY = nextTile.getY();
@@ -91,10 +131,7 @@ public class Monster {
         } else if (tileY < this.y) {
             this.y -= this.movementSpeed;
         }
-        if (this.x == tileX && this.y == tileY) {
-            this.behaviourFactor++;
-            this.nextTile = null;
-        }
+        checkPosition();
         return true;
     }
 
@@ -149,5 +186,4 @@ public class Monster {
     public double getCentreY() {
         return this.y + (this.width / 2);
     }
-
 }

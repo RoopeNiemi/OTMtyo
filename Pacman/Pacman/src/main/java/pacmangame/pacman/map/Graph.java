@@ -24,7 +24,7 @@ public class Graph {
     private ArrayList<Point> points = new ArrayList<>();
 
     public Graph(List<String> map) {
-        this.width = map.get(1).length();
+        this.width = map.get(0).length();
         this.height = map.size();
         this.graphMatrix = new Tile[this.height][this.width];
         initGraph(map);
@@ -71,6 +71,16 @@ public class Graph {
                 }
             }
         }
+        int temp = points.size() / 5;
+        int oneFifth = points.size() / 5;
+        points.get(temp).setType(Type.FRUIT);
+        temp += oneFifth;
+        points.get(temp).setType(Type.FRUIT);
+        temp += oneFifth;
+        points.get(temp).setType(Type.FRUIT);
+        temp += oneFifth;
+        points.get(temp).setType(Type.FRUIT);
+        temp += oneFifth;
 
     }
 

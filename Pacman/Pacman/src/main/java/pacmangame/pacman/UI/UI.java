@@ -40,13 +40,14 @@ public class UI extends Application {
     private final Image orangeImage = new Image(getClass().getResourceAsStream("/orange.png"));
     private final Image blueImage = new Image(getClass().getResourceAsStream("/blue.png"));
     private final Image yellowImage = new Image(getClass().getResourceAsStream("/yellow.png"));
+    private final Image scaredImage = new Image(getClass().getResourceAsStream("/scared.png"));
     private PlayerResetTimer timer = new PlayerResetTimer();
     private double width = 400;
     private double scoreBoardHeight = 40;
     private double height = 400;
     private boolean keyIsPressed = false;
     private MapLoader mapLoader = new MapLoader();
-    private GameLogic game = new GameLogic(mapLoader,timer);
+    private GameLogic game = new GameLogic(mapLoader, timer);
     private Label pointLabel = new Label("Points: 0");
     private Label lifeLabel = new Label("HP: 3");
     private Graph currentMap;
@@ -65,7 +66,7 @@ public class UI extends Application {
         Scene scene = new Scene(window);
         scene.setOnMouseClicked(event -> {
             if (game.getGameOver()) {
-                game = new GameLogic(mapLoader,timer);
+                game = new GameLogic(mapLoader, timer);
                 currentMap = game.getGraph();
             }
         });
@@ -104,8 +105,12 @@ public class UI extends Application {
                 if (now - prev < 25000000) {
                     return;
                 }
-                if(timer.addTime(25000000)){
+                if (timer.addTime(25000000)) {
+                    if (timer.getThreshold() == 9000000000L) {
+                        game.setAllMonsterPanicState(false);
+                    }
                     game.getPlayer().setMortality(true);
+
                 }
                 if (!game.getGameOver() && !game.getPlayer().getLostHitPoint()) {
                     prev = now;
@@ -113,6 +118,7 @@ public class UI extends Application {
                         lifeLabel.setText("HP: " + game.getPlayer().getRemainingLife());
                         game.movePlayer();
                         game.updateMonsters();
+                        pointLabel.setText("Points: " + game.getPointAmount());
                         paintGame(c.getGraphicsContext2D(), game.getGraph());
 
                     }
@@ -191,16 +197,33 @@ public class UI extends Application {
 
     public void drawMonsters(GraphicsContext gc) {
         Monster toDraw = game.getBlue();
-        gc.drawImage(blueImage, toDraw.getX(), toDraw.getY() + scoreBoardHeight);
+        if (toDraw.getPanic()) {
+            gc.drawImage(scaredImage, toDraw.getX(), toDraw.getY() + scoreBoardHeight);
 
+        } else {
+            gc.drawImage(blueImage, toDraw.getX(), toDraw.getY() + scoreBoardHeight);
+        }
         toDraw = game.getRed();
-        gc.drawImage(redImage, toDraw.getX(), toDraw.getY() + scoreBoardHeight);
+        if (toDraw.getPanic()) {
+            gc.drawImage(scaredImage, toDraw.getX(), toDraw.getY() + scoreBoardHeight);
 
+        } else {
+            gc.drawImage(redImage, toDraw.getX(), toDraw.getY() + scoreBoardHeight);
+        }
         toDraw = game.getYellow();
-        gc.drawImage(yellowImage, toDraw.getX(), toDraw.getY() + scoreBoardHeight);
+        if (toDraw.getPanic()) {
+            gc.drawImage(scaredImage, toDraw.getX(), toDraw.getY() + scoreBoardHeight);
 
+        } else {
+            gc.drawImage(yellowImage, toDraw.getX(), toDraw.getY() + scoreBoardHeight);
+        }
         toDraw = game.getOrange();
-        gc.drawImage(orangeImage, toDraw.getX(), toDraw.getY() + scoreBoardHeight);
+        if (toDraw.getPanic()) {
+            gc.drawImage(scaredImage, toDraw.getX(), toDraw.getY() + scoreBoardHeight);
+
+        } else {
+            gc.drawImage(orangeImage, toDraw.getX(), toDraw.getY() + scoreBoardHeight);
+        }
     }
 
     public void drawGameOverText(GraphicsContext gc) {
