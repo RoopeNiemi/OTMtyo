@@ -38,7 +38,7 @@ public class MonsterTest {
 
     @Before
     public void setUp() {
-        monster = new Monster(40, 40, 2.5, Color.CORAL, 2,false);
+        monster = new Monster(40, 40, 2.5, 2,false,"red");
         givenPath = new ArrayDeque<>();
         givenPath.addLast(new Tile(60, 40, 20, 1));
         givenPath.addLast(new Tile(40, 60, 20, 1));
@@ -55,7 +55,6 @@ public class MonsterTest {
     public void monsterCreatedWithGivenParameters() {
         assertTrue(monster.getX() == 40);
         assertTrue(monster.getY() == 40);
-        assertTrue(monster.getColor() == Color.CORAL);
         assertTrue(monster.getBehaviourChangeThreshold() == 2);
 
     }

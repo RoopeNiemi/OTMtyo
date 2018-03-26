@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.Random;
 import java.util.Stack;
 import java.util.stream.Collectors;
-import javafx.scene.paint.Color;
 import pacmangame.pacman.characters.Monster;
 import pacmangame.pacman.characters.Player;
 import pacmangame.pacman.characters.Direction;
@@ -28,56 +27,44 @@ import pacmangame.pacman.pathfinding.Pathfinder;
 public class GameLogic {
 
     private Player player = new Player(180, 280);
-    private Monster red = new Monster(160, 140, 1, Color.RED, 15, false);
-    private Monster yellow = new Monster(180, 140, 1, Color.YELLOW, 12, false);
-    private Monster blue = new Monster(160, 160, 1, Color.CYAN, 10, false);
-    private Monster orange = new Monster(180, 160, 1, Color.ORANGE, 11, false);
+    private Monster red = new Monster(160, 140, 2, 9, false, "red");
+    private Monster pink = new Monster(180, 140, 2, 4, false, "pink");
+    private Monster blue = new Monster(160, 160, 2, 5, false, "blue");
+    private Monster orange = new Monster(180, 160, 2, 5, false, "orange");
     private Pathfinder pathfinder = new Pathfinder();
     private boolean gameOver = false;
     private MapLoader mapLoader;
     private Graph currentMap;
     private boolean inProgress = false;
-    private int points = 0;
     private PlayerResetTimer timer;
-    private boolean complete = false;
+    private GameSituation situation;
 
     public GameLogic(MapLoader mapLoader, PlayerResetTimer timer) {
         this.currentMap = new Graph(mapLoader.loadMap());
         this.mapLoader = mapLoader;
         this.timer = timer;
+        this.situation = new GameSituation(currentMap.getPointsList().size() * 10);
     }
 
     public void init() {
-        this.points = 0;
         this.currentMap = new Graph(mapLoader.loadMap());
         this.player = new Player(180, 280);
-        this.red = new Monster(160, 140, 1, Color.RED, 15, false);
-        this.yellow = new Monster(180, 140, 1, Color.YELLOW, 12, false);
-        this.blue = new Monster(160, 0, 1, Color.CYAN, 10, false);
-        this.orange = new Monster(180, 60, 1, Color.ORANGE, 11, false);
+        this.red = new Monster(160, 140, 2, 9, false, "red");
+        this.pink = new Monster(180, 140, 2, 4, false, "pink");
+        this.blue = new Monster(160, 160, 2, 5, false, "blue");
+        this.orange = new Monster(180, 160, 2, 5, false, "orange");
         this.pathfinder = new Pathfinder();
         this.gameOver = false;
         this.inProgress = false;
+        this.situation = new GameSituation(currentMap.getPointsList().size() * 10);
     }
 
-    public boolean getComplete() {
-        return this.complete;
+    public GameSituation getSituation() {
+        return this.situation;
     }
 
     public boolean isInProgress() {
         return this.inProgress;
-    }
-
-    public int getPointAmount() {
-        return this.points;
-    }
-
-    private void gameOver() {
-        this.gameOver = true;
-    }
-
-    public boolean getGameOver() {
-        return this.gameOver;
     }
 
     private void findMonsterPath(Monster monster, Tile monsterTile, Tile destinationTile) {
@@ -88,6 +75,7 @@ public class GameLogic {
             return;
         }
         monster.getNextPath().clear();
+
         while (!path.isEmpty() && monster.getNextPath().size() < monster.getPathSize()) {
             monster.getNextPath().addLast(path.pop());
         }
@@ -98,10 +86,10 @@ public class GameLogic {
         this.player.move();
         checkPointSituation();
         if (player.getX() <= 0 && player.getY() == this.currentMap.getGraphMatrix()[9][0].getY()) {
-            player.setX(this.currentMap.getGraphMatrix()[9][17].getX() + 19);
+            player.setX(this.currentMap.getGraphMatrix()[9][17].getX() + 18);
             return;
         }
-        if (player.getX() >= this.currentMap.getGraphMatrix()[9][17].getX() + 17 && player.getY() == this.currentMap.getGraphMatrix()[9][0].getY() && player.getMovementDirection() == Direction.RIGHT) {
+        if (player.getX() >= this.currentMap.getGraphMatrix()[9][17].getX() + 18 && player.getY() == this.currentMap.getGraphMatrix()[9][0].getY() && player.getMovementDirection() == Direction.RIGHT) {
             player.setX(this.currentMap.getGraphMatrix()[9][0].getX());
             return;
         }
@@ -124,7 +112,7 @@ public class GameLogic {
                     if (currentPoint.getType() == Type.FRUIT) {
                         //Monsters panic, slow down
                         setAllMonsterPanicState(true);
-                        this.timer.setThreshold(9000000000L);
+                        this.timer.setThreshold(5000000000L);
                         this.timer.activate();
                         this.player.setMortality(false);
                     }
@@ -133,12 +121,12 @@ public class GameLogic {
             while (!deletedPoints.isEmpty()) {
                 Point p = deletedPoints.pop();
                 playerTile.getTilesPoints().remove(p);
-                points++;
+                this.situation.gainPoint();
                 this.currentMap.getPointsList().remove(p);
             }
         }
         if (currentMap.getPointsList().isEmpty()) {
-            this.complete = true;
+            this.situation.setComplete(true);
         }
     }
 
@@ -146,7 +134,7 @@ public class GameLogic {
         this.red.setPanic(bool);
         this.orange.setPanic(bool);
         this.blue.setPanic(bool);
-        this.yellow.setPanic(bool);
+        this.pink.setPanic(bool);
     }
 
     private boolean playerCollidesWithPoint(Point point) {
@@ -169,24 +157,24 @@ public class GameLogic {
         }
         //ORANGE MONSTER
         checkMonsterBehaviourState(this.orange);
-        if (this.orange.getBehaviourState()) {
-            updateMonster(this.orange, getTile(this.player.getX(), this.player.getY()));
+        if (!this.orange.getBehaviourState()) {
+            orangeMovement();
         } else {
-            updateMonster(this.orange, getRandomDestinationTile(this.orange));
+            orangeMovement();
         }
         //BLUE MONSTER
         checkMonsterBehaviourState(this.blue);
-        if (this.blue.getBehaviourState()) {
-            chooseFromThreeTiles(this.blue, getBottomRightTile(), getTopRightTile(), getRandomDestinationTile(this.blue));
+        if (!this.blue.getBehaviourState()) {
+            blueMovement();
         } else {
             updateMonster(this.blue, getTile(this.player.getX(), this.player.getY()));
         }
-        //YELLOW MONSTER
-        checkMonsterBehaviourState(this.yellow);
-        if (this.yellow.getBehaviourState()) {
-            chooseFromThreeTiles(this.yellow, getTopRightTile(), getBottomRightTile(), getRandomDestinationTile(this.yellow));
+        //PINK MONSTER
+        checkMonsterBehaviourState(this.pink);
+        if (!this.pink.getBehaviourState()) {
+            updateMonster(this.pink, tileInFrontOfPlayer());
         } else {
-            updateMonster(this.yellow, getTile(this.player.getX(), this.player.getY()));
+            updateMonster(this.pink, tileInFrontOfPlayer());
         }
     }
 
@@ -201,6 +189,81 @@ public class GameLogic {
                 updateMonster(monster, firstChoice);
             }
         }
+    }
+
+    private void orangeMovement() {
+        if (distanceFromPlayer() > 5) {
+            updateMonster(this.orange, getTile(this.player.getX(), this.player.getY()));
+        } else {
+            if (getTile(this.orange.getX(), this.orange.getY()) == getBottomRightTile()) {
+                    updateMonster(this.orange, getTopRightTile());
+            } else {
+                updateMonster(this.orange, getBottomRightTile());
+            }
+        }
+    }
+
+    private void blueMovement() {
+        int random = new Random().nextInt(3);
+        switch (random) {
+            case 0:
+                updateMonster(this.blue, tileInFrontOfPlayer());
+                break;
+            case 1:
+                updateMonster(this.blue, getTile(player.getX(), player.getY()));
+                break;
+            case 2:
+                if (getTile(this.blue.getX(), this.blue.getY()) == getBottomRightTile()) {
+                    updateMonster(this.blue, tileInFrontOfPlayer());
+                } else {
+                    updateMonster(this.blue, getBottomRightTile());
+                }
+                break;
+            default:
+                break;
+        }
+    }
+
+    private int distanceFromPlayer() {
+        int distanceX = Math.abs((int) Math.floor(this.blue.getX() / 20) - (int) Math.floor(this.player.getX() / 20));
+        int distanceY = Math.abs((int) Math.floor(this.blue.getY() / 20) - (int) Math.floor(this.player.getY() / 20));
+        return distanceX + distanceY;
+    }
+
+    private Tile tileInFrontOfPlayer() {
+        Direction dir = this.player.getMovementDirection();
+
+        int playerTileX = (int) Math.floor(getTile(player.getX(), player.getY()).getX() / 20);
+        int playerTileY = (int) Math.floor(getTile(player.getX(), player.getY()).getY() / 20);
+        switch (dir) {
+            case UP:
+                if (playerTileY >= 2) {
+                    return this.currentMap.getGraphMatrix()[playerTileY - 2][playerTileX];
+                } else {
+                    return this.currentMap.getGraphMatrix()[playerTileY + 4][playerTileX];
+                }
+            case DOWN:
+                if (playerTileY <= this.currentMap.getGraphMatrix().length - 3) {
+                    return this.currentMap.getGraphMatrix()[playerTileY + 2][playerTileX];
+                } else {
+                    return this.currentMap.getGraphMatrix()[playerTileY - 4][playerTileX];
+                }
+            case RIGHT:
+                if (playerTileX <= this.currentMap.getGraphMatrix()[0].length - 3) {
+                    return this.currentMap.getGraphMatrix()[playerTileY][playerTileX + 2];
+                } else {
+                    return this.currentMap.getGraphMatrix()[playerTileY][playerTileX - 4];
+                }
+            case LEFT:
+                if (playerTileX >= 2) {
+                    return this.currentMap.getGraphMatrix()[playerTileY][playerTileX - 2];
+                } else {
+                    return this.currentMap.getGraphMatrix()[playerTileY][playerTileX + 4];
+                }
+            case NOT_MOVING:
+                return getTile(player.getX(), player.getY());
+        }
+        return null;
     }
 
     public Tile getRandomDestinationTile(Monster monster) {
@@ -229,11 +292,11 @@ public class GameLogic {
         if (!this.player.getMortality()) {
             return;
         }
-        if (Math.abs(this.player.getCentreX() - monster.getCentreX()) <= 15 && Math.abs(this.player.getCentreY() - monster.getCentreY()) <= 15) {
+        if (Math.abs(this.player.getCentreX() - monster.getCentreX()) <= 10 && Math.abs(this.player.getCentreY() - monster.getCentreY()) <= 10) {
             this.player.loseHitPoint(timer);
             findMonsterPath(monster, getTile(monster.getX(), monster.getY()), getRandomDestinationTile(monster));
             if (this.player.getRemainingLife() <= 0) {
-                gameOver();
+                this.situation.setGameOver(true);
             }
         }
     }
@@ -263,8 +326,8 @@ public class GameLogic {
         return this.red;
     }
 
-    public Monster getYellow() {
-        return this.yellow;
+    public Monster getPink() {
+        return this.pink;
     }
 
     public Monster getBlue() {

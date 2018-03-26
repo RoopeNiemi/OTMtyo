@@ -76,7 +76,7 @@ public class UI extends Application {
 
         Scene scene = new Scene(window);
         scene.setOnMouseClicked(event -> {
-            if (game.getGameOver()) {
+            if (game.getSituation().isGameOver()) {
                 resetMap();
             }
         });
@@ -116,33 +116,33 @@ public class UI extends Application {
                     return;
                 }
                 if (timer.addTime(25000000)) {
-                    if (timer.getThreshold() == 9000000000L) {
+                    if (timer.getThreshold() == 5000000000L) {
                         game.setAllMonsterPanicState(false);
                     }
                     game.getPlayer().setMortality(true);
 
                 }
-                if (!game.getGameOver() && !game.getPlayer().getLostHitPoint() && !game.getComplete()) {
+                if (!game.getSituation().isGameOver()&& !game.getPlayer().getLostHitPoint() && !game.getSituation().isGameOver()) {
                     prev = now;
                     if (!game.isInProgress()) {
                         lifeLabel.setText("HP: " + game.getPlayer().getRemainingLife());
                         game.movePlayer();
                         game.updateMonsters();
-                        pointLabel.setText("Points: " + game.getPointAmount());
+                        pointLabel.setText("Points: " + game.getSituation().getPoints());
                         paintGame(c.getGraphicsContext2D(), game.getGraph());
 
                     }
 
                 } else {
-                    if (game.getComplete()) {
+                    if (game.getSituation().isComplete()) {
                         changeMap();
                     }
                     if (game.getPlayer().getLostHitPoint()) {
                         game.getPlayer().loseHitPoints(timer);
                         paintGame(c.getGraphicsContext2D(), currentMap);
-                        pointLabel.setText("Points: " + game.getPointAmount());
+                        pointLabel.setText("Points: " + game.getSituation().getPoints());
                     } else {
-                        if (game.getGameOver()) {
+                        if (game.getSituation().isGameOver()) {
                             lifeLabel.setText("HP: 0");
                             paintGame(c.getGraphicsContext2D(), currentMap);
                             drawGameOverText(c.getGraphicsContext2D());
@@ -210,34 +210,18 @@ public class UI extends Application {
     }
 
     public void drawMonsters(GraphicsContext gc) {
-        Monster toDraw = game.getBlue();
-        if (toDraw.getPanic()) {
-            gc.drawImage(scaredImage, toDraw.getX(), toDraw.getY() + scoreBoardHeight);
+        drawSingleMonster(gc, game.getRed());
+        drawSingleMonster(gc, game.getBlue());
+        drawSingleMonster(gc, game.getPink());
+        drawSingleMonster(gc, game.getOrange());
+    }
 
-        } else {
-            gc.drawImage(blueImage, toDraw.getX(), toDraw.getY() + scoreBoardHeight);
+    public void drawSingleMonster(GraphicsContext gc, Monster monster) {
+        if (monster.getPanic()) {
+            gc.drawImage(scaredImage, monster.getX(), monster.getY() + scoreBoardHeight);
+            return;
         }
-        toDraw = game.getRed();
-        if (toDraw.getPanic()) {
-            gc.drawImage(scaredImage, toDraw.getX(), toDraw.getY() + scoreBoardHeight);
-
-        } else {
-            gc.drawImage(redImage, toDraw.getX(), toDraw.getY() + scoreBoardHeight);
-        }
-        toDraw = game.getYellow();
-        if (toDraw.getPanic()) {
-            gc.drawImage(scaredImage, toDraw.getX(), toDraw.getY() + scoreBoardHeight);
-
-        } else {
-            gc.drawImage(yellowImage, toDraw.getX(), toDraw.getY() + scoreBoardHeight);
-        }
-        toDraw = game.getOrange();
-        if (toDraw.getPanic()) {
-            gc.drawImage(scaredImage, toDraw.getX(), toDraw.getY() + scoreBoardHeight);
-
-        } else {
-            gc.drawImage(orangeImage, toDraw.getX(), toDraw.getY() + scoreBoardHeight);
-        }
+        gc.drawImage(monster.getCurrentImage(), monster.getX(), monster.getY() + scoreBoardHeight);
     }
 
     public void drawGameOverText(GraphicsContext gc) {

@@ -9,6 +9,7 @@ import javafx.scene.paint.Color;
 import pacmangame.pacman.map.Tile;
 import java.util.ArrayDeque;
 import java.util.Stack;
+import javafx.scene.image.Image;
 
 /**
  *
@@ -18,25 +19,38 @@ public class Monster {
 
     private double x, y, width, movementSpeed, behaviourChangeThreshold, behaviourFactor;
     private int pathSize;
-    private Color color;
+
     private Tile nextTile = null;
     private ArrayDeque<Tile> nextPath = new ArrayDeque<>();
     private boolean behaviourState;
     private boolean isInPanic = false;
     private double startingMovementSpeed;
     private boolean panicInProgess = false;
+    private String imagePath = "";
+    private final Image up;
+    private final Image down;
+    private final Image left;
+    private final Image right;
+    private Image currentImage;
 
-    public Monster(double x, double y, double movementSpeed, Color color, double behaviourThreshold, boolean startBehaviour) {
+    public Monster(double x, double y, double movementSpeed, double behaviourThreshold, boolean startBehaviour, String imagepath) {
         this.x = x;
         this.y = y;
         this.width = 20;
-        this.color = color;
+
         this.movementSpeed = movementSpeed;
         startingMovementSpeed = movementSpeed;
         this.behaviourChangeThreshold = behaviourThreshold;
         this.behaviourFactor = 0;
         this.pathSize = (int) behaviourThreshold;
         this.behaviourState = startBehaviour;
+        this.imagePath = imagepath;
+
+        up = new Image(getClass().getResourceAsStream("/" + this.imagePath + "Up.png"));
+        down = new Image(getClass().getResourceAsStream("/" + this.imagePath + "Down.png"));
+        left = new Image(getClass().getResourceAsStream("/" + this.imagePath + "Left.png"));
+        right = new Image(getClass().getResourceAsStream("/" + this.imagePath + "Right.png"));
+        currentImage = up;
     }
 
     public boolean getPanic() {
@@ -45,19 +59,6 @@ public class Monster {
 
     public void setPanic(boolean panic) {
         this.isInPanic = panic;
-    }
-
-    private void correctPosition() {
-        if (nextTile.getX() > this.x) {
-            this.x += 0.5;
-        } else if (nextTile.getX() < this.x) {
-            this.x -= 0.5;
-        }
-        if (nextTile.getY() > this.y) {
-            this.y += 0.5;
-        } else if (nextTile.getY() < this.y) {
-            this.y -= 0.5;
-        }
     }
 
     public boolean getBehaviourState() {
@@ -71,14 +72,8 @@ public class Monster {
     public void changeBehaviour() {
         this.behaviourState = !this.behaviourState;
         this.nextPath.clear();
+        this.nextTile=null;
         resetBehaviourFactor();
-        if (this.behaviourState) {
-            this.behaviourChangeThreshold *= 2;
-            this.pathSize /= 2;
-        } else {
-            this.behaviourChangeThreshold /= 2;
-            this.pathSize *= 2;
-        }
     }
 
     public int getPathSize() {
@@ -99,7 +94,7 @@ public class Monster {
 
     public void checkPosition() {
         if (this.x == nextTile.getX() && this.y == nextTile.getY()) {
-            this.behaviourFactor++;
+            //   this.behaviourFactor++;
             this.nextTile = null;
         }
         if (!this.panicInProgess && this.isInPanic) {
@@ -114,6 +109,9 @@ public class Monster {
         }
         if (this.nextTile == null) {
             if (this.nextPath.isEmpty()) {
+               if(this.behaviourState){
+                   this.changeBehaviour();
+               }
                 return false;
             } else {
                 this.nextTile = this.nextPath.pollFirst();
@@ -124,10 +122,10 @@ public class Monster {
             currentTileX = 0;
         }
 
-        double currentTileY = Math.floor(y / 20);
         if (nextTile.getX() == 0 && nextTile.getY() == 180 && currentTileX == 17) {
-            if (this.x < 359) {
+            if (this.x < 356) {
                 x += this.movementSpeed;
+                currentImage = right;
             } else {
                 this.x = 0;
             }
@@ -135,10 +133,11 @@ public class Monster {
             return true;
         }
         if (nextTile.getX() == 340 && nextTile.getY() == 180 && currentTileX == 0) {
-            if (this.x > -20) {
+            if (this.x > -16) {
                 x -= this.movementSpeed;
+                currentImage = left;
             } else {
-                this.x = 359;
+                this.x = 356;
             }
             checkPosition();
             return true;
@@ -147,12 +146,16 @@ public class Monster {
         double tileY = nextTile.getY();
         if (tileX > this.x) {
             this.x += this.movementSpeed;
+            currentImage = right;
         } else if (tileX < this.x) {
             this.x -= this.movementSpeed;
+            currentImage = left;
         } else if (tileY > this.y) {
             this.y += this.movementSpeed;
+            currentImage = down;
         } else if (tileY < this.y) {
             this.y -= this.movementSpeed;
+            currentImage = up;
         }
         checkPosition();
         return true;
@@ -186,14 +189,6 @@ public class Monster {
         this.width = width;
     }
 
-    public Color getColor() {
-        return color;
-    }
-
-    public void setColor(Color color) {
-        this.color = color;
-    }
-
     public Tile getNextTile() {
         return nextTile;
     }
@@ -208,5 +203,9 @@ public class Monster {
 
     public double getCentreY() {
         return this.y + (this.width / 2);
+    }
+
+    public Image getCurrentImage() {
+        return this.currentImage;
     }
 }

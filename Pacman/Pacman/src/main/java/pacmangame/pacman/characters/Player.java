@@ -22,7 +22,7 @@ public class Player {
     private Direction movementDirection = Direction.NOT_MOVING;
     private Direction queuedDirection = Direction.NOT_MOVING;
     private Direction previousDirection = Direction.NOT_MOVING;
-    private double movementSpeed = 1;
+    private double movementSpeed = 2;
     private boolean lostHitPoint = false;
     private int hitPointsLeft = 3;
     private boolean mortality = true;

@@ -23,7 +23,7 @@ import pacmangame.pacman.map.Tile;
 public class GameLogicTest {
 
     GameLogic logic;
-    double redX, redY, orangeX, orangeY, blueX, blueY, yellowX, yellowY, playerX, playerY;
+    double redX, redY, orangeX, orangeY, blueX, blueY, pinkX, pinkY, playerX, playerY;
     PlayerResetTimer timer;
     public GameLogicTest() {
     }
@@ -49,8 +49,8 @@ public class GameLogicTest {
         blueX = logic.getBlue().getX();
         blueY = logic.getBlue().getY();
 
-        yellowX = logic.getYellow().getX();
-        yellowY = logic.getYellow().getY();
+        pinkX = logic.getPink().getX();
+        pinkY = logic.getPink().getY();
 
         playerX = logic.getPlayer().getX();
         playerY = logic.getPlayer().getY();
@@ -82,7 +82,7 @@ public class GameLogicTest {
         assertTrue(logic.getRed().getX() != redX || logic.getRed().getY() != redY);
         assertTrue(logic.getOrange().getX() != orangeX || logic.getOrange().getY() != orangeY);
         assertTrue(logic.getBlue().getX() != blueX || logic.getBlue().getY() != blueY);
-        assertTrue(logic.getYellow().getX() != yellowX || logic.getYellow().getY() != yellowY);
+        assertTrue(logic.getPink().getX() != pinkX || logic.getPink().getY() != pinkY);
     }
 
     @Test
@@ -111,7 +111,7 @@ public class GameLogicTest {
         assertTrue(logic.getRed().getX() == redX && logic.getRed().getY() == redY);
         assertTrue(logic.getOrange().getX() == orangeX && logic.getOrange().getY() == orangeY);
         assertTrue(logic.getBlue().getX() == blueX && logic.getBlue().getY() == blueY);
-        assertTrue(logic.getYellow().getX() == yellowX && logic.getYellow().getY() == yellowY);
+        assertTrue(logic.getPink().getX() == pinkX && logic.getPink().getY() == pinkY);
         assertTrue(logic.getPlayer().getX() == playerX && logic.getPlayer().getY() == playerY);
 
     }
@@ -122,19 +122,19 @@ public class GameLogicTest {
         logic.getRed().setY(logic.getPlayer().getY());
         logic.updateMonsters();
         logic.init();
-        assertTrue(!logic.getGameOver());
+        assertTrue(!logic.getSituation().isGameOver());
     }
     
     @Test
     public void initMapResetsPoints(){
-        int points=logic.getPointAmount();
+        int points=logic.getSituation().getPoints();
         logic.getPlayer().setMovementDirection(Direction.DOWN);
         logic.movePlayer();
         logic.movePlayer();
         logic.movePlayer();
-        assertTrue(logic.getPointAmount()!=points);
+        assertTrue(logic.getSituation().getPoints()!=points);
         logic.init();
-        assertTrue(logic.getPointAmount()==points);
+        assertTrue(logic.getSituation().getPoints()==points);
     }
 
     @Test
@@ -143,14 +143,14 @@ public class GameLogicTest {
         logic.getRed().changeBehaviour();
         logic.getOrange().changeBehaviour();
         logic.getBlue().changeBehaviour();
-        logic.getYellow().changeBehaviour();
+        logic.getPink().changeBehaviour();
 
         logic.updateMonsters();
 
         assertTrue(logic.getRed().getX() != redX || logic.getRed().getY() != redY);
         assertTrue(logic.getOrange().getX() != orangeX || logic.getOrange().getY() != orangeY);
         assertTrue(logic.getBlue().getX() != blueX || logic.getBlue().getY() != blueY);
-        assertTrue(logic.getYellow().getX() != yellowX || logic.getYellow().getY() != yellowY);
+        assertTrue(logic.getPink().getX() != pinkX || logic.getPink().getY() != pinkY);
     }
 
     @Test
@@ -167,7 +167,7 @@ public class GameLogicTest {
     
     @Test
     public void pointsAreGainedAndRemovedFromMapWhenCollidingWithPlayer(){
-        int points=logic.getPointAmount();
+        int points=logic.getSituation().getPoints();
         int currentPointsOnMap=logic.getGraph().getPointsList().size();
         logic.getPlayer().setMovementDirection(Direction.DOWN);
         logic.movePlayer();
@@ -175,7 +175,7 @@ public class GameLogicTest {
         logic.movePlayer();
         logic.movePlayer();
         assertTrue(currentPointsOnMap> logic.getGraph().getPointsList().size());
-        assertTrue(points<logic.getPointAmount());
+        assertTrue(points<logic.getSituation().getPoints());
         
     }
 }
