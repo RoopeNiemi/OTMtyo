@@ -27,8 +27,8 @@ import pacmangame.pacman.pathfinding.Pathfinder;
 public class GameLogic {
 
     private Player player = new Player(180, 280);
-    private Monster red = new Monster(160, 140, 2, 9, false, "red");
-    private Monster pink = new Monster(180, 140, 2, 4, false, "pink");
+    private Monster red = new Monster(160, 140, 2, 5, false, "red");
+    private Monster pink = new Monster(180, 140, 2, 5, false, "pink");
     private Monster blue = new Monster(160, 160, 2, 5, false, "blue");
     private Monster orange = new Monster(180, 160, 2, 5, false, "orange");
     private Pathfinder pathfinder = new Pathfinder();
@@ -49,8 +49,8 @@ public class GameLogic {
     public void init() {
         this.currentMap = new Graph(mapLoader.loadMap());
         this.player = new Player(180, 280);
-        this.red = new Monster(160, 140, 2, 9, false, "red");
-        this.pink = new Monster(180, 140, 2, 4, false, "pink");
+        this.red = new Monster(160, 140, 2, 5, false, "red");
+        this.pink = new Monster(180, 140, 2, 5, false, "pink");
         this.blue = new Monster(160, 160, 2, 5, false, "blue");
         this.orange = new Monster(180, 160, 2, 5, false, "orange");
         this.pathfinder = new Pathfinder();
