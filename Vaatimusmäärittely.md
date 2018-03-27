@@ -20,7 +20,7 @@ jotka tekevät käytöksestä hieman satunnaisen, jotta hirviöt eivät tottelis
 Pelin perustoiminnallisuuden toimiessa hyvin peliä voidaan täydentää mm. high score listalla, joka näyttäisi esim.
 kyseisen kentän suurimman saavutetun pistemäärän. Lista pidettäisiin joko tietokannassa tai tekstitiedostossa. 
 
-Lisäksi kenttäeditorin tekeminen voisi olla mahdollista, jotta uusien kenttien tekemisestä tulisi helpompaa, esim. graafinen käyttöliittymä.
+
 
 
 
