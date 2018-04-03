@@ -8,5 +8,5 @@
 | 23.3  | 5   | koodin siistimistä, maploader luokan luonti, pelaajahahmon toiminnan parantamista. Osuessaan hirviöön siirtyy nyt aloitusruutuun ja on sekunnin ajan turvassa lisäelämien menetykseltä. |
 | 25.3. | 3    | hirviöiden paniikkivaiheen luonti |
 | 26.3  | 4    | Hirviöiden ulkomuodon parantelua, käytös nyt halutun kaltainen lukuunottamatta paniikkivaihetta ja "scatter" vaihetta|
-| 3.4 | 3 | Korjattu testejä, luokkien rakennetta, ohjelman ulkonäköä |
-| yht   | 33  | | 
+| 3.4 | 4 | Korjattu testejä sekä poistettu turhia vanhoja testejä, korjattu luokkien rakennetta ja ohjelman ulkonäköä |
+| yht   | 34  | | 
