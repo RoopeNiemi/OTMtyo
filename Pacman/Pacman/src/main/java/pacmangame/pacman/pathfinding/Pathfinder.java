@@ -41,15 +41,15 @@ public class Pathfinder {
             int x = (int) Math.floor(tile.getX() / 20);
             int y = (int) Math.floor(tile.getY() / 20);
 
-            //Fixed position, transition to  [9][17]
+            //Fixed position, transition to  [9][18]
             if (x == 0 && y == 9) {
-                if (!this.visited.contains(map[9][17])) {
-                    checkPathAvailability(map[9][17], tile);
-                    tileQueue.addLast(map[9][17]);
+                if (!this.visited.contains(map[9][18])) {
+                    checkPathAvailability(map[9][18], tile);
+                    tileQueue.addLast(map[9][18]);
                 }
             }
             //Fixed position, transition to [9][0]
-            if (x == 17 && y == 9) {
+            if (x == 18 && y == 9) {
                 if (!this.visited.contains(map[9][0])) {
                     checkPathAvailability(map[9][0], tile);
                     tileQueue.addLast(map[9][0]);
@@ -129,7 +129,7 @@ public class Pathfinder {
             return;
         }
         Tile begin = this.shortestPath.peek();
-        while (begin.getPathFrom() != start) {
+        while (begin!=null &&begin.getPathFrom() != start) {
             begin = begin.getPathFrom();
             shortestPath.push(begin);
         }

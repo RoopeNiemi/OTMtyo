@@ -25,6 +25,7 @@ public class GameLogicTest {
     GameLogic logic;
     double redX, redY, orangeX, orangeY, blueX, blueY, pinkX, pinkY, playerX, playerY;
     PlayerResetTimer timer;
+
     public GameLogicTest() {
     }
 
@@ -38,8 +39,8 @@ public class GameLogicTest {
 
     @Before
     public void setUp() {
-        timer=new PlayerResetTimer();
-        logic = new GameLogic(new MapLoader(),timer);
+        timer = new PlayerResetTimer();
+        logic = new GameLogic(new MapLoader(), timer);
         redX = logic.getRed().getX();
         redY = logic.getRed().getY();
 
@@ -90,10 +91,10 @@ public class GameLogicTest {
         logic.getRed().setX(logic.getPlayer().getX());
         logic.getRed().setY(logic.getPlayer().getY());
         logic.updateMonsters();
-        while(logic.getPlayer().getLostHitPoint()){
+        while (logic.getPlayer().getLostHitPoint()) {
             logic.getPlayer().loseHitPoint(timer);
         }
-        assertTrue(logic.getPlayer().getRemainingLife()==2);
+        assertTrue(logic.getPlayer().getRemainingLife() == 2);
     }
 
     @Test
@@ -124,33 +125,17 @@ public class GameLogicTest {
         logic.init();
         assertTrue(!logic.getSituation().isGameOver());
     }
-    
+
     @Test
-    public void initMapResetsPoints(){
-        int points=logic.getSituation().getPoints();
+    public void initMapResetsPoints() {
+        int points = logic.getSituation().getPoints();
         logic.getPlayer().setMovementDirection(Direction.DOWN);
         logic.movePlayer();
         logic.movePlayer();
         logic.movePlayer();
-        assertTrue(logic.getSituation().getPoints()!=points);
+        assertTrue(logic.getSituation().getPoints() != points);
         logic.init();
-        assertTrue(logic.getSituation().getPoints()==points);
-    }
-
-    @Test
-    public void monstersMoveWithAnotherBehaviourState() {
-
-        logic.getRed().changeBehaviour();
-        logic.getOrange().changeBehaviour();
-        logic.getBlue().changeBehaviour();
-        logic.getPink().changeBehaviour();
-
-        logic.updateMonsters();
-
-        assertTrue(logic.getRed().getX() != redX || logic.getRed().getY() != redY);
-        assertTrue(logic.getOrange().getX() != orangeX || logic.getOrange().getY() != orangeY);
-        assertTrue(logic.getBlue().getX() != blueX || logic.getBlue().getY() != blueY);
-        assertTrue(logic.getPink().getX() != pinkX || logic.getPink().getY() != pinkY);
+        assertTrue(logic.getSituation().getPoints() == points);
     }
 
     @Test
@@ -159,23 +144,23 @@ public class GameLogicTest {
         logic.getPlayer().setY(180);
         logic.getPlayer().setMovementDirection(Direction.LEFT);
         logic.movePlayer();
-        assertTrue(logic.getPlayer().getX() == 359);
+        assertTrue(logic.getPlayer().getX() == 378);
         logic.getPlayer().setMovementDirection(Direction.RIGHT);
         logic.movePlayer();
         assertTrue(logic.getPlayer().getX() == 0);
     }
-    
+
     @Test
-    public void pointsAreGainedAndRemovedFromMapWhenCollidingWithPlayer(){
-        int points=logic.getSituation().getPoints();
-        int currentPointsOnMap=logic.getGraph().getPointsList().size();
+    public void pointsAreGainedAndRemovedFromMapWhenCollidingWithPlayer() {
+        int points = logic.getSituation().getPoints();
+        int currentPointsOnMap = logic.getGraph().getPointsList().size();
         logic.getPlayer().setMovementDirection(Direction.DOWN);
         logic.movePlayer();
         logic.movePlayer();
         logic.movePlayer();
         logic.movePlayer();
-        assertTrue(currentPointsOnMap> logic.getGraph().getPointsList().size());
-        assertTrue(points<logic.getSituation().getPoints());
-        
+        assertTrue(currentPointsOnMap > logic.getGraph().getPointsList().size());
+        assertTrue(points < logic.getSituation().getPoints());
+
     }
 }

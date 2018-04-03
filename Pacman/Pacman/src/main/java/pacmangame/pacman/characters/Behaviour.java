@@ -3,12 +3,12 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package pacmangame.pacman.map;
+package pacmangame.pacman.characters;
 
 /**
  *
  * @author nroope
  */
-public enum Type {
-    POINT, POWER_PELLET;
+public enum Behaviour {
+    NORMAL, PANIC, SCATTER;
 }

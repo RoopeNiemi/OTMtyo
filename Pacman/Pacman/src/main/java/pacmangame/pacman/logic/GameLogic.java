@@ -5,19 +5,10 @@
  */
 package pacmangame.pacman.logic;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-import java.util.Stack;
+import java.util.*;
 import java.util.stream.Collectors;
-import pacmangame.pacman.characters.Monster;
-import pacmangame.pacman.characters.Player;
-import pacmangame.pacman.characters.Direction;
-import pacmangame.pacman.map.Graph;
-import pacmangame.pacman.map.MapLoader;
-import pacmangame.pacman.map.Point;
-import pacmangame.pacman.map.Tile;
-import pacmangame.pacman.map.Type;
+import pacmangame.pacman.characters.*;
+import pacmangame.pacman.map.*;
 import pacmangame.pacman.pathfinding.Pathfinder;
 
 /**
@@ -26,11 +17,11 @@ import pacmangame.pacman.pathfinding.Pathfinder;
  */
 public class GameLogic {
 
-    private Player player = new Player(180, 280);
-    private Monster red = new Monster(160, 140, 2, 5, false, "red");
-    private Monster pink = new Monster(180, 140, 2, 5, false, "pink");
-    private Monster blue = new Monster(160, 160, 2, 5, false, "blue");
-    private Monster orange = new Monster(180, 160, 2, 5, false, "orange");
+    private Player player = new Player(180, 300);
+    private Monster red = new Monster(180, 140, 2, 5, false, "red");
+    private Monster pink = new Monster(160, 180, 2, 5, false, "pink");
+    private Monster blue = new Monster(180, 180, 2, 5, false, "blue");
+    private Monster orange = new Monster(200, 180, 2, 5, false, "orange");
     private Pathfinder pathfinder = new Pathfinder();
     private boolean gameOver = false;
     private MapLoader mapLoader;
@@ -48,11 +39,11 @@ public class GameLogic {
 
     public void init() {
         this.currentMap = new Graph(mapLoader.loadMap());
-        this.player = new Player(180, 280);
-        this.red = new Monster(160, 140, 2, 5, false, "red");
-        this.pink = new Monster(180, 140, 2, 5, false, "pink");
-        this.blue = new Monster(160, 160, 2, 5, false, "blue");
-        this.orange = new Monster(180, 160, 2, 5, false, "orange");
+        this.player = new Player(180, 300);
+        this.red = new Monster(180, 140, 2, 5, false, "red");
+        this.pink = new Monster(160, 180, 2, 5, false, "pink");
+        this.blue = new Monster(180, 180, 2, 5, false, "blue");
+        this.orange = new Monster(200, 180, 2, 5, false, "orange");
         this.pathfinder = new Pathfinder();
         this.gameOver = false;
         this.inProgress = false;
@@ -86,10 +77,10 @@ public class GameLogic {
         this.player.move();
         checkPointSituation();
         if (player.getX() <= 0 && player.getY() == this.currentMap.getGraphMatrix()[9][0].getY()) {
-            player.setX(this.currentMap.getGraphMatrix()[9][17].getX() + 18);
+            player.setX(this.currentMap.getGraphMatrix()[9][18].getX() + 18);
             return;
         }
-        if (player.getX() >= this.currentMap.getGraphMatrix()[9][17].getX() + 18 && player.getY() == this.currentMap.getGraphMatrix()[9][0].getY() && player.getMovementDirection() == Direction.RIGHT) {
+        if (player.getX() >= this.currentMap.getGraphMatrix()[9][18].getX() + 18 && player.getY() == this.currentMap.getGraphMatrix()[9][0].getY() && player.getMovementDirection() == Direction.RIGHT) {
             player.setX(this.currentMap.getGraphMatrix()[9][0].getX());
             return;
         }
@@ -103,15 +94,15 @@ public class GameLogic {
     }
 
     private void checkPointSituation() {
-        if (player.getCentreX() <= 359) {
+        if (player.getCentreX() <= 379) {
             Tile playerTile = getTile(player.getCentreX(), player.getCentreY());
             Stack<Point> deletedPoints = new Stack();
             for (Point currentPoint : playerTile.getTilesPoints()) {
                 if (playerCollidesWithPoint(currentPoint)) {
                     deletedPoints.push(currentPoint);
-                    if (currentPoint.getType() == Type.FRUIT) {
+                    if (currentPoint.getType() == Type.POWER_PELLET) {
                         //Monsters panic, slow down
-                        setAllMonsterPanicState(true);
+                        setAllMonsterPanicState(Behaviour.PANIC);
                         this.timer.setThreshold(5000000000L);
                         this.timer.activate();
                         this.player.setMortality(false);
@@ -130,64 +121,43 @@ public class GameLogic {
         }
     }
 
-    public void setAllMonsterPanicState(boolean bool) {
-        this.red.setPanic(bool);
-        this.orange.setPanic(bool);
-        this.blue.setPanic(bool);
-        this.pink.setPanic(bool);
+    public void setAllMonsterPanicState(Behaviour newBehaviour) {
+        this.red.setCurrentBehaviour(newBehaviour);
+        this.orange.setCurrentBehaviour(newBehaviour);
+        this.blue.setCurrentBehaviour(newBehaviour);
+        this.pink.setCurrentBehaviour(newBehaviour);
     }
 
     private boolean playerCollidesWithPoint(Point point) {
         return (Math.abs(player.getCentreX() - point.getCentreX()) <= 5 && Math.abs(player.getCentreY() - point.getCentreY()) <= 5);
     }
 
-    private void checkMonsterBehaviourState(Monster monster) {
-        if (monster.getBehaviourFactor() == monster.getBehaviourChangeThreshold()) {
-            monster.changeBehaviour();
-        }
-    }
-
     public void updateMonsters() {
         //RED MONSTER
-        checkMonsterBehaviourState(this.red);
-        if (!this.red.getBehaviourState()) {
+
+        if (this.red.getCurrentBehaviour() == Behaviour.NORMAL) {
             updateMonster(this.red, getTile(this.player.getX(), this.player.getY()));
         } else {
             updateMonster(this.red, getTile(this.player.getX(), this.player.getY()));
         }
         //ORANGE MONSTER
-        checkMonsterBehaviourState(this.orange);
-        if (!this.orange.getBehaviourState()) {
+
+        if (this.orange.getCurrentBehaviour() == Behaviour.NORMAL) {
             orangeMovement();
         } else {
             orangeMovement();
         }
         //BLUE MONSTER
-        checkMonsterBehaviourState(this.blue);
-        if (!this.blue.getBehaviourState()) {
+        if (this.blue.getCurrentBehaviour() == Behaviour.NORMAL) {
             blueMovement();
         } else {
             updateMonster(this.blue, getTile(this.player.getX(), this.player.getY()));
         }
         //PINK MONSTER
-        checkMonsterBehaviourState(this.pink);
-        if (!this.pink.getBehaviourState()) {
+        if (this.pink.getCurrentBehaviour() == Behaviour.NORMAL) {
             updateMonster(this.pink, tileInFrontOfPlayer());
         } else {
             updateMonster(this.pink, tileInFrontOfPlayer());
-        }
-    }
-
-    private void chooseFromThreeTiles(Monster monster, Tile firstChoice, Tile secondChoice, Tile thirdChoice) {
-        int random = new Random().nextInt(4);
-        if (random == 0 && getTile(monster.getX(), monster.getY()) != secondChoice) {
-            updateMonster(monster, secondChoice);
-        } else {
-            if (getTile(monster.getX(), monster.getY()) == firstChoice) {
-                updateMonster(monster, thirdChoice);
-            } else {
-                updateMonster(monster, firstChoice);
-            }
         }
     }
 
@@ -196,7 +166,7 @@ public class GameLogic {
             updateMonster(this.orange, getTile(this.player.getX(), this.player.getY()));
         } else {
             if (getTile(this.orange.getX(), this.orange.getY()) == getBottomRightTile()) {
-                    updateMonster(this.orange, getTopRightTile());
+                updateMonster(this.orange, getTopRightTile());
             } else {
                 updateMonster(this.orange, getBottomRightTile());
             }
@@ -260,10 +230,14 @@ public class GameLogic {
                 } else {
                     return this.currentMap.getGraphMatrix()[playerTileY][playerTileX + 4];
                 }
-            case NOT_MOVING:
+            default:
                 return getTile(player.getX(), player.getY());
         }
-        return null;
+        
+    }
+    
+    private void checkIfPlausibleDestination(Tile t){
+        
     }
 
     public Tile getRandomDestinationTile(Monster monster) {
@@ -278,7 +252,7 @@ public class GameLogic {
         }
 
         if (monster.getNextTile() == null && monster.getNextPath().isEmpty()) {
-            if (monster.getPanic()) {
+            if (monster.getCurrentBehaviour() == Behaviour.PANIC) {
                 findMonsterPath(monster, getTile(monster.getX(), monster.getY()), getRandomDestinationTile(monster));
             } else {
                 findMonsterPath(monster, getTile(monster.getX(), monster.getY()), destinationTile);
@@ -311,11 +285,11 @@ public class GameLogic {
     }
 
     public Tile getBottomRightTile() {
-        return this.currentMap.getGraphMatrix()[16][16];
+        return this.currentMap.getGraphMatrix()[19][17];
     }
 
     public Tile getTopRightTile() {
-        return this.currentMap.getGraphMatrix()[1][16];
+        return this.currentMap.getGraphMatrix()[1][17];
     }
 
     public Player getPlayer() {

@@ -61,14 +61,6 @@ public class PathfinderTest {
     }
 
     @Test
-    public void returnsEmptyStackWhenDestinationTileValueIsZero() {
-        Tile start = map.getGraphMatrix()[0][1];
-        Tile dest = map.getGraphMatrix()[0][0];
-        Stack<Tile> path = pathfinder.findPath(start, map.getGraphMatrix(), dest);
-        assertTrue(path.isEmpty());
-    }
-
-    @Test
     public void returnEmptyStackWhenStartingTileAndDestinationTileAreSame() {
         Tile start = map.getGraphMatrix()[0][1];
         Tile dest = map.getGraphMatrix()[0][1];

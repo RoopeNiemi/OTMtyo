@@ -35,7 +35,7 @@
                 <version>0.8.0</version>
                 <configuration>
                     <excludes>
-                        <exclude>pacmangame/pacman/UI/*</exclude>
+                        <exclude>pacmangame/pacman/ui/*</exclude>
                     </excludes>
                 </configuration>
                 <executions>

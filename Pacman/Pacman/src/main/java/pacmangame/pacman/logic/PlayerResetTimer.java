@@ -38,7 +38,7 @@ public class PlayerResetTimer {
     }
 
     public void activate() {
-        this.time=0;
+        this.time = 0;
         this.active = true;
     }
 

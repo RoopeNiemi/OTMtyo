@@ -15,54 +15,13 @@ public class GameSituation {
     private boolean complete = false;
     private boolean gameOver = false;
     private int maxPoints = 0;
-    private boolean firstThresholdReached, secondThresholdReached, thirdThresholdReached, fourthThresholdReached;
 
     public GameSituation(int maxPoints) {
         this.maxPoints = maxPoints;
-        this.firstThresholdReached = false;
-        this.secondThresholdReached = false;
-        this.thirdThresholdReached = false;
-        this.fourthThresholdReached = false;
-    }
-
-    public boolean getNextThreshold() {
-        if (!this.firstThresholdReached && this.points >= firstScatterThreshold()) {
-            this.firstThresholdReached = true;
-            return true;
-        }
-        if (!this.secondThresholdReached && this.points >= secondScatterThreshold()) {
-            this.secondThresholdReached = true;
-            return true;
-        }
-        if (!this.thirdThresholdReached && this.points >= thirdScatterThreshold()) {
-            this.thirdThresholdReached = true;
-            return true;
-        }
-        if (!this.fourthThresholdReached && this.points >= fourthScatterThreshold()) {
-            this.fourthThresholdReached = true;
-            return true;
-        }
-        return false;
     }
 
     public int getMaxPoints() {
         return this.maxPoints;
-    }
-
-    private int firstScatterThreshold() {
-        return this.maxPoints / 5;
-    }
-
-    private int secondScatterThreshold() {
-        return this.maxPoints / 5 * 2;
-    }
-
-    private int thirdScatterThreshold() {
-        return this.maxPoints / 5 * 3;
-    }
-
-    private int fourthScatterThreshold() {
-        return this.maxPoints / 5 * 4;
     }
 
     public void gainPoint() {

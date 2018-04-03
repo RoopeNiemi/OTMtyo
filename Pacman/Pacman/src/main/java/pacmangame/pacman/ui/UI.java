@@ -3,9 +3,8 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package pacmangame.pacman.UI;
+package pacmangame.pacman.ui;
 
-import java.awt.geom.Arc2D;
 import java.util.ArrayList;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
@@ -18,17 +17,10 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.ArcType;
 import javafx.scene.text.Font;
-import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
-import pacmangame.pacman.characters.Direction;
-import pacmangame.pacman.characters.Monster;
-import pacmangame.pacman.logic.GameLogic;
-import pacmangame.pacman.logic.PlayerResetTimer;
-import pacmangame.pacman.map.Graph;
-import pacmangame.pacman.map.MapLoader;
-import pacmangame.pacman.map.Point;
-import pacmangame.pacman.map.Tile;
-import pacmangame.pacman.map.Type;
+import pacmangame.pacman.characters.*;
+import pacmangame.pacman.logic.*;
+import pacmangame.pacman.map.*;
 
 /**
  *
@@ -36,11 +28,8 @@ import pacmangame.pacman.map.Type;
  */
 public class UI extends Application {
 
-    private final Image redImage = new Image(getClass().getResourceAsStream("/red.png"));
-    private final Image orangeImage = new Image(getClass().getResourceAsStream("/orange.png"));
-    private final Image blueImage = new Image(getClass().getResourceAsStream("/blue.png"));
-    private final Image yellowImage = new Image(getClass().getResourceAsStream("/yellow.png"));
     private final Image scaredImage = new Image(getClass().getResourceAsStream("/scared.png"));
+    private final Image healthLeft = new Image(getClass().getResourceAsStream("/pacmanHealth.png"));
     private PlayerResetTimer timer = new PlayerResetTimer();
     private double width = 400;
     private double scoreBoardHeight = 40;
@@ -48,29 +37,23 @@ public class UI extends Application {
     private boolean keyIsPressed = false;
     private MapLoader mapLoader = new MapLoader();
     private GameLogic game = new GameLogic(mapLoader, timer);
-    private Label pointLabel = new Label("Points: 0");
-    private Label lifeLabel = new Label("HP: 3");
+    private Label pointLabel = new Label("POINTS: 0");
     private Graph currentMap;
+    private long panicPhaseLength = 5000000000L;
+    private long playerImmortalityPhaseLength = 1000000000L;
 
     private void resetMap() {
         game = new GameLogic(mapLoader, timer);
         currentMap = game.getGraph();
     }
 
-    private void changeMap() {
-        mapLoader.nextMap();
-        game = new GameLogic(mapLoader, timer);
-        currentMap = game.getGraph();
-    }
-
     @Override
     public void start(Stage primaryStage) throws Exception {
-        this.pointLabel.setText("Points: 0");
-        this.lifeLabel.setText("HP: 3");
+        this.pointLabel.setText("POINTS: 0");
         currentMap = game.getGraph();
         this.width = currentMap.getGraphMatrix()[0].length * 20;
         this.height = currentMap.getGraphMatrix().length * 20;
-        Canvas c = new Canvas(width, height + scoreBoardHeight);
+        Canvas c = new Canvas(width, height + scoreBoardHeight * 2);
         BorderPane window = new BorderPane();
         window.setCenter(c);
 
@@ -116,35 +99,32 @@ public class UI extends Application {
                     return;
                 }
                 if (timer.addTime(25000000)) {
-                    if (timer.getThreshold() == 5000000000L) {
-                        game.setAllMonsterPanicState(false);
+                    if (timer.getThreshold() == panicPhaseLength) {
+                        game.setAllMonsterPanicState(Behaviour.NORMAL);
+                        game.getPlayer().setMortality(true);
+                    } else if (timer.getThreshold() == playerImmortalityPhaseLength) {
+                        game.getPlayer().setMortality(true);
                     }
-                    game.getPlayer().setMortality(true);
 
                 }
-                if (!game.getSituation().isGameOver()&& !game.getPlayer().getLostHitPoint() && !game.getSituation().isGameOver()) {
+                if (!game.getSituation().isGameOver() && !game.getPlayer().getLostHitPoint() && !game.getSituation().isGameOver()) {
                     prev = now;
                     if (!game.isInProgress()) {
-                        lifeLabel.setText("HP: " + game.getPlayer().getRemainingLife());
                         game.movePlayer();
                         game.updateMonsters();
-                        pointLabel.setText("Points: " + game.getSituation().getPoints());
-                        paintGame(c.getGraphicsContext2D(), game.getGraph());
+                        pointLabel.setText("POINTS: " + game.getSituation().getPoints());
+                        paintGame(c.getGraphicsContext2D(), game.getGraph(), game.getPlayer());
 
                     }
 
                 } else {
-                    if (game.getSituation().isComplete()) {
-                        changeMap();
-                    }
                     if (game.getPlayer().getLostHitPoint()) {
                         game.getPlayer().loseHitPoints(timer);
-                        paintGame(c.getGraphicsContext2D(), currentMap);
-                        pointLabel.setText("Points: " + game.getSituation().getPoints());
+                        paintGame(c.getGraphicsContext2D(), currentMap, game.getPlayer());
+                        pointLabel.setText("POINTS: " + game.getSituation().getPoints());
                     } else {
                         if (game.getSituation().isGameOver()) {
-                            lifeLabel.setText("HP: 0");
-                            paintGame(c.getGraphicsContext2D(), currentMap);
+                            paintGame(c.getGraphicsContext2D(), currentMap, game.getPlayer());
                             drawGameOverText(c.getGraphicsContext2D());
                         }
                     }
@@ -158,13 +138,13 @@ public class UI extends Application {
         primaryStage.show();
     }
 
-    public void paintGame(GraphicsContext gc, Graph map) {
+    public void paintGame(GraphicsContext gc, Graph map, Player player) {
         gc.setFill(Color.BLACK);
-        gc.fillRect(0, 0, width, height + 30);
+        gc.fillRect(0, 0, width, height + scoreBoardHeight * 2);
         gc.setFill(Color.WHITE);
         gc.setFont(new Font(20));
         gc.fillText(this.pointLabel.getText(), 20, 30);
-        gc.fillText(this.lifeLabel.getText(), 150, 30);
+        drawRemainingHealth(gc, player);
         for (int i = 0; i < map.getGraphMatrix().length; i++) {
             for (int j = 0; j < map.getGraphMatrix()[0].length; j++) {
                 Tile tile = map.getGraphMatrix()[i][j];
@@ -172,7 +152,7 @@ public class UI extends Application {
                     gc.setFill(Color.BLACK);
                     gc.fillRect(tile.getX(), tile.getY() + scoreBoardHeight, tile.getWidth(), tile.getWidth());
                 } else {
-                    gc.setFill(Color.GRAY);
+                    gc.setFill(Color.CORNFLOWERBLUE);
                     gc.fillRect(tile.getX(), tile.getY() + scoreBoardHeight, tile.getWidth(), tile.getWidth());
                 }
             }
@@ -180,6 +160,14 @@ public class UI extends Application {
         drawPoints(gc);
         drawPlayer(gc);
         drawMonsters(gc);
+    }
+
+    public void drawRemainingHealth(GraphicsContext gc, Player player) {
+        double x = 10;
+        for (int i = 1; i <= player.getRemainingLife(); i++) {
+            gc.drawImage(healthLeft, x, this.height + scoreBoardHeight+5);
+            x += 40;
+        }
     }
 
     public void drawPlayer(GraphicsContext gc) {
@@ -217,7 +205,7 @@ public class UI extends Application {
     }
 
     public void drawSingleMonster(GraphicsContext gc, Monster monster) {
-        if (monster.getPanic()) {
+        if (monster.getCurrentBehaviour() == Behaviour.PANIC) {
             gc.drawImage(scaredImage, monster.getX(), monster.getY() + scoreBoardHeight);
             return;
         }

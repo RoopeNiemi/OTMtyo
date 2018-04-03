@@ -16,11 +16,9 @@ import java.util.Scanner;
  */
 public class MapLoader {
 
-    private int currentMapNumber = 1;
-    private int numberOfMaps = 3;
 
     public List<String> loadMap() {
-        String path = "map" + currentMapNumber + ".txt";
+        String path = "map2.txt";
         InputStream is = getClass().getClassLoader().getResourceAsStream(path);
         Scanner fileScanner = new Scanner(is);
         List<String> map = new ArrayList<>();
@@ -28,11 +26,5 @@ public class MapLoader {
             map.add(fileScanner.nextLine());
         }
         return map;
-    }
-
-    public void nextMap() {
-        if (currentMapNumber < numberOfMaps) {
-            currentMapNumber++;
-        }
     }
 }

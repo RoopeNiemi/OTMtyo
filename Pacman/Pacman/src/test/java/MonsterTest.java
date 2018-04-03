@@ -38,7 +38,7 @@ public class MonsterTest {
 
     @Before
     public void setUp() {
-        monster = new Monster(40, 40, 2.5, 2,false,"red");
+        monster = new Monster(40, 40, 2.5, 2, false, "red");
         givenPath = new ArrayDeque<>();
         givenPath.addLast(new Tile(60, 40, 20, 1));
         givenPath.addLast(new Tile(40, 60, 20, 1));
@@ -49,21 +49,6 @@ public class MonsterTest {
 
     @After
     public void tearDown() {
-    }
-
-    @Test
-    public void monsterCreatedWithGivenParameters() {
-        assertTrue(monster.getX() == 40);
-        assertTrue(monster.getY() == 40);
-        assertTrue(monster.getBehaviourChangeThreshold() == 2);
-
-    }
-
-    @Test
-    public void changeBehaviourWorks() {
-        assertTrue(monster.getBehaviourState() == false);
-        monster.changeBehaviour();
-        assertTrue(monster.getBehaviourState() == true);
     }
 
     @Test
@@ -112,7 +97,7 @@ public class MonsterTest {
         monster.setX(57.5);
         monster.move();
         monster.move();
-        assertTrue(monster.getX()==60 && monster.getY()==37.5);
+        assertTrue(monster.getX() == 60 && monster.getY() == 37.5);
 
     }
 

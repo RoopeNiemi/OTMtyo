@@ -38,7 +38,7 @@ public class PointTest {
     public void setUp() {
         pointOne = new Point(20, 20, Type.POINT);
         pointTwo = new Point(20, 20, Type.POINT);
-        pointThree = new Point(30, 20, Type.FRUIT);
+        pointThree = new Point(30, 20, Type.POWER_PELLET);
     }
 
     @After

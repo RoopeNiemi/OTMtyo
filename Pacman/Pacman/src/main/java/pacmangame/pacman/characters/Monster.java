@@ -5,10 +5,8 @@
  */
 package pacmangame.pacman.characters;
 
-import javafx.scene.paint.Color;
 import pacmangame.pacman.map.Tile;
 import java.util.ArrayDeque;
-import java.util.Stack;
 import javafx.scene.image.Image;
 
 /**
@@ -17,14 +15,13 @@ import javafx.scene.image.Image;
  */
 public class Monster {
 
-    private double x, y, width, movementSpeed, behaviourChangeThreshold, behaviourFactor;
+    private double x, y, width, movementSpeed;
     private int pathSize;
 
+    private Behaviour currentBehaviour = Behaviour.NORMAL;
     private Tile nextTile = null;
     private ArrayDeque<Tile> nextPath = new ArrayDeque<>();
-    private boolean behaviourState;
     private boolean isInPanic = false;
-    private double startingMovementSpeed;
     private boolean panicInProgess = false;
     private String imagePath = "";
     private final Image up;
@@ -39,11 +36,7 @@ public class Monster {
         this.width = 20;
 
         this.movementSpeed = movementSpeed;
-        startingMovementSpeed = movementSpeed;
-        this.behaviourChangeThreshold = behaviourThreshold;
-        this.behaviourFactor = 0;
         this.pathSize = (int) behaviourThreshold;
-        this.behaviourState = startBehaviour;
         this.imagePath = imagepath;
 
         up = new Image(getClass().getResourceAsStream("/" + this.imagePath + "Up.png"));
@@ -53,65 +46,38 @@ public class Monster {
         currentImage = up;
     }
 
-    public boolean getPanic() {
-        return this.isInPanic;
+    public void setCurrentBehaviour(Behaviour newBehaviour) {
+        this.currentBehaviour = newBehaviour;
     }
 
-    public void setPanic(boolean panic) {
-        this.isInPanic = panic;
-    }
-
-    public boolean getBehaviourState() {
-        return this.behaviourState;
+    public Behaviour getCurrentBehaviour() {
+        return this.currentBehaviour;
     }
 
     public void setNextPath(ArrayDeque<Tile> path) {
         this.nextPath = path;
     }
 
-    public void changeBehaviour() {
-        this.behaviourState = !this.behaviourState;
-        this.nextPath.clear();
-        this.nextTile=null;
-        resetBehaviourFactor();
-    }
-
     public int getPathSize() {
         return this.pathSize;
     }
 
-    public double getBehaviourFactor() {
-        return this.behaviourFactor;
-    }
-
-    public void resetBehaviourFactor() {
-        this.behaviourFactor = 0;
-    }
-
-    public double getBehaviourChangeThreshold() {
-        return this.behaviourChangeThreshold;
-    }
-
     public void checkPosition() {
         if (this.x == nextTile.getX() && this.y == nextTile.getY()) {
-            //   this.behaviourFactor++;
             this.nextTile = null;
         }
-        if (!this.panicInProgess && this.isInPanic) {
+        if (!this.panicInProgess && this.currentBehaviour == Behaviour.PANIC) {
             this.panicInProgess = true;
         }
     }
 
     public boolean move() {
-        if (this.panicInProgess && this.isInPanic) {
+        if (this.panicInProgess && this.currentBehaviour == Behaviour.PANIC) {
             this.panicInProgess = false;
             return false;
         }
         if (this.nextTile == null) {
             if (this.nextPath.isEmpty()) {
-               if(this.behaviourState){
-                   this.changeBehaviour();
-               }
                 return false;
             } else {
                 this.nextTile = this.nextPath.pollFirst();
@@ -122,8 +88,8 @@ public class Monster {
             currentTileX = 0;
         }
 
-        if (nextTile.getX() == 0 && nextTile.getY() == 180 && currentTileX == 17) {
-            if (this.x < 356) {
+        if (nextTile.getX() == 0 && nextTile.getY() == 180 && currentTileX == 18) {
+            if (this.x < 376) {
                 x += this.movementSpeed;
                 currentImage = right;
             } else {
@@ -132,12 +98,12 @@ public class Monster {
             checkPosition();
             return true;
         }
-        if (nextTile.getX() == 340 && nextTile.getY() == 180 && currentTileX == 0) {
+        if (nextTile.getX() == 360 && nextTile.getY() == 180 && currentTileX == 0) {
             if (this.x > -16) {
                 x -= this.movementSpeed;
                 currentImage = left;
             } else {
-                this.x = 356;
+                this.x = 376;
             }
             checkPosition();
             return true;

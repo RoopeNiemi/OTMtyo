@@ -7,10 +7,7 @@ package pacmangame.pacman.map;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
-import java.util.stream.Collectors;
 import pacmangame.pacman.characters.Direction;
-import pacmangame.pacman.characters.Monster;
 
 /**
  *
@@ -41,6 +38,9 @@ public class Graph {
     public void generatePointsAndFruits() {
         for (int i = 0; i < this.graphMatrix.length; i++) {
             for (int j = 0; j < this.graphMatrix[0].length; j++) {
+                if (i >= 7 && i <= 11 && j >= 6 && j <= 12) {
+                    continue;
+                }
                 Tile t = this.graphMatrix[i][j];
                 if (t.getValue() == 1) {
                     //Tile centre x and y
@@ -73,13 +73,13 @@ public class Graph {
         }
         int temp = 0;
         int oneFourth = points.size() / 4;
-        points.get(temp).setType(Type.FRUIT);
+        points.get(temp).setType(Type.POWER_PELLET);
         temp += oneFourth;
-        points.get(temp).setType(Type.FRUIT);
+        points.get(temp).setType(Type.POWER_PELLET);
         temp += oneFourth;
-        points.get(temp).setType(Type.FRUIT);
+        points.get(temp).setType(Type.POWER_PELLET);
         temp += oneFourth;
-        points.get(temp).setType(Type.FRUIT);
+        points.get(temp).setType(Type.POWER_PELLET);
         temp += oneFourth;
     }
 
@@ -137,7 +137,7 @@ public class Graph {
 
                     break;
                 case RIGHT:
-                    if (yCrd == 9 && xCrd == 17) {
+                    if (yCrd == 9 && xCrd == 18) {
                         return true;
                     }
                     if (x == this.graphMatrix[yCrd][xCrd].getX() && y == this.graphMatrix[yCrd][xCrd].getY()) {
