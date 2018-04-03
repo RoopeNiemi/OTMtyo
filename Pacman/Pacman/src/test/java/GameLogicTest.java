@@ -40,7 +40,7 @@ public class GameLogicTest {
     @Before
     public void setUp() {
         timer = new PlayerResetTimer();
-        logic = new GameLogic(new MapLoader(), timer);
+        logic = new GameLogic(new MapLoader(), timer, 0,3);
         redX = logic.getRed().getX();
         redY = logic.getRed().getY();
 
@@ -95,47 +95,6 @@ public class GameLogicTest {
             logic.getPlayer().loseHitPoint(timer);
         }
         assertTrue(logic.getPlayer().getRemainingLife() == 2);
-    }
-
-    @Test
-    public void initMapResetsCharacterPositions() {
-
-        logic.getPlayer().setMovementDirection(Direction.DOWN);
-        logic.movePlayer();
-        logic.movePlayer();
-
-        logic.updateMonsters();
-        logic.updateMonsters();
-
-        logic.init();
-
-        assertTrue(logic.getRed().getX() == redX && logic.getRed().getY() == redY);
-        assertTrue(logic.getOrange().getX() == orangeX && logic.getOrange().getY() == orangeY);
-        assertTrue(logic.getBlue().getX() == blueX && logic.getBlue().getY() == blueY);
-        assertTrue(logic.getPink().getX() == pinkX && logic.getPink().getY() == pinkY);
-        assertTrue(logic.getPlayer().getX() == playerX && logic.getPlayer().getY() == playerY);
-
-    }
-
-    @Test
-    public void initMapResetsGameOverState() {
-        logic.getRed().setX(logic.getPlayer().getX());
-        logic.getRed().setY(logic.getPlayer().getY());
-        logic.updateMonsters();
-        logic.init();
-        assertTrue(!logic.getSituation().isGameOver());
-    }
-
-    @Test
-    public void initMapResetsPoints() {
-        int points = logic.getSituation().getPoints();
-        logic.getPlayer().setMovementDirection(Direction.DOWN);
-        logic.movePlayer();
-        logic.movePlayer();
-        logic.movePlayer();
-        assertTrue(logic.getSituation().getPoints() != points);
-        logic.init();
-        assertTrue(logic.getSituation().getPoints() == points);
     }
 
     @Test

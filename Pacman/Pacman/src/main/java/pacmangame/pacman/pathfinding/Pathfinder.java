@@ -129,7 +129,7 @@ public class Pathfinder {
             return;
         }
         Tile begin = this.shortestPath.peek();
-        while (begin!=null &&begin.getPathFrom() != start) {
+        while (begin != null && begin.getPathFrom() != start) {
             begin = begin.getPathFrom();
             shortestPath.push(begin);
         }

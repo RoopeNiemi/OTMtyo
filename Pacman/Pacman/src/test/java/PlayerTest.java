@@ -35,7 +35,7 @@ public class PlayerTest {
 
     @Before
     public void setUp() {
-        player = new Player(50, 50);
+        player = new Player(50, 50,3);
     }
 
     @After

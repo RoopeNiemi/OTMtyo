@@ -16,8 +16,9 @@ public class GameSituation {
     private boolean gameOver = false;
     private int maxPoints = 0;
 
-    public GameSituation(int maxPoints) {
+    public GameSituation(int maxPoints, int startingPoints) {
         this.maxPoints = maxPoints;
+        this.points = startingPoints;
     }
 
     public int getMaxPoints() {

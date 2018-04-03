@@ -38,7 +38,7 @@ public class Graph {
     public void generatePointsAndFruits() {
         for (int i = 0; i < this.graphMatrix.length; i++) {
             for (int j = 0; j < this.graphMatrix[0].length; j++) {
-                if (i >= 7 && i <= 11 && j >= 6 && j <= 12) {
+                if (i >= 8 && i <= 9 && j >= 7 && j <= 11) {
                     continue;
                 }
                 Tile t = this.graphMatrix[i][j];
@@ -74,13 +74,17 @@ public class Graph {
         int temp = 0;
         int oneFourth = points.size() / 4;
         points.get(temp).setType(Type.POWER_PELLET);
-        temp += oneFourth;
+        temp += oneFourth+10;
         points.get(temp).setType(Type.POWER_PELLET);
-        temp += oneFourth;
+        temp += oneFourth+10;
         points.get(temp).setType(Type.POWER_PELLET);
-        temp += oneFourth;
+        temp += oneFourth+20;
         points.get(temp).setType(Type.POWER_PELLET);
-        temp += oneFourth;
+
+
+        /*  Point t = points.get(points.size() - 1);
+        points.clear();
+        points.add(t);*/
     }
 
     public ArrayList<Tile> getMovableTiles() {

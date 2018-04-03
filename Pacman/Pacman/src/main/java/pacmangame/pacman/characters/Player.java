@@ -28,11 +28,12 @@ public class Player {
     private boolean mortality = true;
     private String OS = System.getProperty("os.name").toLowerCase();
 
-    public Player(double x, double y) {
+    public Player(double x, double y, int lifeTotal) {
         this.x = x;
         this.y = y;
         this.startingX = x;
         this.startingY = y;
+        this.hitPointsLeft = lifeTotal;
     }
 
     public double getStartingX() {

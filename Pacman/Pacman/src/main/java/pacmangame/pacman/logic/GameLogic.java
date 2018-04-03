@@ -17,7 +17,7 @@ import pacmangame.pacman.pathfinding.Pathfinder;
  */
 public class GameLogic {
 
-    private Player player = new Player(180, 300);
+    private Player player;
     private Monster red = new Monster(180, 140, 2, 5, false, "red");
     private Monster pink = new Monster(160, 180, 2, 5, false, "pink");
     private Monster blue = new Monster(180, 180, 2, 5, false, "blue");
@@ -30,24 +30,13 @@ public class GameLogic {
     private PlayerResetTimer timer;
     private GameSituation situation;
 
-    public GameLogic(MapLoader mapLoader, PlayerResetTimer timer) {
+    public GameLogic(MapLoader mapLoader, PlayerResetTimer timer, int startingPoints, int playerLives) {
+        this.player = new Player(180, 300, playerLives);
         this.currentMap = new Graph(mapLoader.loadMap());
         this.mapLoader = mapLoader;
         this.timer = timer;
-        this.situation = new GameSituation(currentMap.getPointsList().size() * 10);
-    }
+        this.situation = new GameSituation(currentMap.getPointsList().size() * 10, startingPoints);
 
-    public void init() {
-        this.currentMap = new Graph(mapLoader.loadMap());
-        this.player = new Player(180, 300);
-        this.red = new Monster(180, 140, 2, 5, false, "red");
-        this.pink = new Monster(160, 180, 2, 5, false, "pink");
-        this.blue = new Monster(180, 180, 2, 5, false, "blue");
-        this.orange = new Monster(200, 180, 2, 5, false, "orange");
-        this.pathfinder = new Pathfinder();
-        this.gameOver = false;
-        this.inProgress = false;
-        this.situation = new GameSituation(currentMap.getPointsList().size() * 10);
     }
 
     public GameSituation getSituation() {
@@ -155,9 +144,9 @@ public class GameLogic {
         }
         //PINK MONSTER
         if (this.pink.getCurrentBehaviour() == Behaviour.NORMAL) {
-            updateMonster(this.pink, tileInFrontOfPlayer());
+            updateMonster(this.pink, tileInFrontOfPlayer(this.pink));
         } else {
-            updateMonster(this.pink, tileInFrontOfPlayer());
+            updateMonster(this.pink, tileInFrontOfPlayer(this.pink));
         }
     }
 
@@ -177,14 +166,14 @@ public class GameLogic {
         int random = new Random().nextInt(3);
         switch (random) {
             case 0:
-                updateMonster(this.blue, tileInFrontOfPlayer());
+                updateMonster(this.blue, tileInFrontOfPlayer(this.blue));
                 break;
             case 1:
                 updateMonster(this.blue, getTile(player.getX(), player.getY()));
                 break;
             case 2:
                 if (getTile(this.blue.getX(), this.blue.getY()) == getBottomRightTile()) {
-                    updateMonster(this.blue, tileInFrontOfPlayer());
+                    updateMonster(this.blue, tileInFrontOfPlayer(this.blue));
                 } else {
                     updateMonster(this.blue, getBottomRightTile());
                 }
@@ -200,11 +189,17 @@ public class GameLogic {
         return distanceX + distanceY;
     }
 
-    private Tile tileInFrontOfPlayer() {
+    private Tile tileInFrontOfPlayer(Monster monster) {
         Direction dir = this.player.getMovementDirection();
 
         int playerTileX = (int) Math.floor(getTile(player.getX(), player.getY()).getX() / 20);
         int playerTileY = (int) Math.floor(getTile(player.getX(), player.getY()).getY() / 20);
+
+        int monsterTileX = ((int) Math.floor(getTile(monster.getX(), monster.getY()).getX() / 20));
+        int monsterTileY = ((int) Math.floor(getTile(monster.getX(), monster.getY()).getY() / 20));
+        if (monsterTileX == playerTileX && monsterTileY == playerTileY) {
+            return getRandomDestinationTile(monster);
+        }
         switch (dir) {
             case UP:
                 if (playerTileY >= 2) {
@@ -233,11 +228,7 @@ public class GameLogic {
             default:
                 return getTile(player.getX(), player.getY());
         }
-        
-    }
-    
-    private void checkIfPlausibleDestination(Tile t){
-        
+
     }
 
     public Tile getRandomDestinationTile(Monster monster) {

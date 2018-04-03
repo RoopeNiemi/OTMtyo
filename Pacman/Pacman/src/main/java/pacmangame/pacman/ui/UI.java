@@ -31,19 +31,27 @@ public class UI extends Application {
     private final Image scaredImage = new Image(getClass().getResourceAsStream("/scared.png"));
     private final Image healthLeft = new Image(getClass().getResourceAsStream("/pacmanHealth.png"));
     private PlayerResetTimer timer = new PlayerResetTimer();
+    private int totalPoints = 0;
     private double width = 400;
     private double scoreBoardHeight = 40;
     private double height = 400;
     private boolean keyIsPressed = false;
     private MapLoader mapLoader = new MapLoader();
-    private GameLogic game = new GameLogic(mapLoader, timer);
+    private GameLogic game = new GameLogic(mapLoader, timer, totalPoints, 3);
     private Label pointLabel = new Label("POINTS: 0");
     private Graph currentMap;
     private long panicPhaseLength = 5000000000L;
     private long playerImmortalityPhaseLength = 1000000000L;
 
-    private void resetMap() {
-        game = new GameLogic(mapLoader, timer);
+    private void startOver() {
+        game = new GameLogic(mapLoader, timer, 0, 3);
+        currentMap = game.getGraph();
+    }
+
+    private void nextLevel() {
+        int playerLivesLeft = game.getPlayer().getRemainingLife();
+        this.totalPoints = game.getSituation().getPoints();         //TODO compare vs. current highscore
+        game = game = new GameLogic(mapLoader, timer, totalPoints, playerLivesLeft);
         currentMap = game.getGraph();
     }
 
@@ -60,7 +68,7 @@ public class UI extends Application {
         Scene scene = new Scene(window);
         scene.setOnMouseClicked(event -> {
             if (game.getSituation().isGameOver()) {
-                resetMap();
+                startOver();
             }
         });
         scene.setOnKeyPressed(event -> {
@@ -107,7 +115,7 @@ public class UI extends Application {
                     }
 
                 }
-                if (!game.getSituation().isGameOver() && !game.getPlayer().getLostHitPoint() && !game.getSituation().isGameOver()) {
+                if (!game.getSituation().isGameOver() && !game.getPlayer().getLostHitPoint() && !game.getSituation().isComplete()) {
                     prev = now;
                     if (!game.isInProgress()) {
                         game.movePlayer();
@@ -122,6 +130,8 @@ public class UI extends Application {
                         game.getPlayer().loseHitPoints(timer);
                         paintGame(c.getGraphicsContext2D(), currentMap, game.getPlayer());
                         pointLabel.setText("POINTS: " + game.getSituation().getPoints());
+                    } else if (game.getSituation().isComplete()) {
+                        nextLevel();
                     } else {
                         if (game.getSituation().isGameOver()) {
                             paintGame(c.getGraphicsContext2D(), currentMap, game.getPlayer());
@@ -132,8 +142,9 @@ public class UI extends Application {
             }
 
         }.start();
+        
+        primaryStage.setResizable(false);
         primaryStage.setScene(scene);
-
         primaryStage.setTitle("Pacman");
         primaryStage.show();
     }
@@ -165,7 +176,7 @@ public class UI extends Application {
     public void drawRemainingHealth(GraphicsContext gc, Player player) {
         double x = 10;
         for (int i = 1; i <= player.getRemainingLife(); i++) {
-            gc.drawImage(healthLeft, x, this.height + scoreBoardHeight+5);
+            gc.drawImage(healthLeft, x, this.height + scoreBoardHeight + 5);
             x += 40;
         }
     }
