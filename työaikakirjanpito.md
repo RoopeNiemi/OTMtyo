@@ -9,4 +9,5 @@
 | 25.3. | 3    | hirviöiden paniikkivaiheen luonti |
 | 26.3  | 4    | Hirviöiden ulkomuodon parantelua, käytös nyt halutun kaltainen lukuunottamatta paniikkivaihetta ja "scatter" vaihetta|
 | 3.4 | 4 | Korjattu testejä sekä poistettu turhia vanhoja testejä, korjattu luokkien rakennetta ja ohjelman ulkonäköä |
-| yht   | 34  | | 
+| 4.4 | 1 | Hirviöiden scatter vaihe, sinisen hirviön käytöstä parannettu |
+| yht   | 35  | | 
