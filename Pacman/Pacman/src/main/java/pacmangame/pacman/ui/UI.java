@@ -31,6 +31,7 @@ public class UI extends Application {
     private final Image scaredImage = new Image(getClass().getResourceAsStream("/scared.png"));
     private final Image healthLeft = new Image(getClass().getResourceAsStream("/pacmanHealth.png"));
     private PlayerResetTimer timer = new PlayerResetTimer();
+    private PlayerResetTimer monsterBehaviourTimer = new PlayerResetTimer();
     private int totalPoints = 0;
     private double width = 400;
     private double scoreBoardHeight = 40;
@@ -42,6 +43,8 @@ public class UI extends Application {
     private Graph currentMap;
     private long panicPhaseLength = 5000000000L;
     private long playerImmortalityPhaseLength = 1000000000L;
+    private long normalMonsterBehaviourLength = 20000000000L;
+    private long scatterBehaviourLength = 7000000000L;
 
     private void startOver() {
         game = new GameLogic(mapLoader, timer, 0, 3);
@@ -57,6 +60,8 @@ public class UI extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
+        monsterBehaviourTimer.setThreshold(normalMonsterBehaviourLength);
+        monsterBehaviourTimer.activate();
         this.pointLabel.setText("POINTS: 0");
         currentMap = game.getGraph();
         this.width = currentMap.getGraphMatrix()[0].length * 20;
@@ -106,9 +111,25 @@ public class UI extends Application {
                 if (now - prev < 25000000) {
                     return;
                 }
+                if (monsterBehaviourTimer.addTime(25000000)) {
+                    if (monsterBehaviourTimer.getThreshold() == normalMonsterBehaviourLength) {
+                        if (game.getSituation().getTimesScattered() < 4) {
+                            monsterBehaviourTimer.setThreshold(scatterBehaviourLength);
+                            game.getSituation().addScatterTime();
+                            System.out.println("SCATTER ACTIVATED");
+                            game.setAllMonstersBehaviourState(Behaviour.SCATTER);
+                            monsterBehaviourTimer.activate();
+                        }
+                    } else {
+                        monsterBehaviourTimer.setThreshold(normalMonsterBehaviourLength);
+                        System.out.println("SCATTER DEACTIVATED");
+                        game.setAllMonstersBehaviourState(Behaviour.NORMAL);
+                        monsterBehaviourTimer.activate();
+                    }
+                }
                 if (timer.addTime(25000000)) {
                     if (timer.getThreshold() == panicPhaseLength) {
-                        game.setAllMonsterPanicState(Behaviour.NORMAL);
+                        game.setAllMonstersBehaviourState(Behaviour.NORMAL);
                         game.getPlayer().setMortality(true);
                     } else if (timer.getThreshold() == playerImmortalityPhaseLength) {
                         game.getPlayer().setMortality(true);
@@ -142,7 +163,7 @@ public class UI extends Application {
             }
 
         }.start();
-        
+
         primaryStage.setResizable(false);
         primaryStage.setScene(scene);
         primaryStage.setTitle("Pacman");

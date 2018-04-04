@@ -15,10 +15,19 @@ public class GameSituation {
     private boolean complete = false;
     private boolean gameOver = false;
     private int maxPoints = 0;
+    private int timesScattered = 0;
 
     public GameSituation(int maxPoints, int startingPoints) {
         this.maxPoints = maxPoints;
         this.points = startingPoints;
+    }
+
+    public void addScatterTime() {
+        this.timesScattered++;
+    }
+
+    public int getTimesScattered() {
+        return this.timesScattered;
     }
 
     public int getMaxPoints() {
