@@ -9,7 +9,7 @@ package pacmangame.pacman.logic;
  *
  * @author User
  */
-public class PlayerResetTimer {
+public class GameTimer {
 
     private long timerThreshold = 1000000000;
     private long time = 0;

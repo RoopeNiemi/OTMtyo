@@ -6,7 +6,7 @@
 package pacmangame.pacman.characters;
 
 import javafx.scene.paint.Color;
-import pacmangame.pacman.logic.PlayerResetTimer;
+import pacmangame.pacman.logic.GameTimer;
 
 /**
  *
@@ -60,7 +60,7 @@ public class Player {
         return this.lostHitPoint;
     }
 
-    public void loseHitPoint(PlayerResetTimer timer) {
+    public void loseHitPoint(GameTimer timer) {
         this.lostHitPoint = true;
         loseHitPoints(timer);
     }
@@ -80,7 +80,7 @@ public class Player {
         }
     }
 
-    public void loseHitPoints(PlayerResetTimer timer) {
+    public void loseHitPoints(GameTimer timer) {
         if (OS.indexOf("win") >= 0) {
             this.mouthAngle += 2;
         } else {

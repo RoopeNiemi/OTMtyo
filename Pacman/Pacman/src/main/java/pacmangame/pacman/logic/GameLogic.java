@@ -26,29 +26,22 @@ public class GameLogic {
     private boolean gameOver = false;
     private MapLoader mapLoader;
     private Graph currentMap;
-    private boolean inProgress = false;
-    private PlayerResetTimer timer;
+    private GameTimer timer;
     private GameSituation situation;
 
-    public GameLogic(MapLoader mapLoader, PlayerResetTimer timer, int startingPoints, int playerLives) {
+    public GameLogic(MapLoader mapLoader, GameTimer timer, int startingPoints, int playerLives) {
         this.player = new Player(180, 300, playerLives);
         this.currentMap = new Graph(mapLoader.loadMap());
         this.mapLoader = mapLoader;
         this.timer = timer;
         this.situation = new GameSituation(currentMap.getPointsList().size() * 10, startingPoints);
-
     }
 
     public GameSituation getSituation() {
         return this.situation;
     }
 
-    public boolean isInProgress() {
-        return this.inProgress;
-    }
-
     private void findMonsterPath(Monster monster, Tile monsterTile, Tile destinationTile) {
-
         if (monsterTile == destinationTile) {
             destinationTile = getRandomDestinationTile(monster);
         }
@@ -58,11 +51,9 @@ public class GameLogic {
             return;
         }
         monster.getNextPath().clear();
-
         while (!path.isEmpty() && monster.getNextPath().size() < monster.getPathSize()) {
             monster.getNextPath().addLast(path.pop());
         }
-
     }
 
     public void movePlayer() {
@@ -125,56 +116,22 @@ public class GameLogic {
     }
 
     public void updateMonsters() {
-        //RED MONSTER
-
-        if (this.red.getCurrentBehaviour() == Behaviour.NORMAL) {
-            updateMonster(this.red, getTile(this.player.getX(), this.player.getY()));
-        } else if (this.red.getCurrentBehaviour() == Behaviour.SCATTER) {
-            updateMonster(this.red, getTopRightTile());
-        } else {
-            updateMonster(this.red, getRandomDestinationTile(this.red));
-        }
-        //ORANGE MONSTER
-
-        if (this.orange.getCurrentBehaviour() == Behaviour.NORMAL) {
-            orangeMovement();
-        } else if (this.orange.getCurrentBehaviour() == Behaviour.SCATTER) {
-            updateMonster(this.orange, getBottomRightTile());
-        } else {
-            updateMonster(this.orange, getRandomDestinationTile(this.orange));
-        }
-        //BLUE MONSTER
-        if (this.blue.getCurrentBehaviour() == Behaviour.NORMAL) {
-            blueMovement();
-        } else if (this.blue.getCurrentBehaviour() == Behaviour.SCATTER) {
-            updateMonster(this.blue, getTopLeftTile());
-        } else {
-            updateMonster(this.blue, getRandomDestinationTile(this.blue));
-        }
-        //PINK MONSTER
-        if (this.pink.getCurrentBehaviour() == Behaviour.NORMAL) {
-            updateMonster(this.pink, tileInFrontOfPlayer(this.pink));
-        } else if (this.pink.getCurrentBehaviour() == Behaviour.SCATTER) {
-            updateMonster(this.pink, getBottomLeftTile());
-        } else {
-            updateMonster(this.pink, getRandomDestinationTile(this.pink));
-        }
+        updateMonster(this.red, getTile(player.getX(), player.getY()), getTopRightTile());
+        updateMonster(this.orange, orangeMovement(), getBottomRightTile());
+        updateMonster(this.blue, blueMovement(), getTopLeftTile());
+        updateMonster(this.pink, tileInFrontOfPlayer(), getBottomLeftTile());
     }
 
-    private void orangeMovement() {
+    private Tile orangeMovement() {
         if (distanceFromPlayer() > 8) {
-            updateMonster(this.orange, getTile(this.player.getX(), this.player.getY()));
+            return getTile(player.getX(), player.getY());
         } else {
-            if (getTile(this.orange.getX(), this.orange.getY()) == getBottomRightTile()) {
-                updateMonster(this.orange, getRandomDestinationTile(this.orange));
-            } else {
-                updateMonster(this.orange, getBottomRightTile());
-            }
+            return getBottomRightTile();
         }
     }
 
-    private void blueMovement() {
-        Tile inFrontOfPlayer = tileInFrontOfPlayer(this.blue);
+    private Tile blueMovement() {
+        Tile inFrontOfPlayer = tileInFrontOfPlayer();
         Tile redTile = getTile(this.red.getX(), this.red.getY());
         double xDifference = inFrontOfPlayer.getX() - redTile.getX();
         double yDifference = inFrontOfPlayer.getY() - redTile.getY();
@@ -183,7 +140,7 @@ public class GameLogic {
         destinationTileX = checkInBounds(destinationTileX, 340);
         destinationTileY = checkInBounds(destinationTileY, 380);
         Tile blueDestinationTile = getTile(destinationTileX, destinationTileY);
-        updateMonster(this.blue, blueDestinationTile);
+        return blueDestinationTile;
     }
 
     private double checkInBounds(double value, double max) {
@@ -202,17 +159,11 @@ public class GameLogic {
         return distanceX + distanceY;
     }
 
-    private Tile tileInFrontOfPlayer(Monster monster) {
+    private Tile tileInFrontOfPlayer() {
         Direction dir = this.player.getMovementDirection();
-
         int playerTileX = (int) Math.floor(getTile(player.getX(), player.getY()).getX() / 20);
         int playerTileY = (int) Math.floor(getTile(player.getX(), player.getY()).getY() / 20);
 
-        int monsterTileX = ((int) Math.floor(getTile(monster.getX(), monster.getY()).getX() / 20));
-        int monsterTileY = ((int) Math.floor(getTile(monster.getX(), monster.getY()).getY() / 20));
-        if (monsterTileX == playerTileX && monsterTileY == playerTileY) {
-            return getRandomDestinationTile(monster);
-        }
         switch (dir) {
             case UP:
                 if (playerTileY >= 2) {
@@ -241,22 +192,34 @@ public class GameLogic {
             default:
                 return getTile(player.getX(), player.getY());
         }
-
     }
 
-    public Tile getRandomDestinationTile(Monster monster) {
+    private Tile getRandomDestinationTile(Monster monster) {
         Tile monsterTile = getTile(monster.getX(), monster.getY());
         List<Tile> tiles = getGraph().getMovableTiles().stream().filter(a -> a.getX() != monsterTile.getX() && a.getY() != monsterTile.getY()).collect(Collectors.toCollection(ArrayList::new));
         return tiles.get(new Random().nextInt(tiles.size()));
     }
 
-    public void updateMonster(Monster monster, Tile destinationTile) {
+    private void updateMonster(Monster monster, Tile normalDestination, Tile scatterDestination) {
         if (this.gameOver) {
             return;
         }
-
         if (monster.getNextTile() == null && monster.getNextPath().isEmpty()) {
-            findMonsterPath(monster, getTile(monster.getX(), monster.getY()), destinationTile);
+            if (null == monster.getCurrentBehaviour()) {
+                findMonsterPath(monster, getTile(monster.getX(), monster.getY()), getRandomDestinationTile(monster));
+            } else {
+                switch (monster.getCurrentBehaviour()) {
+                    case NORMAL:
+                        findMonsterPath(monster, getTile(monster.getX(), monster.getY()), normalDestination);
+                        break;
+                    case SCATTER:
+                        findMonsterPath(monster, getTile(monster.getX(), monster.getY()), scatterDestination);
+                        break;
+                    default:
+                        findMonsterPath(monster, getTile(monster.getX(), monster.getY()), getRandomDestinationTile(monster));
+                        break;
+                }
+            }
         }
         monster.move();
         checkCollision(monster);

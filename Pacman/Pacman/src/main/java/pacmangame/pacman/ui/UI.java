@@ -30,15 +30,15 @@ public class UI extends Application {
 
     private final Image scaredImage = new Image(getClass().getResourceAsStream("/scared.png"));
     private final Image healthLeft = new Image(getClass().getResourceAsStream("/pacmanHealth.png"));
-    private PlayerResetTimer timer = new PlayerResetTimer();
-    private PlayerResetTimer monsterBehaviourTimer = new PlayerResetTimer();
+    private GameTimer timer = new GameTimer();
+    private GameTimer monsterBehaviourTimer = new GameTimer();
     private int totalPoints = 0;
     private double width = 400;
     private double scoreBoardHeight = 40;
     private double height = 400;
     private boolean keyIsPressed = false;
     private MapLoader mapLoader = new MapLoader();
-    private GameLogic game = new GameLogic(mapLoader, timer, totalPoints, 3);
+    private GameLogic game = new GameLogic(mapLoader, timer, totalPoints, 2);
     private Label pointLabel = new Label("POINTS: 0");
     private Graph currentMap;
     private long panicPhaseLength = 5000000000L;
@@ -47,7 +47,7 @@ public class UI extends Application {
     private long scatterBehaviourLength = 7000000000L;
 
     private void startOver() {
-        game = new GameLogic(mapLoader, timer, 0, 3);
+        game = new GameLogic(mapLoader, timer, 0, 2);
         currentMap = game.getGraph();
     }
 
@@ -138,13 +138,10 @@ public class UI extends Application {
                 }
                 if (!game.getSituation().isGameOver() && !game.getPlayer().getLostHitPoint() && !game.getSituation().isComplete()) {
                     prev = now;
-                    if (!game.isInProgress()) {
-                        game.movePlayer();
-                        game.updateMonsters();
-                        pointLabel.setText("POINTS: " + game.getSituation().getPoints());
-                        paintGame(c.getGraphicsContext2D(), game.getGraph(), game.getPlayer());
-
-                    }
+                    game.movePlayer();
+                    game.updateMonsters();
+                    pointLabel.setText("POINTS: " + game.getSituation().getPoints());
+                    paintGame(c.getGraphicsContext2D(), game.getGraph(), game.getPlayer());
 
                 } else {
                     if (game.getPlayer().getLostHitPoint()) {

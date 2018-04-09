@@ -12,7 +12,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import pacmangame.pacman.characters.Direction;
 import pacmangame.pacman.logic.GameLogic;
-import pacmangame.pacman.logic.PlayerResetTimer;
+import pacmangame.pacman.logic.GameTimer;
 import pacmangame.pacman.map.MapLoader;
 import pacmangame.pacman.map.Tile;
 
@@ -24,7 +24,7 @@ public class GameLogicTest {
 
     GameLogic logic;
     double redX, redY, orangeX, orangeY, blueX, blueY, pinkX, pinkY, playerX, playerY;
-    PlayerResetTimer timer;
+    GameTimer timer;
 
     public GameLogicTest() {
     }
@@ -39,7 +39,7 @@ public class GameLogicTest {
 
     @Before
     public void setUp() {
-        timer = new PlayerResetTimer();
+        timer = new GameTimer();
         logic = new GameLogic(new MapLoader(), timer, 0,3);
         redX = logic.getRed().getX();
         redY = logic.getRed().getY();
