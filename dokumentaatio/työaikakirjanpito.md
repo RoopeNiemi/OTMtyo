@@ -10,5 +10,5 @@
 | 26.3  | 4    | Hirviöiden ulkomuodon parantelua, käytös nyt halutun kaltainen lukuunottamatta paniikkivaihetta ja "scatter" vaihetta|
 | 3.4 | 4 | Korjattu testejä sekä poistettu turhia vanhoja testejä, korjattu luokkien rakennetta ja ohjelman ulkonäköä |
 | 4.4 | 1 | Hirviöiden scatter vaihe, sinisen hirviön käytöstä parannettu |
-| 9.4 | 1 | Sovelluslogiikan luokkakaavio, ohjelman rakenteen korjausta, ensimmäinen release |
-| yht   | 36  | | 
+| 9.4 | 2 | Sovelluslogiikan luokkakaavio, sekvenssikaavioita pelaajan liikkeestä ja tilanteen päivityksestä, ohjelman rakenteen korjausta. Ensimmäinen release |
+| yht   | 37  | | 
