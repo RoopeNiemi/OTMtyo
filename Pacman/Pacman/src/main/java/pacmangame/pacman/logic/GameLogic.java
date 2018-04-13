@@ -68,10 +68,10 @@ public class GameLogic {
     }
 
     private void findMonsterPath(Monster monster, Tile monsterTile, Tile destinationTile) {
-        if (monsterTile == destinationTile) {
-            destinationTile = getRandomDestinationTile(monster);
-        }
         Stack<Tile> path = pathfinder.findPath(monsterTile, this.currentMap.getGraphMatrix(), destinationTile);
+        if (path.isEmpty() || path.peek() == null || path.size() == 1 && path.peek() == monsterTile) {
+            path = pathfinder.findPath(monsterTile, this.currentMap.getGraphMatrix(), getRandomDestinationTile(monster));
+        }
         while (!path.isEmpty() && monster.getNextPath().size() < monster.getPathSize()) {
             monster.getNextPath().addLast(path.pop());
         }
@@ -286,7 +286,7 @@ public class GameLogic {
             return;
         }
 
-        if (Math.abs(this.player.getCentreX() - monster.getCentreX()) <= 10 && Math.abs(this.player.getCentreY() - monster.getCentreY()) <= 13) {
+        if (Math.abs(this.player.getCentreX() - monster.getCentreX()) <= 10 && Math.abs(this.player.getCentreY() - monster.getCentreY()) <= 10) {
             if (monster.getCurrentBehaviour() == Behaviour.PANIC) {
                 monster.setCurrentBehaviour(Behaviour.RESET);
                 monster.getNextPath().clear();
