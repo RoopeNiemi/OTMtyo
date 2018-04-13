@@ -11,4 +11,5 @@
 | 3.4 | 4 | Korjattu testejä sekä poistettu turhia vanhoja testejä, korjattu luokkien rakennetta ja ohjelman ulkonäköä |
 | 4.4 | 1 | Hirviöiden scatter vaihe, sinisen hirviön käytöstä parannettu |
 | 9.4 | 2 | Sovelluslogiikan luokkakaavio, sekvenssikaavioita pelaajan liikkeestä ja tilanteen päivityksestä, ohjelman rakenteen korjausta. Ensimmäinen release |
-| yht   | 37  | | 
+| 13.4 | 4 | High score tietokannan teko, hirviön syömisen toteuttaminen.  |
+| yht   | 41  | | 
