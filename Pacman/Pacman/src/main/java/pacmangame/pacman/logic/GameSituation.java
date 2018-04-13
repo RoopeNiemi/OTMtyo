@@ -19,6 +19,7 @@ public class GameSituation {
     private int points = 0;
     private boolean complete = false;
     private boolean gameOver = false;
+    private int activeMonsters = 1;
     private int maxPoints = 0;
     private int highScore = 0;
     private int timesScattered = 0;
@@ -32,6 +33,14 @@ public class GameSituation {
 
     public void addScatterTime() {
         this.timesScattered++;
+    }
+
+    public int getActiveMonsters() {
+        return this.activeMonsters;
+    }
+
+    public void addActiveMonster() {
+        this.activeMonsters++;
     }
 
     private void setCurrentHighScore() {

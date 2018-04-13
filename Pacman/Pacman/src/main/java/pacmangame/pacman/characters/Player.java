@@ -51,7 +51,7 @@ public class Player {
         return this.gotHit;
     }
 
-    public void loseHitPoint(GameTimer timer) {
+    public void loseHitPoint() {
         this.gotHit = true;
         loseHitPoints();
     }

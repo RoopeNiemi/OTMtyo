@@ -18,7 +18,7 @@ public class Monster {
     private double x, y, width, movementSpeed;
     private int pathSize;
     private Tile startingTile;
-
+    private boolean active = false;
     private Behaviour currentBehaviour = Behaviour.NORMAL;
     private Tile nextTile = null;
     private ArrayDeque<Tile> nextPath = new ArrayDeque<>();
@@ -45,6 +45,14 @@ public class Monster {
         left = new Image(getClass().getResourceAsStream("/" + this.imagePath + "Left.png"));
         right = new Image(getClass().getResourceAsStream("/" + this.imagePath + "Right.png"));
         currentImage = up;
+    }
+
+    public void activate() {
+        this.active = true;
+    }
+
+    public boolean isActive() {
+        return this.active;
     }
 
     public void setCurrentBehaviour(Behaviour newBehaviour) {

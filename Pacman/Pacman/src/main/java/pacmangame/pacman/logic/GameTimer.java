@@ -29,6 +29,10 @@ public class GameTimer {
         return false;
     }
 
+    public boolean isActive() {
+        return this.active;
+    }
+
     public long getThreshold() {
         return this.timerThreshold;
     }

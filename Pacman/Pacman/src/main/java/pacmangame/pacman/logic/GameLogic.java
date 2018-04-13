@@ -33,6 +33,7 @@ public class GameLogic {
     private GameTimer timer;
     private GameSituation situation;
     private GameTimer monsterBehaviourTimer;
+    private GameTimer monsterActivator = new GameTimer();
     private int highscore = 0;
 
     public GameLogic(MapLoader mapLoader, int startingPoints, int playerLives) {
@@ -42,17 +43,34 @@ public class GameLogic {
         this.situation = new GameSituation(currentMap.getPointsList().size() * 10, startingPoints);
         this.timer = new GameTimer();
         this.monsterBehaviourTimer = new GameTimer();
+        this.monsterActivator.setThreshold(4000000000L);
+        this.monsterActivator.activate();
+        this.red = new Monster(currentMap.getRedStartingTile(), 2, 5, "red");
+        this.pink = new Monster(currentMap.getPinkStartingTile(), 2, 10, "pink");
+        this.blue = new Monster(currentMap.getBlueStartingTile(), 2, 5, "blue");
+        this.orange = new Monster(currentMap.getOrangeStartingTile(), 2, 15, "orange");
     }
 
     public boolean situationNormal() {
         return !this.situation.isGameOver() && !this.player.gotHit() && !this.situation.isComplete();
     }
 
-    public void setMonsterStartingPositions() {
-        this.red = new Monster(currentMap.getRedStartingTile(), 2, 5, "red");
-        this.pink = new Monster(currentMap.getPinkStartingTile(), 2, 5, "pink");
-        this.blue = new Monster(currentMap.getBlueStartingTile(), 2, 5, "blue");
-        this.orange = new Monster(currentMap.getOrangeStartingTile(), 2, 15, "orange");
+    public GameTimer getMonsterActivator() {
+        return this.monsterActivator;
+    }
+
+    public void resetMonsterStartingPositions() {
+        resetMonsterPosition(this.red);
+        resetMonsterPosition(this.pink);
+        resetMonsterPosition(this.blue);
+        resetMonsterPosition(this.orange);
+    }
+
+    public void resetMonsterPosition(Monster monster) {
+        monster.setX(monster.getStartingTile().getX());
+        monster.setY(monster.getStartingTile().getY());
+        monster.getNextPath().clear();
+        monster.setNextTile(null);
     }
 
     public GameSituation getSituation() {
@@ -127,6 +145,29 @@ public class GameLogic {
 
     public GameTimer getMonsterBehaviourTimer() {
         return this.monsterBehaviourTimer;
+    }
+
+    public void monsterActivation(long addedTime) {
+        if (this.monsterActivator.isActive()) {
+            if (this.monsterActivator.addTime(addedTime)) {
+                switch (this.situation.getActiveMonsters()) {
+                    case 1:
+                        this.pink.activate();
+                        this.monsterActivator.activate();
+                        this.situation.addActiveMonster();
+                        break;
+                    case 2:
+                        this.blue.activate();
+                        this.monsterActivator.activate();
+                        this.situation.addActiveMonster();
+                        break;
+                    case 3:
+                        this.orange.activate();
+                        this.situation.addActiveMonster();
+                        break;
+                }
+            }
+        }
     }
 
     private void checkPointSituation() {
@@ -254,7 +295,7 @@ public class GameLogic {
     }
 
     private void updateMonster(Monster monster, Tile normalDestination, Tile scatterDestination) {
-        if (this.situation.isGameOver()) {
+        if (this.situation.isGameOver() || !monster.isActive()) {
             return;
         }
         if (monster.getNextTile() == null && monster.getNextPath().isEmpty()) {
@@ -295,10 +336,9 @@ public class GameLogic {
                 return;
             }
             findMonsterPath(monster, getTile(monster.getX(), monster.getY()), getRandomDestinationTile(monster));
-            this.player.loseHitPoint(timer);
+            this.player.loseHitPoint();
             if (this.player.getRemainingLife() <= 0) {
                 this.situation.setGameOver(true);
-                return;
             }
 
         }

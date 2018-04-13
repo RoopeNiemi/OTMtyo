@@ -82,7 +82,7 @@ public class Graph {
         points.get(temp).setType(Type.POWER_PELLET);
 
 
-        /*  Point t = points.get(points.size() - 1);
+        /* Point t = points.get(points.size() - 1);
         points.clear();
         points.add(t);*/
     }

@@ -51,8 +51,8 @@ public class UI extends Application {
         game.getSituation().saveNewHighScoreIfNeeded(totalPoints);
         this.totalPoints = 0;
         this.game = new GameLogic(mapLoader, 0, 2);
-        game.setMonsterStartingPositions();
         this.currentMap = game.getGraph();
+        game.getRed().activate();
         highScoreLabel = new Label("HIGH SCORE: " + game.getSituation().getCurrentHighScore());
     }
 
@@ -60,8 +60,8 @@ public class UI extends Application {
         int playerLivesLeft = game.getPlayer().getRemainingLife();
         this.totalPoints = game.getSituation().getPoints();
         game = game = new GameLogic(mapLoader, totalPoints, playerLivesLeft);
-        game.setMonsterStartingPositions();
         currentMap = game.getGraph();
+        game.getRed().activate();
     }
 
     @Override
@@ -70,7 +70,7 @@ public class UI extends Application {
         game.getMonsterBehaviourTimer().activate();
         this.pointLabel.setText("POINTS: 0");
         currentMap = game.getGraph();
-        game.setMonsterStartingPositions();
+        game.getRed().activate();
         this.highScoreLabel = new Label("HIGH SCORE: " + game.getSituation().getCurrentHighScore());
         this.width = currentMap.getGraphMatrix()[0].length * 20;
         this.height = currentMap.getGraphMatrix().length * 20;
@@ -119,6 +119,7 @@ public class UI extends Application {
                 if (now - prev < updateFrequency) {
                     return;
                 }
+                game.monsterActivation(updateFrequency);
                 if (game.monsterBehaviourThresholdReached(updateFrequency)) {
                     if (game.getMonsterBehaviourTimer().getThreshold() == normalMonsterBehaviourLength) {
                         game.scatterIfPossible(scatterBehaviourLength);
@@ -139,7 +140,9 @@ public class UI extends Application {
                 } else {
                     if (game.getPlayer().gotHit()) {
                         game.getPlayer().loseHitPoints();
-                        game.setMonsterStartingPositions();
+                        if (!game.getPlayer().gotHit()) {
+                            game.resetMonsterStartingPositions();
+                        }
                         paintGame(c.getGraphicsContext2D(), currentMap, game.getPlayer());
                         pointLabel.setText("POINTS: " + game.getSituation().getPoints());
                     } else if (game.getSituation().isComplete()) {

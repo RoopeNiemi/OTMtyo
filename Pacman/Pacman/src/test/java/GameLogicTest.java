@@ -10,6 +10,7 @@ import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import pacmangame.pacman.characters.Behaviour;
 import pacmangame.pacman.characters.Direction;
 import pacmangame.pacman.logic.GameLogic;
 import pacmangame.pacman.logic.GameTimer;
@@ -24,7 +25,6 @@ public class GameLogicTest {
 
     GameLogic logic;
     double redX, redY, orangeX, orangeY, blueX, blueY, pinkX, pinkY, playerX, playerY;
-    GameTimer timer, monsterBehaviourTimer;
 
     public GameLogicTest() {
     }
@@ -39,10 +39,11 @@ public class GameLogicTest {
 
     @Before
     public void setUp() {
-        timer = new GameTimer();
-        monsterBehaviourTimer = new GameTimer();
-
-        logic = new GameLogic(new MapLoader(), 0, 3);
+        logic = new GameLogic(new MapLoader(), 0, 2);
+        logic.getRed().activate();
+        logic.getPink().activate();
+        logic.getBlue().activate();
+        logic.getOrange().activate();
         redX = logic.getRed().getX();
         redY = logic.getRed().getY();
 
@@ -94,9 +95,9 @@ public class GameLogicTest {
         logic.getRed().setY(logic.getPlayer().getY());
         logic.updateMonsters();
         while (logic.getPlayer().gotHit()) {
-            logic.getPlayer().loseHitPoint(timer);
+            logic.getPlayer().loseHitPoint();
         }
-        assertTrue(logic.getPlayer().getRemainingLife() == 2);
+        assertTrue(logic.getPlayer().getRemainingLife() == 1);
     }
 
     @Test
@@ -122,6 +123,72 @@ public class GameLogicTest {
         logic.movePlayer();
         assertTrue(currentPointsOnMap > logic.getGraph().getPointsList().size());
         assertTrue(points < logic.getSituation().getPoints());
+    }
+
+    @Test
+    public void scatteringWorksWhenScatteredLessThanFourTimes() {
+        logic.scatterIfPossible(0);
+        assertTrue(logic.getRed().getCurrentBehaviour() == Behaviour.SCATTER);
+        assertTrue(logic.getPink().getCurrentBehaviour() == Behaviour.SCATTER);
+        assertTrue(logic.getBlue().getCurrentBehaviour() == Behaviour.SCATTER);
+        assertTrue(logic.getOrange().getCurrentBehaviour() == Behaviour.SCATTER);
+    }
+
+    @Test
+    public void scatteringDoesNotWorkAfterFourTimes() {
+        logic.scatterIfPossible(0);
+        logic.scatterIfPossible(0);
+        logic.scatterIfPossible(0);
+        logic.scatterIfPossible(0);
+        logic.setAllMonstersBehaviourState(Behaviour.NORMAL);
+        logic.scatterIfPossible(0);
+        assertTrue(logic.getRed().getCurrentBehaviour() == Behaviour.NORMAL);
+        assertTrue(logic.getPink().getCurrentBehaviour() == Behaviour.NORMAL);
+        assertTrue(logic.getBlue().getCurrentBehaviour() == Behaviour.NORMAL);
+        assertTrue(logic.getOrange().getCurrentBehaviour() == Behaviour.NORMAL);
+    }
+
+    @Test
+    public void activatingChaseModeWorks() {
+        logic.setAllMonstersBehaviourState(Behaviour.SCATTER);
+        logic.activateChaseMode(0);
+        assertTrue(logic.getRed().getCurrentBehaviour() == Behaviour.NORMAL);
+        assertTrue(logic.getPink().getCurrentBehaviour() == Behaviour.NORMAL);
+        assertTrue(logic.getBlue().getCurrentBehaviour() == Behaviour.NORMAL);
+        assertTrue(logic.getOrange().getCurrentBehaviour() == Behaviour.NORMAL);
+    }
+
+    @Test
+    public void resettingMonsterPositionsWorks() {
+        logic.updateMonsters();
+        logic.updateMonsters();
+        logic.resetMonsterStartingPositions();
+        assertTrue(logic.getRed().getX() == redX && logic.getRed().getY() == redY);
+        assertTrue(logic.getPink().getX() == pinkX && logic.getPink().getY() == pinkY);
+        assertTrue(logic.getBlue().getX() == blueX && logic.getBlue().getY() == blueY);
+        assertTrue(logic.getOrange().getX() == orangeX && logic.getOrange().getY() == orangeY);
+    }
+
+    @Test
+    public void endingPanicPhaseWorks() {
+        logic.setAllMonstersBehaviourState(Behaviour.PANIC);
+        logic.endPanicPhase();
+        assertTrue(logic.getRed().getCurrentBehaviour() == Behaviour.NORMAL);
+        assertTrue(logic.getPink().getCurrentBehaviour() == Behaviour.NORMAL);
+        assertTrue(logic.getBlue().getCurrentBehaviour() == Behaviour.NORMAL);
+        assertTrue(logic.getOrange().getCurrentBehaviour() == Behaviour.NORMAL);
+    }
+
+    @Test
+    public void activatingMonstersGraduallyWorks() {
+        assertTrue(logic.getRed().isActive());
+        logic.monsterActivation(4000000000L);
+        assertTrue(logic.getPink().isActive());
+        logic.monsterActivation(4000000000L);
+        assertTrue(logic.getBlue().isActive());
+        logic.monsterActivation(4000000000L);
+        assertTrue(logic.getOrange().isActive());
 
     }
+
 }
