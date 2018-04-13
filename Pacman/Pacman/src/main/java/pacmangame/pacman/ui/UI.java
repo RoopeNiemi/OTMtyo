@@ -30,40 +30,48 @@ public class UI extends Application {
 
     private final Image scaredImage = new Image(getClass().getResourceAsStream("/scared.png"));
     private final Image healthLeft = new Image(getClass().getResourceAsStream("/pacmanHealth.png"));
-    private GameTimer timer = new GameTimer();
-    private GameTimer monsterBehaviourTimer = new GameTimer();
+    private final Image reset = new Image(getClass().getResourceAsStream("/reset.png"));
     private int totalPoints = 0;
     private double width = 400;
     private double scoreBoardHeight = 40;
     private double height = 400;
     private boolean keyIsPressed = false;
     private MapLoader mapLoader = new MapLoader();
-    private GameLogic game = new GameLogic(mapLoader, timer, totalPoints, 2);
+    private GameLogic game = new GameLogic(mapLoader, totalPoints, 2);
     private Label pointLabel = new Label("POINTS: 0");
+    private Label highScoreLabel;
     private Graph currentMap;
     private long panicPhaseLength = 5000000000L;
-    private long playerImmortalityPhaseLength = 1000000000L;
     private long normalMonsterBehaviourLength = 20000000000L;
     private long scatterBehaviourLength = 7000000000L;
+    private long updateFrequency = 25000000L;
 
     private void startOver() {
-        game = new GameLogic(mapLoader, timer, 0, 2);
-        currentMap = game.getGraph();
+        this.totalPoints = game.getSituation().getPoints();
+        game.getSituation().saveNewHighScoreIfNeeded(totalPoints);
+        this.totalPoints = 0;
+        this.game = new GameLogic(mapLoader, 0, 2);
+        game.setMonsterStartingPositions();
+        this.currentMap = game.getGraph();
+        highScoreLabel = new Label("HIGH SCORE: " + game.getSituation().getCurrentHighScore());
     }
 
     private void nextLevel() {
         int playerLivesLeft = game.getPlayer().getRemainingLife();
-        this.totalPoints = game.getSituation().getPoints();         //TODO compare vs. current highscore
-        game = game = new GameLogic(mapLoader, timer, totalPoints, playerLivesLeft);
+        this.totalPoints = game.getSituation().getPoints();
+        game = game = new GameLogic(mapLoader, totalPoints, playerLivesLeft);
+        game.setMonsterStartingPositions();
         currentMap = game.getGraph();
     }
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        monsterBehaviourTimer.setThreshold(normalMonsterBehaviourLength);
-        monsterBehaviourTimer.activate();
+        game.getMonsterBehaviourTimer().setThreshold(normalMonsterBehaviourLength);
+        game.getMonsterBehaviourTimer().activate();
         this.pointLabel.setText("POINTS: 0");
         currentMap = game.getGraph();
+        game.setMonsterStartingPositions();
+        this.highScoreLabel = new Label("HIGH SCORE: " + game.getSituation().getCurrentHighScore());
         this.width = currentMap.getGraphMatrix()[0].length * 20;
         this.height = currentMap.getGraphMatrix().length * 20;
         Canvas c = new Canvas(width, height + scoreBoardHeight * 2);
@@ -108,35 +116,20 @@ public class UI extends Application {
 
             @Override
             public void handle(long now) {
-                if (now - prev < 25000000) {
+                if (now - prev < updateFrequency) {
                     return;
                 }
-                if (monsterBehaviourTimer.addTime(25000000)) {
-                    if (monsterBehaviourTimer.getThreshold() == normalMonsterBehaviourLength) {
-                        if (game.getSituation().getTimesScattered() < 4) {
-                            monsterBehaviourTimer.setThreshold(scatterBehaviourLength);
-                            game.getSituation().addScatterTime();
-                            System.out.println("SCATTER ACTIVATED");
-                            game.setAllMonstersBehaviourState(Behaviour.SCATTER);
-                            monsterBehaviourTimer.activate();
-                        }
+                if (game.monsterBehaviourThresholdReached(updateFrequency)) {
+                    if (game.getMonsterBehaviourTimer().getThreshold() == normalMonsterBehaviourLength) {
+                        game.scatterIfPossible(scatterBehaviourLength);
                     } else {
-                        monsterBehaviourTimer.setThreshold(normalMonsterBehaviourLength);
-                        System.out.println("SCATTER DEACTIVATED");
-                        game.setAllMonstersBehaviourState(Behaviour.NORMAL);
-                        monsterBehaviourTimer.activate();
+                        game.activateChaseMode(normalMonsterBehaviourLength);
                     }
                 }
-                if (timer.addTime(25000000)) {
-                    if (timer.getThreshold() == panicPhaseLength) {
-                        game.setAllMonstersBehaviourState(Behaviour.NORMAL);
-                        game.getPlayer().setMortality(true);
-                    } else if (timer.getThreshold() == playerImmortalityPhaseLength) {
-                        game.getPlayer().setMortality(true);
-                    }
-
+                if (game.timerThresholdReached(updateFrequency)) {
+                    game.endPanicPhase();
                 }
-                if (!game.getSituation().isGameOver() && !game.getPlayer().getLostHitPoint() && !game.getSituation().isComplete()) {
+                if (game.situationNormal()) {
                     prev = now;
                     game.movePlayer();
                     game.updateMonsters();
@@ -144,21 +137,23 @@ public class UI extends Application {
                     paintGame(c.getGraphicsContext2D(), game.getGraph(), game.getPlayer());
 
                 } else {
-                    if (game.getPlayer().getLostHitPoint()) {
-                        game.getPlayer().loseHitPoints(timer);
+                    if (game.getPlayer().gotHit()) {
+                        game.getPlayer().loseHitPoints();
+                        game.setMonsterStartingPositions();
                         paintGame(c.getGraphicsContext2D(), currentMap, game.getPlayer());
                         pointLabel.setText("POINTS: " + game.getSituation().getPoints());
                     } else if (game.getSituation().isComplete()) {
                         nextLevel();
                     } else {
                         if (game.getSituation().isGameOver()) {
+                            game.getTimer().deactivate();
+                            game.getMonsterBehaviourTimer().deactivate();
                             paintGame(c.getGraphicsContext2D(), currentMap, game.getPlayer());
                             drawGameOverText(c.getGraphicsContext2D());
                         }
                     }
                 }
             }
-
         }.start();
 
         primaryStage.setResizable(false);
@@ -173,6 +168,7 @@ public class UI extends Application {
         gc.setFill(Color.WHITE);
         gc.setFont(new Font(20));
         gc.fillText(this.pointLabel.getText(), 20, 30);
+        gc.fillText(highScoreLabel.getText(), 200, 30);
         drawRemainingHealth(gc, player);
         for (int i = 0; i < map.getGraphMatrix().length; i++) {
             for (int j = 0; j < map.getGraphMatrix()[0].length; j++) {
@@ -236,6 +232,9 @@ public class UI extends Application {
     public void drawSingleMonster(GraphicsContext gc, Monster monster) {
         if (monster.getCurrentBehaviour() == Behaviour.PANIC) {
             gc.drawImage(scaredImage, monster.getX(), monster.getY() + scoreBoardHeight);
+            return;
+        } else if (monster.getCurrentBehaviour() == Behaviour.RESET) {
+            gc.drawImage(reset, monster.getX(), monster.getY() + scoreBoardHeight);
             return;
         }
         gc.drawImage(monster.getCurrentImage(), monster.getX(), monster.getY() + scoreBoardHeight);

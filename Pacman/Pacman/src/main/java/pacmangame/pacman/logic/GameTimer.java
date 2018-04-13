@@ -37,8 +37,11 @@ public class GameTimer {
         this.timerThreshold = newThreshold;
     }
 
-    public void activate() {
+    public void reset() {
         this.time = 0;
+    }
+
+    public void activate() {
         this.active = true;
     }
 

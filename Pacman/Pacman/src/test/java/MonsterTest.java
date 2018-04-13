@@ -5,8 +5,6 @@
  */
 
 import java.util.ArrayDeque;
-import java.util.Stack;
-import javafx.scene.paint.Color;
 import org.junit.After;
 import org.junit.AfterClass;
 import static org.junit.Assert.*;
@@ -38,7 +36,7 @@ public class MonsterTest {
 
     @Before
     public void setUp() {
-        monster = new Monster(40, 40, 2.5, 2, false, "red");
+        monster = new Monster(new Tile(40, 40, 20, 1), 2, 2, "red");
         givenPath = new ArrayDeque<>();
         givenPath.addLast(new Tile(60, 40, 20, 1));
         givenPath.addLast(new Tile(40, 60, 20, 1));

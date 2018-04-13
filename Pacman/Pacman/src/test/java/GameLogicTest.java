@@ -24,7 +24,7 @@ public class GameLogicTest {
 
     GameLogic logic;
     double redX, redY, orangeX, orangeY, blueX, blueY, pinkX, pinkY, playerX, playerY;
-    GameTimer timer;
+    GameTimer timer, monsterBehaviourTimer;
 
     public GameLogicTest() {
     }
@@ -40,7 +40,9 @@ public class GameLogicTest {
     @Before
     public void setUp() {
         timer = new GameTimer();
-        logic = new GameLogic(new MapLoader(), timer, 0,3);
+        monsterBehaviourTimer = new GameTimer();
+
+        logic = new GameLogic(new MapLoader(), 0, 3);
         redX = logic.getRed().getX();
         redY = logic.getRed().getY();
 
@@ -91,7 +93,7 @@ public class GameLogicTest {
         logic.getRed().setX(logic.getPlayer().getX());
         logic.getRed().setY(logic.getPlayer().getY());
         logic.updateMonsters();
-        while (logic.getPlayer().getLostHitPoint()) {
+        while (logic.getPlayer().gotHit()) {
             logic.getPlayer().loseHitPoint(timer);
         }
         assertTrue(logic.getPlayer().getRemainingLife() == 2);

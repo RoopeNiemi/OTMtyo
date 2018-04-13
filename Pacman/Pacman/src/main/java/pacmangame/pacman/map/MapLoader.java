@@ -17,7 +17,7 @@ import java.util.Scanner;
 public class MapLoader {
 
     public List<String> loadMap() {
-        String path = "map2.txt";
+        String path = "map.txt";
         InputStream is = getClass().getClassLoader().getResourceAsStream(path);
         Scanner fileScanner = new Scanner(is);
         List<String> map = new ArrayList<>();

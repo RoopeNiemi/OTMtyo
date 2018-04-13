@@ -5,6 +5,11 @@
  */
 package pacmangame.pacman.logic;
 
+import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import pacmangame.pacman.dao.HighScoreDao;
+
 /**
  *
  * @author User
@@ -15,15 +20,41 @@ public class GameSituation {
     private boolean complete = false;
     private boolean gameOver = false;
     private int maxPoints = 0;
+    private int highScore = 0;
     private int timesScattered = 0;
+    private HighScoreDao highScoreDatabase = new HighScoreDao();
 
     public GameSituation(int maxPoints, int startingPoints) {
         this.maxPoints = maxPoints;
         this.points = startingPoints;
+        setCurrentHighScore();
     }
 
     public void addScatterTime() {
         this.timesScattered++;
+    }
+
+    private void setCurrentHighScore() {
+        try {
+            this.highScore = highScoreDatabase.getHighScore();
+        } catch (SQLException ex) {
+            Logger.getLogger(GameLogic.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    public int getCurrentHighScore() {
+        return this.highScore;
+    }
+
+    public void saveNewHighScoreIfNeeded(int score) {
+        if (score > this.highScore) {
+            try {
+                highScoreDatabase.updateHighScore(score);
+                System.out.println("update ended");
+            } catch (SQLException ex) {
+                Logger.getLogger(GameSituation.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
     }
 
     public int getTimesScattered() {
@@ -34,8 +65,8 @@ public class GameSituation {
         return this.maxPoints;
     }
 
-    public void gainPoint() {
-        this.points += 10;
+    public void gainPoint(int points) {
+        this.points += points;
     }
 
     public int getPoints() {

@@ -23,9 +23,8 @@ public class Player {
     private Direction queuedDirection = Direction.NOT_MOVING;
     private Direction previousDirection = Direction.NOT_MOVING;
     private double movementSpeed = 2;
-    private boolean lostHitPoint = false;
+    private boolean gotHit = false;
     private int hitPointsLeft = 3;
-    private boolean mortality = true;
     private String OS = System.getProperty("os.name").toLowerCase();
 
     public Player(double x, double y, int lifeTotal) {
@@ -44,25 +43,17 @@ public class Player {
         return this.y;
     }
 
-    public void setMortality(boolean mortality) {
-        this.mortality = mortality;
-    }
-
-    public boolean getMortality() {
-        return this.mortality;
-    }
-
     public int getRemainingLife() {
         return this.hitPointsLeft;
     }
 
-    public boolean getLostHitPoint() {
-        return this.lostHitPoint;
+    public boolean gotHit() {
+        return this.gotHit;
     }
 
     public void loseHitPoint(GameTimer timer) {
-        this.lostHitPoint = true;
-        loseHitPoints(timer);
+        this.gotHit = true;
+        loseHitPoints();
     }
 
     public double getMouthAngle() {
@@ -80,7 +71,7 @@ public class Player {
         }
     }
 
-    public void loseHitPoints(GameTimer timer) {
+    public void loseHitPoints() {
         if (OS.indexOf("win") >= 0) {
             this.mouthAngle += 2;
         } else {
@@ -95,10 +86,7 @@ public class Player {
                 this.queuedDirection = Direction.NOT_MOVING;
             }
             this.hitPointsLeft--;
-            this.lostHitPoint = false;
-            this.mortality = false;
-            timer.setThreshold(1000000000L);
-            timer.activate();
+            this.gotHit = false;
         }
     }
 

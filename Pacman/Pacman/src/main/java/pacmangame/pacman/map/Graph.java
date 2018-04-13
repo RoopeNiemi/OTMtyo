@@ -185,6 +185,22 @@ public class Graph {
         generatePointsAndFruits();
     }
 
+    public Tile getRedStartingTile() {
+        return this.graphMatrix[7][9];
+    }
+
+    public Tile getPinkStartingTile() {
+        return this.graphMatrix[9][8];
+    }
+
+    public Tile getBlueStartingTile() {
+        return this.graphMatrix[9][9];
+    }
+
+    public Tile getOrangeStartingTile() {
+        return this.graphMatrix[9][10];
+    }
+
     public Tile[][] getGraphMatrix() {
         return this.graphMatrix;
     }

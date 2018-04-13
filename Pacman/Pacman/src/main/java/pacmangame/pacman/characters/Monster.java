@@ -17,6 +17,7 @@ public class Monster {
 
     private double x, y, width, movementSpeed;
     private int pathSize;
+    private Tile startingTile;
 
     private Behaviour currentBehaviour = Behaviour.NORMAL;
     private Tile nextTile = null;
@@ -30,13 +31,13 @@ public class Monster {
     private final Image right;
     private Image currentImage;
 
-    public Monster(double x, double y, double movementSpeed, double behaviourThreshold, boolean startBehaviour, String imagepath) {
-        this.x = x;
-        this.y = y;
+    public Monster(Tile startingTile, double movementSpeed, double pathSize, String imagepath) {
+        this.x = startingTile.getX();
+        this.y = startingTile.getY();
         this.width = 20;
-
+        this.startingTile = startingTile;
         this.movementSpeed = movementSpeed;
-        this.pathSize = (int) behaviourThreshold;
+        this.pathSize = (int) pathSize;
         this.imagePath = imagepath;
 
         up = new Image(getClass().getResourceAsStream("/" + this.imagePath + "Up.png"));
@@ -47,15 +48,25 @@ public class Monster {
     }
 
     public void setCurrentBehaviour(Behaviour newBehaviour) {
-        this.currentBehaviour = newBehaviour;
+        if (this.currentBehaviour != Behaviour.RESET) {
+            this.currentBehaviour = newBehaviour;
+        }
     }
 
     public Behaviour getCurrentBehaviour() {
         return this.currentBehaviour;
     }
 
+    public void setMovementSpeed(double i) {
+        this.movementSpeed = i;
+    }
+
     public void setNextPath(ArrayDeque<Tile> path) {
         this.nextPath = path;
+    }
+
+    public Tile getStartingTile() {
+        return this.startingTile;
     }
 
     public int getPathSize() {
@@ -63,6 +74,16 @@ public class Monster {
     }
 
     public void checkPosition() {
+        if (this.currentBehaviour == Behaviour.RESET && this.x == this.startingTile.getX() && this.y == this.startingTile.getY()) {
+            this.currentBehaviour = Behaviour.NORMAL;
+            this.movementSpeed = 2;
+        }
+        if (this.movementSpeed == 4 && Math.abs(this.x - nextTile.getX()) <= 2 && Math.abs(this.y - nextTile.getY()) <= 2) {
+            this.x = nextTile.getX();
+            this.y = nextTile.getY();
+            this.nextTile = null;
+            return;
+        }
         if (this.x == nextTile.getX() && this.y == nextTile.getY()) {
             this.nextTile = null;
         }

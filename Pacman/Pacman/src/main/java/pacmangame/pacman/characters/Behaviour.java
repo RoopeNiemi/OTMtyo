@@ -10,5 +10,5 @@ package pacmangame.pacman.characters;
  * @author nroope
  */
 public enum Behaviour {
-    NORMAL, PANIC, SCATTER;
+    NORMAL, PANIC, SCATTER, RESET;
 }
