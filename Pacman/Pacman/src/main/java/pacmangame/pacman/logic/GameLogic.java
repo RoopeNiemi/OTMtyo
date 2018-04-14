@@ -73,6 +73,19 @@ public class GameLogic {
         monster.setNextTile(null);
     }
 
+    public void handleBehaviourUpdate(long updateFrequency, long normalMonsterBehaviourLength, long scatterBehaviourLength) {
+        if (monsterBehaviourThresholdReached(updateFrequency)) {
+            if (getMonsterBehaviourTimer().getThreshold() == normalMonsterBehaviourLength) {
+                scatterIfPossible(scatterBehaviourLength);
+            } else {
+                activateChaseMode(normalMonsterBehaviourLength);
+            }
+        }
+        if (timerThresholdReached(updateFrequency)) {
+            endPanicPhase();
+        }
+    }
+
     public GameSituation getSituation() {
         return this.situation;
     }
@@ -210,17 +223,17 @@ public class GameLogic {
     }
 
     public void updateMonsters() {
-        updateMonster(this.red, getTile(player.getX(), player.getY()), getTopRightTile());
-        updateMonster(this.orange, orangeMovement(), getBottomRightTile());
-        updateMonster(this.blue, blueMovement(), getTopLeftTile());
-        updateMonster(this.pink, tileInFrontOfPlayer(), getBottomLeftTile());
+        updateMonster(this.red, getTile(player.getX(), player.getY()), this.currentMap.getTopRightTile());
+        updateMonster(this.orange, orangeMovement(), this.currentMap.getBottomRightTile());
+        updateMonster(this.blue, blueMovement(), this.currentMap.getTopLeftTile());
+        updateMonster(this.pink, tileInFrontOfPlayer(), this.currentMap.getBottomLeftTile());
     }
 
     private Tile orangeMovement() {
         if (distanceFromPlayer() > 4) {
             return getTile(player.getX(), player.getY());
         } else {
-            return getBottomRightTile();
+            return this.currentMap.getBottomRightTile();
         }
     }
 
@@ -351,22 +364,6 @@ public class GameLogic {
         }
         int yK = (int) Math.floor(y / 20);
         return this.currentMap.getGraphMatrix()[yK][xK];
-    }
-
-    public Tile getBottomRightTile() {
-        return this.currentMap.getGraphMatrix()[19][17];
-    }
-
-    public Tile getTopRightTile() {
-        return this.currentMap.getGraphMatrix()[1][17];
-    }
-
-    public Tile getBottomLeftTile() {
-        return this.currentMap.getGraphMatrix()[19][1];
-    }
-
-    public Tile getTopLeftTile() {
-        return this.currentMap.getGraphMatrix()[1][1];
     }
 
     public Player getPlayer() {

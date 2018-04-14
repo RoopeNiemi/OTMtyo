@@ -204,4 +204,20 @@ public class Graph {
     public Tile[][] getGraphMatrix() {
         return this.graphMatrix;
     }
+
+    public Tile getBottomRightTile() {
+        return this.graphMatrix[19][17];
+    }
+
+    public Tile getTopRightTile() {
+        return this.graphMatrix[1][17];
+    }
+
+    public Tile getBottomLeftTile() {
+        return this.graphMatrix[19][1];
+    }
+
+    public Tile getTopLeftTile() {
+        return this.graphMatrix[1][1];
+    }
 }
