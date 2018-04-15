@@ -13,4 +13,5 @@
 | 9.4 | 2 | Sovelluslogiikan luokkakaavio, sekvenssikaavioita pelaajan liikkeestä ja tilanteen päivityksestä, ohjelman rakenteen korjausta. Ensimmäinen release |
 | 13.4 | 6 | High score tietokannan teko, hirviön syömisen toteuttaminen. Lisäksi hirviöt aktivoituvat nyt asteittain. Tehty testejä  |
 | 14.4 | 1 | Refaktorointia, uusi luokkakaavio |
-| yht   | 44  | | 
+| 15.4 | 0.5 | Refaktorointia, uusi sekvenssikaavio pelaajan liikkumisesta|
+| yht   | 44.5  | | 
