@@ -65,7 +65,7 @@ public class PacmanUi extends Application {
     }
 
     @Override
-    public void start(Stage primaryStage) throws Exception {
+    public void init() {
         game.getMonsterBehaviourTimer().setThreshold(normalMonsterBehaviourLength);
         game.getMonsterBehaviourTimer().activate();
         this.pointLabel.setText("POINTS: 0");
@@ -74,42 +74,17 @@ public class PacmanUi extends Application {
         this.highScoreLabel = new Label("HIGH SCORE: " + game.getSituation().getCurrentHighScore());
         this.width = currentMap.getGraphMatrix()[0].length * 20;
         this.height = currentMap.getGraphMatrix().length * 20;
+    }
+
+    @Override
+    public void start(Stage primaryStage) throws Exception {
         Canvas c = new Canvas(width, height + scoreBoardHeight * 2);
         BorderPane window = new BorderPane();
         window.setCenter(c);
-
         Scene scene = new Scene(window);
-        scene.setOnMouseClicked(event -> {
-            if (game.getSituation().isGameOver()) {
-                startOver();
-            }
-        });
-        scene.setOnKeyPressed(event -> {
-            if (this.keyIsPressed) {
-                return;
-            }
-            this.keyIsPressed = true;
-            if (null != event.getCode()) {
 
-                switch (event.getCode()) {
-                    case RIGHT:
-                        game.getPlayer().setQueuedDirection(Direction.RIGHT);
-                        break;
-                    case LEFT:
-                        game.getPlayer().setQueuedDirection(Direction.LEFT);
-                        break;
-                    case UP:
-                        game.getPlayer().setQueuedDirection(Direction.UP);
-                        break;
-                    case DOWN:
-                        game.getPlayer().setQueuedDirection(Direction.DOWN);
-                        break;
-                }
-            }
-        });
-        scene.setOnKeyReleased(event -> {
-            this.keyIsPressed = false;
-        });
+        setMouseClicked(scene);
+        setKeyPressed(scene);
 
         new AnimationTimer() {
             long prev = 0;
@@ -154,6 +129,37 @@ public class PacmanUi extends Application {
         primaryStage.setScene(scene);
         primaryStage.setTitle("Pacman");
         primaryStage.show();
+    }
+
+    private void setKeyPressed(Scene scene) {
+        scene.setOnKeyPressed(event -> {
+            this.keyIsPressed = true;
+            if (null != event.getCode()) {
+
+                switch (event.getCode()) {
+                    case RIGHT:
+                        game.getPlayer().setQueuedDirection(Direction.RIGHT);
+                        break;
+                    case LEFT:
+                        game.getPlayer().setQueuedDirection(Direction.LEFT);
+                        break;
+                    case UP:
+                        game.getPlayer().setQueuedDirection(Direction.UP);
+                        break;
+                    case DOWN:
+                        game.getPlayer().setQueuedDirection(Direction.DOWN);
+                        break;
+                }
+            }
+        });
+    }
+
+    private void setMouseClicked(Scene scene) {
+        scene.setOnMouseClicked(event -> {
+            if (game.getSituation().isGameOver()) {
+                startOver();
+            }
+        });
     }
 
     private void paintGame(GraphicsContext gc, Graph map, Player player) {
