@@ -1,6 +1,6 @@
-# Ohjelmistotekniikan menetelmät kevään 2018 kurssin repositorio
+# Pacman
 
-Kurssia varten tehtävän projektin aiheena Pacman-peli
+Helsingin yliopiston Ohjelmistotekniikan menetelmät -kurssia varten tehty sovellus.
 
 ### Dokumentaatio
 [Vaatimusmäärittely](https://github.com/RoopeNiemi/OTMtyo/tree/master/dokumentaatio/Vaatimusmäärittely.md)
