@@ -2,4 +2,5 @@
 /laskarit/viikko2/Unicafe/nbproject/
 /Pacman/Pacman/target/
 /Pacman/Pacman/nbproject/
-/Pacman/Pacman/db/
+/Pacman/Pacman/highscore.db
+/Pacman/Pacman/test.db

@@ -23,7 +23,7 @@ public class GameSituation {
     private int maxPoints = 0;
     private int highScore = 0;
     private int timesScattered = 0;
-    private HighScoreDao highScoreDatabase = new HighScoreDao();
+    private HighScoreDao highScoreDatabase = new HighScoreDao("highscore.db");
 
     public GameSituation(int maxPoints, int startingPoints) {
         this.maxPoints = maxPoints;
@@ -58,7 +58,7 @@ public class GameSituation {
     public void saveNewHighScoreIfNeeded(int score) {
         if (score > this.highScore) {
             try {
-                highScoreDatabase.updateHighScore(score);
+                highScoreDatabase.updateOrSetHighScore(score);
                 System.out.println("update ended");
             } catch (SQLException ex) {
                 Logger.getLogger(GameSituation.class.getName()).log(Level.SEVERE, null, ex);

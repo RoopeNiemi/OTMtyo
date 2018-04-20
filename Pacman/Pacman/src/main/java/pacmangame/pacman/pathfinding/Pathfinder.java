@@ -41,21 +41,21 @@ public class Pathfinder {
             int x = (int) Math.floor(tile.getX() / 20);
             int y = (int) Math.floor(tile.getY() / 20);
 
-            //Fixed position, transition to  [9][18]
+            //Fixed position, transition from [9][0] to  [9][18]
             if (x == 0 && y == 9) {
                 if (!this.visited.contains(map[9][18])) {
                     checkPathAvailability(map[9][18], tile);
                     tileQueue.addLast(map[9][18]);
                 }
             }
-            //Fixed position, transition to [9][0]
+            //Fixed position, transition from [9][18] to [9][0]
             if (x == 18 && y == 9) {
                 if (!this.visited.contains(map[9][0])) {
                     checkPathAvailability(map[9][0], tile);
                     tileQueue.addLast(map[9][0]);
                 }
             }
-            //Left side tile is unvisited and has value 1
+            //Tile to the left of current tile
             if (x > 0) {
                 if (checkIfDestination(tile, map[y][x - 1], dest)) {
                     break;
@@ -65,7 +65,7 @@ public class Pathfinder {
                     tileQueue.addLast(map[y][x - 1]);
                 }
             }
-            //Right side tile is unvisited and has value 1
+            //Tile to the right of current tile
             if (x < map[0].length - 1) {
                 if (checkIfDestination(tile, map[y][x + 1], dest)) {
                     break;
@@ -75,7 +75,7 @@ public class Pathfinder {
                     tileQueue.addLast(map[y][x + 1]);
                 }
             }
-            //Up side tile is unvisited and has value 1
+            //Tile above current tile
             if (y > 0) {
                 if (checkIfDestination(tile, map[y - 1][x], dest)) {
                     break;
@@ -85,7 +85,7 @@ public class Pathfinder {
                     tileQueue.addLast(map[y - 1][x]);
                 }
             }
-            // Down side tile is unvisited and has value 1
+            //Tile below current tile
             if (y < map.length - 1) {
                 if (checkIfDestination(tile, map[y + 1][x], dest)) {
                     break;
