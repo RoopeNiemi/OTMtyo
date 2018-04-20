@@ -35,10 +35,9 @@ public class PacmanUi extends Application {
     private double width = 400;
     private double scoreBoardHeight = 40;
     private double height = 400;
-    private boolean keyIsPressed = false;
     private MapLoader mapLoader = new MapLoader();
     private GameLogic game = new GameLogic(mapLoader, totalPoints, 2);
-    private Label pointLabel = new Label("POINTS: 0");
+    private Label pointLabel = new Label("0");
     private Label highScoreLabel;
     private Graph currentMap;
     private long panicPhaseLength = 5000000000L;
@@ -68,7 +67,7 @@ public class PacmanUi extends Application {
     public void init() {
         game.getMonsterBehaviourTimer().setThreshold(normalMonsterBehaviourLength);
         game.getMonsterBehaviourTimer().activate();
-        this.pointLabel.setText("POINTS: 0");
+        this.pointLabel.setText("0");
         currentMap = game.getGraph();
         game.getRed().activate();
         this.highScoreLabel = new Label("HIGH SCORE: " + game.getSituation().getCurrentHighScore());
@@ -101,7 +100,7 @@ public class PacmanUi extends Application {
                     prev = now;
                     game.movePlayer();
                     game.updateMonsters();
-                    pointLabel.setText("POINTS: " + game.getSituation().getPoints());
+                    pointLabel.setText("" + game.getSituation().getPoints());
                     paintGame(c.getGraphicsContext2D(), game.getGraph(), game.getPlayer());
                 } else {
                     if (game.getPlayer().gotHit()) {
@@ -110,7 +109,7 @@ public class PacmanUi extends Application {
                             game.resetMonsterStartingPositions();
                         }
                         paintGame(c.getGraphicsContext2D(), currentMap, game.getPlayer());
-                        pointLabel.setText("POINTS: " + game.getSituation().getPoints());
+                        pointLabel.setText("" + game.getSituation().getPoints());
                     } else if (game.getSituation().isComplete()) {
                         nextLevel();
                     } else {
@@ -133,7 +132,6 @@ public class PacmanUi extends Application {
 
     private void setKeyPressed(Scene scene) {
         scene.setOnKeyPressed(event -> {
-            this.keyIsPressed = true;
             if (null != event.getCode()) {
 
                 switch (event.getCode()) {
@@ -167,8 +165,8 @@ public class PacmanUi extends Application {
         gc.fillRect(0, 0, width, height + scoreBoardHeight * 2);
         gc.setFill(Color.WHITE);
         gc.setFont(new Font(20));
-        gc.fillText(this.pointLabel.getText(), 20, 30);
-        gc.fillText(highScoreLabel.getText(), 200, 30);
+        gc.fillText(this.pointLabel.getText(), 10, 30);
+        gc.fillText(highScoreLabel.getText(), 120, 30);
         drawRemainingHealth(gc, player);
         for (int i = 0; i < map.getGraphMatrix().length; i++) {
             for (int j = 0; j < map.getGraphMatrix()[0].length; j++) {
