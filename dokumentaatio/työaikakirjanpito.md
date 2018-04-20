@@ -14,4 +14,5 @@
 | 13.4 | 6 | High score tietokannan teko, hirviön syömisen toteuttaminen. Lisäksi hirviöt aktivoituvat nyt asteittain. Tehty testejä  |
 | 14.4 | 1 | Refaktorointia, uusi luokkakaavio |
 | 15.4 | 0.5 | Refaktorointia, uusi sekvenssikaavio pelaajan liikkumisesta|
-| yht   | 44.5  | | 
+| 20.4 | 1 | Tietokantaa varten testejä, tietokannan alustus ensimmäisen käynnistyksen yhteydessä|
+| yht   | 45.5  | | 
