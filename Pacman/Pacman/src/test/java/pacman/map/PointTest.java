@@ -1,4 +1,4 @@
-package pacman.logic;
+package pacman.map;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -11,8 +11,8 @@ import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import pacmangame.pacman.logic.Point;
-import pacmangame.pacman.logic.Type;
+import pacmangame.pacman.map.Point;
+import pacmangame.pacman.map.Type;
 
 /**
  *

@@ -5,8 +5,6 @@
  */
 package pacmangame.pacman.map;
 
-import pacmangame.pacman.logic.Point;
-import pacmangame.pacman.logic.Type;
 import java.util.ArrayList;
 import java.util.List;
 import pacmangame.pacman.characters.Direction;

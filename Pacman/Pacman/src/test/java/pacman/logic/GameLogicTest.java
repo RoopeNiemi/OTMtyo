@@ -14,7 +14,6 @@ import org.junit.Test;
 import pacmangame.pacman.characters.Behaviour;
 import pacmangame.pacman.characters.Direction;
 import pacmangame.pacman.logic.GameLogic;
-import pacmangame.pacman.logic.GameTimer;
 import pacmangame.pacman.map.MapLoader;
 import pacmangame.pacman.map.Tile;
 

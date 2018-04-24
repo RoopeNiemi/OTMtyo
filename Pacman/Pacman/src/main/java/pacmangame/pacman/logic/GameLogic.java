@@ -5,13 +5,11 @@
  */
 package pacmangame.pacman.logic;
 
-import java.sql.SQLException;
+import pacmangame.pacman.map.Point;
+import pacmangame.pacman.map.Type;
 import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import pacmangame.pacman.characters.*;
-import pacmangame.pacman.dao.HighScoreDao;
 import pacmangame.pacman.map.*;
 import pacmangame.pacman.pathfinding.Pathfinder;
 

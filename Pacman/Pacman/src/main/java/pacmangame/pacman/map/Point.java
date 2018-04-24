@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package pacmangame.pacman.logic;
+package pacmangame.pacman.map;
 
 import java.util.Objects;
 import javafx.scene.paint.Color;
