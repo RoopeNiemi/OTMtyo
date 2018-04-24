@@ -15,4 +15,5 @@
 | 14.4 | 1 | Refaktorointia, uusi luokkakaavio |
 | 15.4 | 0.5 | Refaktorointia, uusi sekvenssikaavio pelaajan liikkumisesta|
 | 20.4 | 1 | Tietokantaa varten testejä, tietokannan alustus ensimmäisen käynnistyksen yhteydessä|
-| yht   | 45.5  | | 
+| 24.4 | 0.5 | Muutettu pakkausrakennetta, pari testiä GameSituation luokalle |
+| yht   | 46  | | 
