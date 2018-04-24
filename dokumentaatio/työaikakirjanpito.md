@@ -15,5 +15,5 @@
 | 14.4 | 1 | Refaktorointia, uusi luokkakaavio |
 | 15.4 | 0.5 | Refaktorointia, uusi sekvenssikaavio pelaajan liikkumisesta|
 | 20.4 | 1 | Tietokantaa varten testejä, tietokannan alustus ensimmäisen käynnistyksen yhteydessä|
-| 24.4 | 0.5 | Muutettu pakkausrakennetta, pari testiä GameSituation luokalle |
-| yht   | 46  | | 
+| 24.4 | 1 | Muutettu pakkausrakennetta, pari testiä GameSituation luokalle. Siirretty ajastimin liittyvät arvot gamelogic luokkaan, pilkottu gamelogic luokan konstruktori pienempiin osiin |
+| yht   | 46.5  | | 
