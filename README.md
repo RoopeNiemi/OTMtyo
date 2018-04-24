@@ -2,6 +2,8 @@
 
 Helsingin yliopiston Ohjelmistotekniikan menetelmät -kurssia varten tehty sovellus.
 
+![alt text](https://github.com/RoopeNiemi/OTMtyo/blob/master/dokumentaatio/gif/pacmanGIF.gif)
+
 ### Dokumentaatio
 [Vaatimusmäärittely](https://github.com/RoopeNiemi/OTMtyo/tree/master/dokumentaatio/Vaatimusmäärittely.md)
 
