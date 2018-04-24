@@ -42,9 +42,6 @@ public class PacmanUi extends Application {
     private Label pointLabel = new Label("0");
     private Label highScoreLabel;
     private Graph currentMap;
-    private long panicPhaseLength = 5000000000L;
-    private long normalMonsterBehaviourLength = 20000000000L;
-    private long scatterBehaviourLength = 7000000000L;
     private long updateFrequency = 25000000L;
 
     private void startOver() {
@@ -67,8 +64,6 @@ public class PacmanUi extends Application {
 
     @Override
     public void init() {
-        game.getMonsterBehaviourTimer().setThreshold(normalMonsterBehaviourLength);
-        game.getMonsterBehaviourTimer().activate();
         this.pointLabel.setText("0");
         currentMap = game.getGraph();
         game.getRed().activate();
@@ -96,7 +91,7 @@ public class PacmanUi extends Application {
                     return;
                 }
                 game.monsterActivation(updateFrequency);
-                game.handleBehaviourUpdate(updateFrequency, normalMonsterBehaviourLength, scatterBehaviourLength);
+                game.handleBehaviourUpdate(updateFrequency);
 
                 if (game.situationNormal()) {
                     prev = now;

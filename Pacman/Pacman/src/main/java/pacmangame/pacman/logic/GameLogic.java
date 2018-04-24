@@ -28,23 +28,35 @@ public class GameLogic {
     private Monster orange;
     private Pathfinder pathfinder = new Pathfinder();
     private boolean gameOver = false;
-    private MapLoader mapLoader;
     private Graph currentMap;
     private GameTimer timer;
     private GameSituation situation;
     private GameTimer monsterBehaviourTimer;
-    private GameTimer monsterActivator = new GameTimer();
+    private GameTimer monsterActivator;
     private int highscore = 0;
+    private long panicPhaseLength = 5000000000L;
+    private long normalMonsterBehaviourLength = 20000000000L;
+    private long scatterBehaviourLength = 7000000000L;
 
     public GameLogic(MapLoader mapLoader, int startingPoints, int playerLives) {
         this.player = new Player(180, 300, playerLives);
         this.currentMap = new Graph(mapLoader.loadMap());
-        this.mapLoader = mapLoader;
         this.situation = new GameSituation(currentMap.getPointsList().size() * 10, startingPoints, "highscore.db");
+        initMonsters();
+        initTimers();
+    }
+
+    private void initTimers() {
         this.timer = new GameTimer();
-        this.monsterBehaviourTimer = new GameTimer();
+        this.monsterActivator = new GameTimer();
         this.monsterActivator.setThreshold(4000000000L);
         this.monsterActivator.activate();
+        this.monsterBehaviourTimer = new GameTimer();
+        this.monsterBehaviourTimer.setThreshold(normalMonsterBehaviourLength);
+        this.monsterBehaviourTimer.activate();
+    }
+
+    private void initMonsters() {
         this.red = new Monster(currentMap.getRedStartingTile(), 2, 5, "red");
         this.pink = new Monster(currentMap.getPinkStartingTile(), 2, 10, "pink");
         this.blue = new Monster(currentMap.getBlueStartingTile(), 2, 5, "blue");
@@ -73,7 +85,7 @@ public class GameLogic {
         monster.setNextTile(null);
     }
 
-    public void handleBehaviourUpdate(long updateFrequency, long normalMonsterBehaviourLength, long scatterBehaviourLength) {
+    public void handleBehaviourUpdate(long updateFrequency) {
         if (monsterBehaviourThresholdReached(updateFrequency)) {
             if (getMonsterBehaviourTimer().getThreshold() == normalMonsterBehaviourLength) {
                 scatterIfPossible(scatterBehaviourLength);
@@ -194,7 +206,7 @@ public class GameLogic {
                         //Monsters panic, slow down
                         setAllMonstersBehaviourState(Behaviour.PANIC);
                         monsterBehaviourTimer.deactivate();
-                        this.timer.setThreshold(5000000000L);
+                        this.timer.setThreshold(panicPhaseLength);
                         this.timer.activate();
                     }
                 }
@@ -357,7 +369,7 @@ public class GameLogic {
         }
     }
 
-    public Tile getTile(double x, double y) {
+    private Tile getTile(double x, double y) {
         int xK = (int) Math.floor(x / 20);
         if (xK < 0) {
             xK = 0;
