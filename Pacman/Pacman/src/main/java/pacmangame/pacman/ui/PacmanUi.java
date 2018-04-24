@@ -5,6 +5,8 @@
  */
 package pacmangame.pacman.ui;
 
+import pacmangame.pacman.logic.Point;
+import pacmangame.pacman.logic.Type;
 import java.util.ArrayList;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;

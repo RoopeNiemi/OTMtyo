@@ -23,9 +23,10 @@ public class GameSituation {
     private int maxPoints = 0;
     private int highScore = 0;
     private int timesScattered = 0;
-    private HighScoreDao highScoreDatabase = new HighScoreDao("highscore.db");
+    private HighScoreDao highScoreDatabase;
 
-    public GameSituation(int maxPoints, int startingPoints) {
+    public GameSituation(int maxPoints, int startingPoints, String database) {
+        this.highScoreDatabase = new HighScoreDao(database);
         this.maxPoints = maxPoints;
         this.points = startingPoints;
         setCurrentHighScore();

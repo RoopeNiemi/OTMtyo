@@ -40,7 +40,7 @@ public class GameLogic {
         this.player = new Player(180, 300, playerLives);
         this.currentMap = new Graph(mapLoader.loadMap());
         this.mapLoader = mapLoader;
-        this.situation = new GameSituation(currentMap.getPointsList().size() * 10, startingPoints);
+        this.situation = new GameSituation(currentMap.getPointsList().size() * 10, startingPoints, "highscore.db");
         this.timer = new GameTimer();
         this.monsterBehaviourTimer = new GameTimer();
         this.monsterActivator.setThreshold(4000000000L);
