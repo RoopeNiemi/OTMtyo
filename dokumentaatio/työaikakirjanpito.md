@@ -16,4 +16,5 @@
 | 15.4 | 0.5 | Refaktorointia, uusi sekvenssikaavio pelaajan liikkumisesta|
 | 20.4 | 1 | Tietokantaa varten testejä, tietokannan alustus ensimmäisen käynnistyksen yhteydessä|
 | 24.4 | 1.5 | Muutettu pakkausrakennetta, pari testiä GameSituation luokalle. Siirretty ajastimin liittyvät arvot gamelogic luokkaan, pilkottu gamelogic luokan konstruktori pienempiin osiin. Uusi luokkakaavio |
-| yht   | 47  | | 
+| 26.4 | 1 | refaktorointia. Parempi "power_pellet" pisteiden sijainti. Game over tekstin muokkaus, kysyy nyt pelaajalta jatketaanko peliä vai lopetetaanko. Lisäksi jos peli on ohi ja suljetaan ikkuna high score tallentuu silti muistiin  |
+| yht   | 48  | | 
