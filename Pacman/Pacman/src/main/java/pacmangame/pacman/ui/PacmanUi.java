@@ -15,6 +15,7 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
+import javafx.scene.input.KeyCode;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.ArcType;
@@ -45,18 +46,16 @@ public class PacmanUi extends Application {
     private long updateFrequency = 25000000L;
 
     private void startOver() {
-        this.totalPoints = game.getSituation().getPoints();
-        game.getSituation().saveNewHighScoreIfNeeded(totalPoints);
         this.totalPoints = 0;
         this.game = new GameLogic(mapLoader, 0, 2);
         this.currentMap = game.getGraph();
         game.getRed().activate();
-        highScoreLabel = new Label("HIGH SCORE: " + game.getSituation().getCurrentHighScore());
+        highScoreLabel = new Label("HIGH SCORE: " + game.getGameState().getCurrentHighScore());
     }
 
     private void nextLevel() {
         int playerLivesLeft = game.getPlayer().getRemainingLife();
-        this.totalPoints = game.getSituation().getPoints();
+        this.totalPoints = game.getGameState().getPoints();
         game = game = new GameLogic(mapLoader, totalPoints, playerLivesLeft);
         currentMap = game.getGraph();
         game.getRed().activate();
@@ -67,7 +66,7 @@ public class PacmanUi extends Application {
         this.pointLabel.setText("0");
         currentMap = game.getGraph();
         game.getRed().activate();
-        this.highScoreLabel = new Label("HIGH SCORE: " + game.getSituation().getCurrentHighScore());
+        this.highScoreLabel = new Label("HIGH SCORE: " + game.getGameState().getCurrentHighScore());
         this.width = currentMap.getGraphMatrix()[0].length * 20;
         this.height = currentMap.getGraphMatrix().length * 20;
     }
@@ -80,7 +79,7 @@ public class PacmanUi extends Application {
         Scene scene = new Scene(window);
 
         setMouseClicked(scene);
-        setKeyPressed(scene);
+        setKeyPressed(primaryStage, scene);
 
         new AnimationTimer() {
             long prev = 0;
@@ -97,7 +96,7 @@ public class PacmanUi extends Application {
                     prev = now;
                     game.movePlayer();
                     game.updateMonsters();
-                    pointLabel.setText("" + game.getSituation().getPoints());
+                    pointLabel.setText("" + game.getGameState().getPoints());
                     paintGame(c.getGraphicsContext2D(), game.getGraph(), game.getPlayer());
                 } else {
                     if (game.getPlayer().gotHit()) {
@@ -106,11 +105,11 @@ public class PacmanUi extends Application {
                             game.resetMonsterStartingPositions();
                         }
                         paintGame(c.getGraphicsContext2D(), currentMap, game.getPlayer());
-                        pointLabel.setText("" + game.getSituation().getPoints());
-                    } else if (game.getSituation().isComplete()) {
+                        pointLabel.setText("" + game.getGameState().getPoints());
+                    } else if (game.getGameState().isComplete()) {
                         nextLevel();
                     } else {
-                        if (game.getSituation().isGameOver()) {
+                        if (game.getGameState().isGameOver()) {
                             game.getTimer().deactivate();
                             game.getMonsterBehaviourTimer().deactivate();
                             paintGame(c.getGraphicsContext2D(), currentMap, game.getPlayer());
@@ -121,16 +120,26 @@ public class PacmanUi extends Application {
             }
         }.start();
 
+        primaryStage.setOnCloseRequest(event -> {
+            if (game.getGameState().isGameOver()) {
+                game.getGameState().saveNewHighScoreIfNeeded(game.getGameState().getPoints());
+            }
+        });
         primaryStage.setResizable(false);
         primaryStage.setScene(scene);
         primaryStage.setTitle("Pacman");
         primaryStage.show();
     }
 
-    private void setKeyPressed(Scene scene) {
+    private void setKeyPressed(Stage stage, Scene scene) {
         scene.setOnKeyPressed(event -> {
-            if (game.getSituation().isGameOver()) {
-                startOver();
+            if (game.getGameState().isGameOver()) {
+                game.getGameState().saveNewHighScoreIfNeeded(game.getGameState().getPoints());
+                if (event.getCode() == KeyCode.Y) {
+                    startOver();
+                } else if (event.getCode() == KeyCode.N) {
+                    stage.close();
+                }
             }
             if (null != event.getCode()) {
 
@@ -154,7 +163,7 @@ public class PacmanUi extends Application {
 
     private void setMouseClicked(Scene scene) {
         scene.setOnMouseClicked(event -> {
-            if (game.getSituation().isGameOver()) {
+            if (game.getGameState().isGameOver()) {
                 startOver();
             }
         });
@@ -242,6 +251,8 @@ public class PacmanUi extends Application {
         gc.setFont(Font.font("Courier New", (50)));
         gc.setFill(Color.YELLOW);
         gc.fillText("GAME OVER", width / 6, height / 2 + scoreBoardHeight);
+        gc.setFont(Font.font("Courier New", (20)));
+        gc.fillText("Continue? (Y/N)", width / 3, height / 2 + scoreBoardHeight + 25);
     }
 
     private void drawPoints(GraphicsContext gc) {

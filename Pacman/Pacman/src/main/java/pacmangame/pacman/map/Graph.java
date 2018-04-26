@@ -74,11 +74,11 @@ public class Graph {
         int temp = 0;
         int oneFourth = points.size() / 4;
         points.get(temp).setType(Type.POWER_PELLET);
-        temp += oneFourth;
+        temp += 78;
         points.get(temp).setType(Type.POWER_PELLET);
-        temp += oneFourth;
+        temp += 2 * oneFourth;
         points.get(temp).setType(Type.POWER_PELLET);
-        temp += oneFourth;
+        temp += 15;
         points.get(temp).setType(Type.POWER_PELLET);
 
 

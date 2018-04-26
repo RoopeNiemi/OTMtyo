@@ -28,7 +28,7 @@ public class GameLogic {
     private boolean gameOver = false;
     private Graph currentMap;
     private GameTimer timer;
-    private GameState situation;
+    private GameState gameState;
     private GameTimer monsterBehaviourTimer;
     private GameTimer monsterActivator;
     private int highscore = 0;
@@ -39,7 +39,7 @@ public class GameLogic {
     public GameLogic(MapLoader mapLoader, int startingPoints, int playerLives) {
         this.player = new Player(180, 300, playerLives);
         this.currentMap = new Graph(mapLoader.loadMap());
-        this.situation = new GameState(currentMap.getPointsList().size() * 10, startingPoints, "highscore.db");
+        this.gameState = new GameState(currentMap.getPointsList().size() * 10, startingPoints, "highscore.db");
         initMonsters();
         initTimers();
     }
@@ -62,7 +62,7 @@ public class GameLogic {
     }
 
     public boolean situationNormal() {
-        return !this.situation.isGameOver() && !this.player.gotHit() && !this.situation.isComplete();
+        return !this.gameState.isGameOver() && !this.player.gotHit() && !this.gameState.isComplete();
     }
 
     public GameTimer getMonsterActivator() {
@@ -96,8 +96,8 @@ public class GameLogic {
         }
     }
 
-    public GameState getSituation() {
-        return this.situation;
+    public GameState getGameState() {
+        return this.gameState;
     }
 
     public boolean monsterBehaviourThresholdReached(long addedTime) {
@@ -119,9 +119,9 @@ public class GameLogic {
     }
 
     public void scatterIfPossible(long scatterBehaviourLength) {
-        if (getSituation().getTimesScattered() < 4) {
+        if (getGameState().getTimesScattered() < 4) {
             getMonsterBehaviourTimer().setThreshold(scatterBehaviourLength);
-            getSituation().addScatterTime();
+            getGameState().addScatterTime();
             System.out.println("SCATTER ACTIVATED");
             setAllMonstersBehaviourState(Behaviour.SCATTER);
             getMonsterBehaviourTimer().reset();
@@ -173,20 +173,20 @@ public class GameLogic {
     public void monsterActivation(long addedTime) {
         if (this.monsterActivator.isActive()) {
             if (this.monsterActivator.addTime(addedTime)) {
-                switch (this.situation.getActiveMonsters()) {
+                switch (this.gameState.getActiveMonsters()) {
                     case 1:
                         this.pink.activate();
                         this.monsterActivator.activate();
-                        this.situation.addActiveMonster();
+                        this.gameState.addActiveMonster();
                         break;
                     case 2:
                         this.blue.activate();
                         this.monsterActivator.activate();
-                        this.situation.addActiveMonster();
+                        this.gameState.addActiveMonster();
                         break;
                     case 3:
                         this.orange.activate();
-                        this.situation.addActiveMonster();
+                        this.gameState.addActiveMonster();
                         break;
                 }
             }
@@ -212,12 +212,12 @@ public class GameLogic {
             while (!deletedPoints.isEmpty()) {
                 Point p = deletedPoints.pop();
                 playerTile.getTilesPoints().remove(p);
-                this.situation.gainPoint(10);
+                this.gameState.gainPoint(10);
                 this.currentMap.getPointsList().remove(p);
             }
         }
         if (currentMap.getPointsList().isEmpty()) {
-            this.situation.setComplete(true);
+            this.gameState.setComplete(true);
         }
     }
 
@@ -318,7 +318,7 @@ public class GameLogic {
     }
 
     private void updateMonster(Monster monster, Tile normalDestination, Tile scatterDestination) {
-        if (this.situation.isGameOver() || !monster.isActive()) {
+        if (this.gameState.isGameOver() || !monster.isActive()) {
             return;
         }
         if (monster.getNextTile() == null && monster.getNextPath().isEmpty()) {
@@ -355,13 +355,13 @@ public class GameLogic {
                 monster.setCurrentBehaviour(Behaviour.RESET);
                 monster.getNextPath().clear();
                 monster.setMovementSpeed(4);
-                this.situation.gainPoint(100);
+                this.gameState.gainPoint(100);
                 return;
             }
             findMonsterPath(monster, getTile(monster.getX(), monster.getY()), getRandomDestinationTile(monster));
             this.player.loseHitPoint();
             if (this.player.getRemainingLife() <= 0) {
-                this.situation.setGameOver(true);
+                this.gameState.setGameOver(true);
             }
 
         }

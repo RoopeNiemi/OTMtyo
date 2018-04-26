@@ -114,7 +114,7 @@ public class GameLogicTest {
 
     @Test
     public void pointsAreGainedAndRemovedFromMapWhenCollidingWithPlayer() {
-        int points = logic.getSituation().getPoints();
+        int points = logic.getGameState().getPoints();
         int currentPointsOnMap = logic.getGraph().getPointsList().size();
         logic.getPlayer().setMovementDirection(Direction.DOWN);
         logic.movePlayer();
@@ -122,7 +122,7 @@ public class GameLogicTest {
         logic.movePlayer();
         logic.movePlayer();
         assertTrue(currentPointsOnMap > logic.getGraph().getPointsList().size());
-        assertTrue(points < logic.getSituation().getPoints());
+        assertTrue(points < logic.getGameState().getPoints());
     }
 
     @Test
