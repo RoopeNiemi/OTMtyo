@@ -100,8 +100,10 @@ public class PacmanUi extends Application {
                     paintGame(c.getGraphicsContext2D(), game.getGraph(), game.getPlayer());
                 } else {
                     if (game.getPlayer().gotHit()) {
+                        game.getMonsterBehaviourTimer().deactivate();
                         game.getPlayer().loseHitPoints();
                         if (!game.getPlayer().gotHit()) {
+                            game.getMonsterBehaviourTimer().activate();
                             game.resetMonsterStartingPositions();
                         }
                         paintGame(c.getGraphicsContext2D(), currentMap, game.getPlayer());

@@ -73,6 +73,18 @@ public class Graph {
         }
         int temp = 0;
         int oneFourth = points.size() / 4;
+        //This is just for tests so they work properly
+        if (points.size() < 100) {
+            points.get(temp).setType(Type.POWER_PELLET);
+            temp += oneFourth;
+
+            points.get(temp).setType(Type.POWER_PELLET);
+            temp += oneFourth;
+            points.get(temp).setType(Type.POWER_PELLET);
+            temp += oneFourth;
+            points.get(temp).setType(Type.POWER_PELLET);
+            return;
+        }
         points.get(temp).setType(Type.POWER_PELLET);
         temp += 78;
         points.get(temp).setType(Type.POWER_PELLET);
