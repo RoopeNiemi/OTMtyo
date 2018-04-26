@@ -14,7 +14,7 @@ import pacmangame.pacman.dao.HighScoreDao;
  *
  * @author User
  */
-public class GameSituation {
+public class GameState {
 
     private int points = 0;
     private boolean complete = false;
@@ -25,7 +25,7 @@ public class GameSituation {
     private int timesScattered = 0;
     private HighScoreDao highScoreDatabase;
 
-    public GameSituation(int maxPoints, int startingPoints, String database) {
+    public GameState(int maxPoints, int startingPoints, String database) {
         this.highScoreDatabase = new HighScoreDao(database);
         this.maxPoints = maxPoints;
         this.points = startingPoints;
@@ -62,7 +62,7 @@ public class GameSituation {
                 highScoreDatabase.updateOrSetHighScore(score);
                 System.out.println("update ended");
             } catch (SQLException ex) {
-                Logger.getLogger(GameSituation.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(GameState.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
     }

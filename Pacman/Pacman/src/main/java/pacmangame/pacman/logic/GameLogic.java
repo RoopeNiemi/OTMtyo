@@ -28,7 +28,7 @@ public class GameLogic {
     private boolean gameOver = false;
     private Graph currentMap;
     private GameTimer timer;
-    private GameSituation situation;
+    private GameState situation;
     private GameTimer monsterBehaviourTimer;
     private GameTimer monsterActivator;
     private int highscore = 0;
@@ -39,7 +39,7 @@ public class GameLogic {
     public GameLogic(MapLoader mapLoader, int startingPoints, int playerLives) {
         this.player = new Player(180, 300, playerLives);
         this.currentMap = new Graph(mapLoader.loadMap());
-        this.situation = new GameSituation(currentMap.getPointsList().size() * 10, startingPoints, "highscore.db");
+        this.situation = new GameState(currentMap.getPointsList().size() * 10, startingPoints, "highscore.db");
         initMonsters();
         initTimers();
     }
@@ -56,7 +56,7 @@ public class GameLogic {
 
     private void initMonsters() {
         this.red = new Monster(currentMap.getRedStartingTile(), 2, 5, "red");
-        this.pink = new Monster(currentMap.getPinkStartingTile(), 2, 10, "pink");
+        this.pink = new Monster(currentMap.getPinkStartingTile(), 2, 7, "pink");
         this.blue = new Monster(currentMap.getBlueStartingTile(), 2, 5, "blue");
         this.orange = new Monster(currentMap.getOrangeStartingTile(), 2, 15, "orange");
     }
@@ -96,7 +96,7 @@ public class GameLogic {
         }
     }
 
-    public GameSituation getSituation() {
+    public GameState getSituation() {
         return this.situation;
     }
 

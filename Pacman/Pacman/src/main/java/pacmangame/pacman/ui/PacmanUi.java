@@ -129,6 +129,9 @@ public class PacmanUi extends Application {
 
     private void setKeyPressed(Scene scene) {
         scene.setOnKeyPressed(event -> {
+            if (game.getSituation().isGameOver()) {
+                startOver();
+            }
             if (null != event.getCode()) {
 
                 switch (event.getCode()) {
@@ -161,7 +164,7 @@ public class PacmanUi extends Application {
         gc.setFill(Color.BLACK);
         gc.fillRect(0, 0, width, height + scoreBoardHeight * 2);
         gc.setFill(Color.WHITE);
-        gc.setFont(new Font(20));
+        gc.setFont(Font.font("Courier New", (20)));
         gc.fillText(this.pointLabel.getText(), 10, 30);
         gc.fillText(highScoreLabel.getText(), 120, 30);
         drawRemainingHealth(gc, player);
@@ -236,9 +239,9 @@ public class PacmanUi extends Application {
     }
 
     private void drawGameOverText(GraphicsContext gc) {
-        gc.setFont(new Font(50));
-        gc.setFill(Color.RED);
-        gc.fillText("GAME OVER", width / 4, height / 2 + scoreBoardHeight);
+        gc.setFont(Font.font("Courier New", (50)));
+        gc.setFill(Color.YELLOW);
+        gc.fillText("GAME OVER", width / 6, height / 2 + scoreBoardHeight);
     }
 
     private void drawPoints(GraphicsContext gc) {

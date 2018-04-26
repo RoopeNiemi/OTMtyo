@@ -11,17 +11,17 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import pacmangame.pacman.logic.GameSituation;
+import pacmangame.pacman.logic.GameState;
 
 /**
  *
  * @author User
  */
-public class GameSituationTest {
+public class GameStateTest {
 
-    GameSituation situation;
+    GameState situation;
 
-    public GameSituationTest() {
+    public GameStateTest() {
     }
 
     @BeforeClass
@@ -34,7 +34,7 @@ public class GameSituationTest {
 
     @Before
     public void setUp() {
-        situation = new GameSituation(0, 0, "test.db");
+        situation = new GameState(0, 0, "test.db");
     }
 
     @After
@@ -45,7 +45,7 @@ public class GameSituationTest {
     public void updatingHighScoreWorks() {
         int previousHighScore = situation.getCurrentHighScore();
         situation.saveNewHighScoreIfNeeded(previousHighScore + 1);
-        situation = new GameSituation(0, 0, "test.db");
+        situation = new GameState(0, 0, "test.db");
         assertTrue(previousHighScore + 1 == situation.getCurrentHighScore());
     }
 
@@ -53,7 +53,7 @@ public class GameSituationTest {
     public void highScoreNotUpdatedWithTooLowValues() {
         int previousHighScore = situation.getCurrentHighScore();
         situation.saveNewHighScoreIfNeeded(previousHighScore - 1);
-        situation = new GameSituation(0, 0, "test.db");
+        situation = new GameState(0, 0, "test.db");
         assertTrue(previousHighScore == situation.getCurrentHighScore());
     }
 
