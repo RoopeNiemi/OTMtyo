@@ -142,7 +142,8 @@ public class Monster {
      * first tile from the queue and sets it as the next tile. If the queue is
      * empty, returns false. Also changes monster's image to match the direction
      * it is going. Handles cases where monster is transferred from one side of
-     * the map to the other.
+     * the map to the other. When monster is in panic, it can only move every other
+     * time it is updated, making it slow down.
      *
      * @return False if moving the monster failed, else True.
      */
