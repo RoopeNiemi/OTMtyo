@@ -10,5 +10,14 @@ package pacmangame.pacman.map;
  * @author nroope
  */
 public enum Type {
-    POINT, POWER_PELLET;
+
+    /**
+     *
+     */
+    POINT,
+
+    /**
+     *
+     */
+    POWER_PELLET;
 }

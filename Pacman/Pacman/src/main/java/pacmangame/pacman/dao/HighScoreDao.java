@@ -17,6 +17,10 @@ public class HighScoreDao {
 
     private String databaseName;
 
+    /**
+     *
+     * @param databaseName name of the database.
+     */
     public HighScoreDao(String databaseName) {
         this.databaseName = databaseName;
         createTableIfNecessary();
@@ -36,6 +40,12 @@ public class HighScoreDao {
         return DriverManager.getConnection("jdbc:sqlite:" + databaseName);
     }
 
+    /**
+     * Gets the current highscore from the database.
+     *
+     * @return Current highscore of the game.
+     * @throws SQLException
+     */
     public int getHighScore() throws SQLException {
         Connection connection = getConnection();
         Statement stmt = connection.createStatement();
@@ -51,6 +61,13 @@ public class HighScoreDao {
         return highScore;
     }
 
+    /**
+     * Updates the database with a new highscore, or inserts a new highscore if
+     * the database is empty.
+     *
+     * @param newHighScore Highscore updated or inserted into the database.
+     * @throws SQLException
+     */
     public void updateOrSetHighScore(int newHighScore) throws SQLException {
         Connection connection = getConnection();
         if (getHighScore() == 0) {

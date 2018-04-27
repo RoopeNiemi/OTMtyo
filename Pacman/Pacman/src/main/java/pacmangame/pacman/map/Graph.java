@@ -20,6 +20,10 @@ public class Graph {
     private ArrayList<Tile> movableTiles = new ArrayList<Tile>();
     private ArrayList<Point> points = new ArrayList<>();
 
+    /**
+     *
+     * @param map
+     */
     public Graph(List<String> map) {
         this.width = map.get(0).length();
         this.height = map.size();
@@ -27,14 +31,10 @@ public class Graph {
         initGraph(map);
     }
 
-    public void resetPaths() {
-        for (int i = 0; i < this.graphMatrix.length; i++) {
-            for (int j = 0; j < this.graphMatrix[0].length; j++) {
-                this.graphMatrix[i][j].setPathFrom(null);
-            }
-        }
-    }
-
+    /**
+     * Generates points on the map. Also generates Power pellets to fixed
+     * locations on map.
+     */
     public void generatePointsAndFruits() {
         for (int i = 0; i < this.graphMatrix.length; i++) {
             for (int j = 0; j < this.graphMatrix[0].length; j++) {
@@ -73,7 +73,7 @@ public class Graph {
         }
         int temp = 0;
         int oneFourth = points.size() / 4;
-        //This is just for tests so they work properly
+        //This is just for tests so they work properly.
         if (points.size() < 100) {
             points.get(temp).setType(Type.POWER_PELLET);
             temp += oneFourth;
@@ -85,6 +85,7 @@ public class Graph {
             points.get(temp).setType(Type.POWER_PELLET);
             return;
         }
+        //This is for the game itself.
         points.get(temp).setType(Type.POWER_PELLET);
         temp += 78;
         points.get(temp).setType(Type.POWER_PELLET);
@@ -99,10 +100,23 @@ public class Graph {
         points.add(t);*/
     }
 
+    /**
+     *
+     * @return List of tiles that are not walls.
+     */
     public ArrayList<Tile> getMovableTiles() {
         return this.movableTiles;
     }
 
+    /**
+     * Checks if moving to a given direction is possible. Has special cases for
+     * player transferring from one side of the map to another.
+     *
+     * @param x Player x-coordinate
+     * @param y Player y-coordinate
+     * @param dir Player direction
+     * @return True if moving to given direction is possible.
+     */
     public boolean checkTurn(double x, double y, Direction dir) {
         int yCrd = (int) Math.floor(y / 20);
         int xCrd = (int) Math.floor(x / 20);
@@ -174,6 +188,10 @@ public class Graph {
         return false;
     }
 
+    /**
+     *
+     * @return List of all points left on map
+     */
     public ArrayList<Point> getPointsList() {
         return this.points;
     }
@@ -197,38 +215,74 @@ public class Graph {
         generatePointsAndFruits();
     }
 
+    /**
+     *
+     * @return Starting tile of red monster.
+     */
     public Tile getRedStartingTile() {
         return this.graphMatrix[7][9];
     }
 
+    /**
+     *
+     * @return Starting tile of pink monster.
+     */
     public Tile getPinkStartingTile() {
         return this.graphMatrix[9][8];
     }
 
+    /**
+     *
+     * @return Starting tile of blue monster.
+     */
     public Tile getBlueStartingTile() {
         return this.graphMatrix[9][9];
     }
 
+    /**
+     *
+     * @return Starting tile of orange monster.
+     */
     public Tile getOrangeStartingTile() {
         return this.graphMatrix[9][10];
     }
 
+    /**
+     *
+     * @return A two dimensional array of tiles representing the map.
+     */
     public Tile[][] getGraphMatrix() {
         return this.graphMatrix;
     }
 
+    /**
+     *
+     * @return Tile on the bottom right of map that is not a wall.
+     */
     public Tile getBottomRightTile() {
         return this.graphMatrix[19][17];
     }
 
+    /**
+     *
+     * @return Tile on the top right of the map that is not a wall.
+     */
     public Tile getTopRightTile() {
         return this.graphMatrix[1][17];
     }
 
+    /**
+     *
+     * @return Tile on the bottom left of the map that is not a wall.
+     */
     public Tile getBottomLeftTile() {
         return this.graphMatrix[19][1];
     }
 
+    /**
+     *
+     * @return Tile on the top left of the map that is not a wall.
+     */
     public Tile getTopLeftTile() {
         return this.graphMatrix[1][1];
     }

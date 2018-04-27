@@ -31,6 +31,13 @@ public class Monster {
     private final Image right;
     private Image currentImage;
 
+    /**
+     *
+     * @param startingTile Tile from which the monster starts the game.
+     * @param movementSpeed Movement speed of the monster.
+     * @param pathSize Maximum size of the path a monster can have.
+     * @param imagepath Path to the image of the monster.
+     */
     public Monster(Tile startingTile, double movementSpeed, double pathSize, String imagepath) {
         this.x = startingTile.getX();
         this.y = startingTile.getY();
@@ -47,14 +54,27 @@ public class Monster {
         currentImage = up;
     }
 
+    /**
+     *
+     */
     public void activate() {
         this.active = true;
     }
 
+    /**
+     *
+     * @return True if monster is active, else false.
+     */
     public boolean isActive() {
         return this.active;
     }
 
+    /**
+     * Sets monster's behaviour to given behaviour, unless monster is in a reset
+     * state.
+     *
+     * @param newBehaviour Monster's new behaviour.
+     */
     public void setCurrentBehaviour(Behaviour newBehaviour) {
         if (this.currentBehaviour != Behaviour.RESET) {
             this.currentBehaviour = newBehaviour;
@@ -69,18 +89,35 @@ public class Monster {
         this.movementSpeed = i;
     }
 
+    /**
+     *
+     * @param path Monster's new path.
+     */
     public void setNextPath(ArrayDeque<Tile> path) {
         this.nextPath = path;
     }
 
+    /**
+     *
+     * @return Tile from which the monster started the game.
+     */
     public Tile getStartingTile() {
         return this.startingTile;
     }
 
+    /**
+     *
+     * @return Monster's path size.
+     */
     public int getPathSize() {
         return this.pathSize;
     }
 
+    /**
+     * Checks monsters current position. If monster is in a reset state and has
+     * reached its starting tile, sets monster behaviour and speed to normal. If
+     * monster has reached its next tile on a path, sets next tile to null.
+     */
     public void checkPosition() {
         if (this.currentBehaviour == Behaviour.RESET && this.x == this.startingTile.getX() && this.y == this.startingTile.getY()) {
             this.currentBehaviour = Behaviour.NORMAL;
@@ -100,6 +137,15 @@ public class Monster {
         }
     }
 
+    /**
+     * Moves the monster. If monster has no next tile to move to, takes the
+     * first tile from the queue and sets it as the next tile. If the queue is
+     * empty, returns false. Also changes monster's image to match the direction
+     * it is going. Handles cases where monster is transferred from one side of
+     * the map to the other.
+     *
+     * @return False if moving the monster failed, else True.
+     */
     public boolean move() {
         if (this.panicInProgess && this.currentBehaviour == Behaviour.PANIC) {
             this.panicInProgess = false;
@@ -160,6 +206,10 @@ public class Monster {
         return x;
     }
 
+    /**
+     *
+     * @return Monster's path.
+     */
     public ArrayDeque<Tile> getNextPath() {
         return this.nextPath;
     }
@@ -192,14 +242,26 @@ public class Monster {
         this.nextTile = nextTile;
     }
 
+    /**
+     *
+     * @return x-coordinate at the centre of the monster.
+     */
     public double getCentreX() {
         return this.x + (this.width / 2);
     }
 
+    /**
+     *
+     * @return y-coordinate at the centre of the monster.
+     */
     public double getCentreY() {
         return this.y + (this.width / 2);
     }
 
+    /**
+     *
+     * @return Monster's current image.
+     */
     public Image getCurrentImage() {
         return this.currentImage;
     }

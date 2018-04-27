@@ -36,6 +36,12 @@ public class GameLogic {
     private long normalMonsterBehaviourLength = 20000000000L;
     private long scatterBehaviourLength = 7000000000L;
 
+    /**
+     *
+     * @param mapLoader
+     * @param startingPoints
+     * @param playerLives
+     */
     public GameLogic(MapLoader mapLoader, int startingPoints, int playerLives) {
         this.player = new Player(180, 300, playerLives);
         this.currentMap = new Graph(mapLoader.loadMap());
@@ -58,17 +64,33 @@ public class GameLogic {
         this.red = new Monster(currentMap.getRedStartingTile(), 2, 5, "red");
         this.pink = new Monster(currentMap.getPinkStartingTile(), 2, 7, "pink");
         this.blue = new Monster(currentMap.getBlueStartingTile(), 2, 5, "blue");
-        this.orange = new Monster(currentMap.getOrangeStartingTile(), 2, 15, "orange");
+        this.orange = new Monster(currentMap.getOrangeStartingTile(), 2, 10, "orange");
     }
 
+    public GameState getGameState() {
+        return this.gameState;
+    }
+
+    /**
+     *
+     * @return True if game is not over, player has not been hit, and level has
+     * not been completed. Else returns false
+     */
     public boolean situationNormal() {
         return !this.gameState.isGameOver() && !this.player.gotHit() && !this.gameState.isComplete();
     }
 
+    /**
+     *
+     * @return GameTimer that handles activating monsters
+     */
     public GameTimer getMonsterActivator() {
         return this.monsterActivator;
     }
 
+    /**
+     *
+     */
     public void resetMonsterStartingPositions() {
         resetMonsterPosition(this.red);
         resetMonsterPosition(this.pink);
@@ -76,6 +98,13 @@ public class GameLogic {
         resetMonsterPosition(this.orange);
     }
 
+    /**
+     * Reset monster's position on map. Monster's location on map is changed to
+     * its starting location at the beginning of the game. Its calculated
+     * movement paths are also reset.
+     *
+     * @param monster Monster that is to be reset
+     */
     public void resetMonsterPosition(Monster monster) {
         monster.setX(monster.getStartingTile().getX());
         monster.setY(monster.getStartingTile().getY());
@@ -83,12 +112,23 @@ public class GameLogic {
         monster.setNextTile(null);
     }
 
+    /**
+     * Adds time passed to the GameTimer that handles monsters' behaviour. If a
+     * set threshold is reached, changes monster behaviour. Does not work if
+     * monsters are in a panic state. If monsters are in a panic state, adds
+     * time passed to the GameTimer that handles monsters' panic behaviour. If
+     * panic behaviour threshold is reached, monsters' behaviour is set to
+     * normal.
+     *
+     * @param updateFrequency time that is added to the GameTimers handling
+     * behaviour changes
+     */
     public void handleBehaviourUpdate(long updateFrequency) {
         if (monsterBehaviourThresholdReached(updateFrequency)) {
             if (getMonsterBehaviourTimer().getThreshold() == normalMonsterBehaviourLength) {
-                scatterIfPossible(scatterBehaviourLength);
+                scatterIfPossible();
             } else {
-                activateChaseMode(normalMonsterBehaviourLength);
+                activateChaseMode();
             }
         }
         if (timerThresholdReached(updateFrequency)) {
@@ -96,14 +136,24 @@ public class GameLogic {
         }
     }
 
-    public GameState getGameState() {
-        return this.gameState;
-    }
-
+    /**
+     * Adds time to GameTimer handling monster behaviour.
+     *
+     * @param addedTime time added to GameTimer handling monster behaviour.
+     * @return True if the GameTimer handling monster behaviour reaches a
+     * threshold. Else false.
+     */
     public boolean monsterBehaviourThresholdReached(long addedTime) {
         return this.monsterBehaviourTimer.addTime(addedTime);
     }
 
+    /**
+     * Adds time to GameTimer handling monster panic phase.
+     *
+     * @param addedTime Time added to GameTimer handling monster panic phase.
+     * @return True if the GameTimer that handles monster panic phase has
+     * reached a threshold.
+     */
     public boolean timerThresholdReached(long addedTime) {
         return this.timer.addTime(addedTime);
     }
@@ -118,10 +168,15 @@ public class GameLogic {
         }
     }
 
-    public void scatterIfPossible(long scatterBehaviourLength) {
-        if (getGameState().getTimesScattered() < 4) {
+    /**
+     * Sets monsters' behaviour to scatter if monsters have scattered less than
+     * 4 times in current game.
+     *
+     */
+    public void scatterIfPossible() {
+        if (this.gameState.getTimesScattered() < 4) {
             getMonsterBehaviourTimer().setThreshold(scatterBehaviourLength);
-            getGameState().addScatterTime();
+            this.gameState.addScatterTime();
             System.out.println("SCATTER ACTIVATED");
             setAllMonstersBehaviourState(Behaviour.SCATTER);
             getMonsterBehaviourTimer().reset();
@@ -129,19 +184,34 @@ public class GameLogic {
         }
     }
 
-    public void activateChaseMode(long chaseModeLength) {
-        getMonsterBehaviourTimer().setThreshold(chaseModeLength);
+    /**
+     * Sets monsters' behaviour to normal
+     *
+     */
+    public void activateChaseMode() {
+        getMonsterBehaviourTimer().setThreshold(normalMonsterBehaviourLength);
         System.out.println("SCATTER DEACTIVATED");
         getMonsterBehaviourTimer().reset();
         setAllMonstersBehaviourState(Behaviour.NORMAL);
         getMonsterBehaviourTimer().activate();
     }
 
+    /**
+     * Sets all monsters behaviour to normal. Activates the GameTimer that
+     * handles monsters' normal behaviour states.
+     */
     public void endPanicPhase() {
         setAllMonstersBehaviourState(Behaviour.NORMAL);
         getMonsterBehaviourTimer().activate();
     }
 
+    /**
+     * Calls player's move method. Calls checkPointSituation method to check if
+     * player collides with any points on map. Handles cases where player is
+     * transferred from one side of the map to another. Calls for a method that
+     * checks if a wall is hit or a movement direction in queue is legal.
+     * Changes player's movement direction accordingly.
+     */
     public void movePlayer() {
         this.player.move();
         checkPointSituation();
@@ -162,14 +232,30 @@ public class GameLogic {
         }
     }
 
+    /**
+     *
+     * @return GameTimer that handles monster's panic phase.
+     */
     public GameTimer getTimer() {
         return this.timer;
     }
 
+    /**
+     *
+     * @return GameTimer that handles monsters' normal behaviour.
+     */
     public GameTimer getMonsterBehaviourTimer() {
         return this.monsterBehaviourTimer;
     }
 
+    /**
+     * Adds time to the GameTimer that handles activating monsters. Activates
+     * next monster in line when a threshold is reached, or deactivates if all
+     * are already active.
+     *
+     * @param addedTime Time added to the GameTimer that handles activating
+     * monsters.
+     */
     public void monsterActivation(long addedTime) {
         if (this.monsterActivator.isActive()) {
             if (this.monsterActivator.addTime(addedTime)) {
@@ -221,6 +307,11 @@ public class GameLogic {
         }
     }
 
+    /**
+     * Sets all monsters' behaviour to given behaviour.
+     *
+     * @param newBehaviour Monsters' new behaviour.
+     */
     public void setAllMonstersBehaviourState(Behaviour newBehaviour) {
         this.red.setCurrentBehaviour(newBehaviour);
         this.orange.setCurrentBehaviour(newBehaviour);
@@ -232,6 +323,11 @@ public class GameLogic {
         return (Math.abs(player.getCentreX() - point.getCentreX()) <= 5 && Math.abs(player.getCentreY() - point.getCentreY()) <= 5);
     }
 
+    /**
+     * Updates monsters. If a monsters path is empty, calculates a new one
+     * according to its current behaviour. Moves monsters, and checks collision
+     * with player. Does not work if monster is not active or game is over.
+     */
     public void updateMonsters() {
         updateMonster(this.red, getTile(player.getX(), player.getY()), this.currentMap.getTopRightTile());
         updateMonster(this.orange, orangeMovement(), this.currentMap.getBottomRightTile());

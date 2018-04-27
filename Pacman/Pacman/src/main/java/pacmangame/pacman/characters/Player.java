@@ -27,6 +27,12 @@ public class Player {
     private int hitPointsLeft = 3;
     private String opCheck = System.getProperty("os.name").toLowerCase();
 
+    /**
+     *
+     * @param x
+     * @param y
+     * @param lifeTotal
+     */
     public Player(double x, double y, int lifeTotal) {
         this.x = x;
         this.y = y;
@@ -35,27 +41,34 @@ public class Player {
         this.hitPointsLeft = lifeTotal;
     }
 
-    public double getStartingX() {
-        return this.x;
-    }
-
-    public double getStartingY() {
-        return this.y;
-    }
-
+    /**
+     *
+     * @return Number of player's remaining hit points.
+     */
     public int getRemainingLife() {
         return this.hitPointsLeft;
     }
 
+    /**
+     *
+     * @return True if player has been hit, else False
+     */
     public boolean gotHit() {
         return this.gotHit;
     }
 
+    /**
+     * Sets player's gotHit value to True. Loses a hitpoint.
+     */
     public void loseHitPoint() {
         this.gotHit = true;
         loseHitPoints();
     }
 
+    /**
+     *
+     * @return Angle of player character's mouth.
+     */
     public double getMouthAngle() {
         return this.mouthAngle;
     }
@@ -71,6 +84,13 @@ public class Player {
         }
     }
 
+    /**
+     * Used for animating player death. Adds to player's mouth angle until
+     * player disappears. After disappearing, reset player position to its
+     * starting position, reduce 1 hitpoint, reset movement direction and set
+     * player's gotHit value to false.
+     *
+     */
     public void loseHitPoints() {
         if (opCheck.indexOf("win") >= 0) {
             this.mouthAngle += 2;
@@ -90,18 +110,38 @@ public class Player {
         }
     }
 
+    /**
+     *
+     * @return Direction player moved to before changing direction.
+     */
     public Direction getPreviousDirection() {
         return this.previousDirection;
     }
 
+    /**
+     *
+     * @return Player's current movement direction.
+     */
     public Direction getMovementDirection() {
         return movementDirection;
     }
 
+    /**
+     *
+     * @return Player's movement speed.
+     */
     public double getMovementSpeed() {
         return this.movementSpeed;
     }
 
+    /**
+     * Sets player's movement direction to given direction. If player's current
+     * direction before changing is not NOT_MOVING, sets player's previous
+     * direction to be player's current direction. Then player's current
+     * direction is changed to given direction.
+     *
+     * @param movementDirection
+     */
     public void setMovementDirection(Direction movementDirection) {
         if (this.movementDirection != Direction.NOT_MOVING) {
             this.previousDirection = this.movementDirection;
@@ -109,42 +149,74 @@ public class Player {
         this.movementDirection = movementDirection;
     }
 
+    /**
+     *
+     * @return Direction that is queued.
+     */
     public Direction getQueuedDirection() {
         return queuedDirection;
     }
 
+    /**
+     *
+     * @param queuedDirection Direction that is queued.
+     */
     public void setQueuedDirection(Direction queuedDirection) {
         this.queuedDirection = queuedDirection;
     }
 
+    /**
+     *
+     * @return Player's x-coordinate.
+     */
     public double getX() {
         return x;
     }
 
+    /**
+     *
+     * @return Player character's width.
+     */
     public double getWidth() {
         return this.width;
     }
 
+    /**
+     *
+     * @param x Player's new x coordinate.
+     */
     public void setX(double x) {
         this.x = x;
     }
 
+    /**
+     *
+     * @return Player's current y-coordinate.
+     */
     public double getY() {
         return y;
     }
 
+    /**
+     *
+     * @param y Player's new y-coordinate.
+     */
     public void setY(double y) {
         this.y = y;
     }
 
+    /**
+     *
+     * @return Player's color.
+     */
     public Color getColor() {
         return color;
     }
 
-    public void setColor(Color color) {
-        this.color = color;
-    }
-
+    /**
+     * If current direction is not NOT_MOVING, changes player's x or y
+     * coordinates according to current direction.
+     */
     public void move() {
         if (Direction.NOT_MOVING != this.movementDirection) {
             changeAngle();
@@ -167,10 +239,18 @@ public class Player {
         }
     }
 
+    /**
+     *
+     * @return x-coordinate in the middle of player character.
+     */
     public double getCentreX() {
         return this.x + (this.width / 2);
     }
 
+    /**
+     *
+     * @return y-coordinate in the middle of player character.
+     */
     public double getCentreY() {
         return this.y + (this.width / 2);
     }

@@ -26,6 +26,18 @@ public class Pathfinder {
         this.shortestPath.clear();
     }
 
+    /**
+     * Finds a path from given starting point to given destination, on a given
+     * map. Uses breadth first search. Has special cases for transitioning
+     * between [9][0] and [9][18] on the map. Assumes that these two tiles on
+     * the map are of value 1.
+     *
+     * @param startingPoint Tile from which the path is calculated.
+     * @param map Map on which the path is calculated
+     * @param dest Tile to which the path is calculated.
+     * @return Stack representing the path from given starting tile to given
+     * destination tile.
+     */
     public Stack<Tile> findPath(Tile startingPoint, Tile[][] map, Tile dest) {
         resetSearches();
         tileQueue.add(startingPoint);
@@ -116,6 +128,12 @@ public class Pathfinder {
         return false;
     }
 
+    /**
+     * Resets all paths calculated on the given map. All tiles' path from value
+     * is set to null.
+     *
+     * @param map Map that is to be reset.
+     */
     public void resetMap(Tile[][] map) {
         for (int i = 0; i < map.length; i++) {
             for (int j = 0; j < map[0].length; j++) {

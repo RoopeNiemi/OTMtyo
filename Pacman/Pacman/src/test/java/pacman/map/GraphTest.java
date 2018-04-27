@@ -5,7 +5,6 @@ package pacman.map;
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.After;
@@ -55,13 +54,6 @@ public class GraphTest {
     public void graphWidthAndHeightIsCorrect() {
         assertTrue(graph.getGraphMatrix().length == 3);
         assertTrue(graph.getGraphMatrix()[0].length == 4);
-    }
-
-    @Test
-    public void resetPathsWorksCorrectly() {
-        graph.getGraphMatrix()[1][1].setPathFrom(new Tile(0, 0, 0, 0));
-        graph.resetPaths();
-        assertTrue(graph.getGraphMatrix()[1][1].getPathFrom() == null);
     }
 
     @Test

@@ -127,7 +127,7 @@ public class GameLogicTest {
 
     @Test
     public void scatteringWorksWhenScatteredLessThanFourTimes() {
-        logic.scatterIfPossible(0);
+        logic.scatterIfPossible();
         assertTrue(logic.getRed().getCurrentBehaviour() == Behaviour.SCATTER);
         assertTrue(logic.getPink().getCurrentBehaviour() == Behaviour.SCATTER);
         assertTrue(logic.getBlue().getCurrentBehaviour() == Behaviour.SCATTER);
@@ -136,12 +136,12 @@ public class GameLogicTest {
 
     @Test
     public void scatteringDoesNotWorkAfterFourTimes() {
-        logic.scatterIfPossible(0);
-        logic.scatterIfPossible(0);
-        logic.scatterIfPossible(0);
-        logic.scatterIfPossible(0);
+        logic.scatterIfPossible();
+        logic.scatterIfPossible();
+        logic.scatterIfPossible();
+        logic.scatterIfPossible();
         logic.setAllMonstersBehaviourState(Behaviour.NORMAL);
-        logic.scatterIfPossible(0);
+        logic.scatterIfPossible();
         assertTrue(logic.getRed().getCurrentBehaviour() == Behaviour.NORMAL);
         assertTrue(logic.getPink().getCurrentBehaviour() == Behaviour.NORMAL);
         assertTrue(logic.getBlue().getCurrentBehaviour() == Behaviour.NORMAL);
@@ -151,7 +151,7 @@ public class GameLogicTest {
     @Test
     public void activatingChaseModeWorks() {
         logic.setAllMonstersBehaviourState(Behaviour.SCATTER);
-        logic.activateChaseMode(0);
+        logic.activateChaseMode();
         assertTrue(logic.getRed().getCurrentBehaviour() == Behaviour.NORMAL);
         assertTrue(logic.getPink().getCurrentBehaviour() == Behaviour.NORMAL);
         assertTrue(logic.getBlue().getCurrentBehaviour() == Behaviour.NORMAL);
