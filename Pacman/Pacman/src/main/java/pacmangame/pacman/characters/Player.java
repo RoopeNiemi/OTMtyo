@@ -25,7 +25,6 @@ public class Player {
     private double movementSpeed = 2;
     private boolean gotHit = false;
     private int hitPointsLeft = 3;
-    private String opCheck = System.getProperty("os.name").toLowerCase();
 
     /**
      *
@@ -92,11 +91,7 @@ public class Player {
      *
      */
     public void loseHitPoints() {
-        if (opCheck.indexOf("win") >= 0) {
-            this.mouthAngle += 2;
-        } else {
-            this.mouthAngle += 0.2;
-        }
+        this.mouthAngle += 3;
         if (this.mouthAngle >= 180) {
             if (this.hitPointsLeft > 0) {
                 this.x = startingX;

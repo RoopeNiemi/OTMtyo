@@ -91,9 +91,8 @@ public class PacmanUi extends Application {
                 }
                 game.monsterActivation(updateFrequency);
                 game.handleBehaviourUpdate(updateFrequency);
-
+                prev = now;
                 if (game.situationNormal()) {
-                    prev = now;
                     game.movePlayer();
                     game.updateMonsters();
                     pointLabel.setText("" + game.getGameState().getPoints());
