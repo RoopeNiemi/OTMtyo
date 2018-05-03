@@ -15,6 +15,9 @@ Helsingin yliopiston Ohjelmistotekniikan menetelmät -kurssia varten tehty sovel
 ### Releaset
 [Viikko 5](https://github.com/RoopeNiemi/OTMtyo/releases/tag/v1.0)
 
+
+[Viikko 6](https://github.com/RoopeNiemi/OTMtyo/releases/tag/v1.1)
+
 ## Komentorivitoiminnot
 
 ### Testaus
