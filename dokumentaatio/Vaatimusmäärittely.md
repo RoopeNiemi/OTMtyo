@@ -20,7 +20,7 @@ Pelissä on 4 vihollishirviötä, jotka poikkeavat hieman toisistaan käytöksen
   * Oranssi hirviö: Jos etäisyys pelaajasta yli 4 ruutua, hakee reittiä pelaajan luo. Muuten hakee reitin oikeaan alakulmaan, tai jos on jos oikeassa alakulmassa, oikeaan yläkulmaan
   * Sininen hirviö: Hakee reittiä ruutuun seuraavalla tavalla: Laskee vektorin punaisen hirviön ja pelaajan edessä olevan ruudun väliin ja tuplaa kyseisen vektorin pituuden. Vektorin päätepiste on kohderuutu. Jos vektorin päätepiste on yli kartan rajojen, se siirretään kartan reunalle. 
 
-Hirviöillä on kaksi normaalia käyttäytymismallia: normaalivaihe (tai jahtaamisvaihe) kestää 20 sekuntia ja silloin hirviöt toimivat yllä kirjoitetulla tavalla. Lisäksi hirviöillä on 7 sekunnin hajautumisvaihe, jolloin ne hakevat reittiä jokainen eri kulmaan. Tämä vaihe voi toistua 4 kertaa kentän aikana. Kun hajautumisvaihe on toteutunut 4 kertaa kentän aikana, hirviöit pysyvät jahtaamisvaiheessa loppukentän ajan.
+Hirviöillä on kaksi normaalia käyttäytymismallia: jahtaamisvaihe kestää 20 sekuntia ja silloin hirviöt toimivat yllä kirjoitetulla tavalla. Lisäksi hirviöillä on 7 sekunnin hajautumisvaihe, jolloin ne hakevat reittiä jokainen kartan eri kulmiin. Tämä vaihe voi toistua 4 kertaa kentän aikana. Kun hajautumisvaihe on toteutunut 4 kertaa kentän aikana, hirviöit pysyvät jahtaamisvaiheessa loppukentän ajan.
 
 
 
