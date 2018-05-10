@@ -18,6 +18,8 @@ Helsingin yliopiston Ohjelmistotekniikan menetelmät -kurssia varten tehty sovel
 
 [Viikko 6](https://github.com/RoopeNiemi/OTMtyo/releases/tag/v1.1)
 
+[Loppupalautus](https://github.com/RoopeNiemi/OTMtyo/releases/tag/v1.2)
+
 ## Komentorivitoiminnot
 
 ### Testaus
