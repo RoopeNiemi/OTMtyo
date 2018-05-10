@@ -16,4 +16,4 @@ uuden high scoren päivittämistä tietokantaan.
 
 Sovelluksen testauksen rivikattavuus on 84%, ja haaraumakattavuus 67%. Tähän ei lasketa mukaan käyttöliittymää.
 
-![alt text](https://github.com/RoopeNiemi/OTMtyo/tree/master/dokumentaatio/kuvat/testikattavuus.png)
+![alt text](https://github.com/RoopeNiemi/OTMtyo/blob/master/dokumentaatio/kuvat/testikattavuus.png)
