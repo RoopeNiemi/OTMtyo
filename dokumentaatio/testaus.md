@@ -1,11 +1,8 @@
 # Testausdokumentti
 
-Ohjelmaa on testattu sekä yksikkötestein että integraatiotestein.
-
 ### Yksikkö- ja integraatiotestaus
 
-Testit noudattavat projektissa samaa pakkausrakennetta kuin ns. normaaliluokat. Testeissä testataan ohjelman 
-kannalta oleellisia asioita, kuten hirviön reitinhakua, tilanteen päivittämistä, pelaajan liikkumista. 
+Testit noudattavat projektissa samaa pakkausrakennetta kuin ns. normaaliluokat. Ohjelman toiminnan kannalta oleellisimmat testit ovat luokan GameLogic testit, joissa testataan ohjelman osien toimimista peliympäristössä ja niiden vuorovaikutusta toisten osien kanssa. Muita luokkia varten on tehty yksikkötestejä. 
 
 
 #### HighScoreDao
