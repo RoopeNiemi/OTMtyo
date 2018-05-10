@@ -11,6 +11,10 @@ Helsingin yliopiston Ohjelmistotekniikan menetelmät -kurssia varten tehty sovel
 
 [Työaikakirjanpito](https://github.com/RoopeNiemi/OTMtyo/tree/master/dokumentaatio/työaikakirjanpito.md)
 
+[Testidokumentti](https://github.com/RoopeNiemi/OTMtyo/tree/master/dokumentaatio/testaus.md)
+
+[Käyttöohje](https://github.com/RoopeNiemi/OTMtyo/tree/master/dokumentaatio/kayttoohje.md)
+
 
 ### Releaset
 [Viikko 5](https://github.com/RoopeNiemi/OTMtyo/releases/tag/v1.0)
