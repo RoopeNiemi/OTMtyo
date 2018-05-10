@@ -1,17 +1,7 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package pacmangame.pacman.characters;
 
 import javafx.scene.paint.Color;
-import pacmangame.pacman.logic.GameTimer;
 
-/**
- *
- * @author User
- */
 public class Player {
 
     private double width = 20;

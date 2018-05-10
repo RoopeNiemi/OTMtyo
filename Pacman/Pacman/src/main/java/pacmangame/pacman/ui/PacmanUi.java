@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package pacmangame.pacman.ui;
 
 import pacmangame.pacman.map.Point;
@@ -25,10 +20,6 @@ import pacmangame.pacman.characters.*;
 import pacmangame.pacman.logic.*;
 import pacmangame.pacman.map.*;
 
-/**
- *
- * @author User
- */
 public class PacmanUi extends Application {
 
     private final Image scaredImage = new Image(getClass().getResourceAsStream("/scared.png"));
@@ -80,7 +71,8 @@ public class PacmanUi extends Application {
 
         setMouseClicked(scene);
         setKeyPressed(primaryStage, scene);
-
+        initStage(primaryStage, scene);
+        
         new AnimationTimer() {
             long prev = 0;
 
@@ -120,7 +112,9 @@ public class PacmanUi extends Application {
                 }
             }
         }.start();
+    }
 
+    private void initStage(Stage primaryStage, Scene scene) {
         primaryStage.setOnCloseRequest(event -> {
             if (game.getGameState().isGameOver()) {
                 game.getGameState().saveNewHighScoreIfNeeded(game.getGameState().getPoints());

@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package pacmangame.pacman.logic;
 
 import java.sql.SQLException;
@@ -10,31 +5,23 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import pacmangame.pacman.dao.HighScoreDao;
 
-/**
- *
- * @author User
- */
 public class GameState {
 
     private int points = 0;
     private boolean complete = false;
     private boolean gameOver = false;
     private int activeMonsters = 1;
-    private int maxPoints = 0;
     private int highScore = 0;
     private int timesScattered = 0;
     private HighScoreDao highScoreDatabase;
 
     /**
      *
-     * @param maxPoints Maximum amount of points that can be gained from this
-     * map.
      * @param startingPoints Player's points when starting the current map.
      * @param database Name of the database where the highscore is stored.
      */
-    public GameState(int maxPoints, int startingPoints, String database) {
+    public GameState(int startingPoints, String database) {
         this.highScoreDatabase = new HighScoreDao(database);
-        this.maxPoints = maxPoints;
         this.points = startingPoints;
         setCurrentHighScore();
     }
@@ -102,16 +89,6 @@ public class GameState {
     }
 
     /**
-     *
-     * @return Number of maximum points available on this map.
-     */
-    public int getMaxPoints() {
-        return this.maxPoints;
-    }
-
-    /**
-     * Player gains a given amount of points.
-     *
      * @param points Points gained.
      */
     public void gainPoint(int points) {

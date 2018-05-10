@@ -34,7 +34,7 @@ public class GameStateTest {
 
     @Before
     public void setUp() {
-        situation = new GameState(0, 0, "test.db");
+        situation = new GameState(0, "test.db");
     }
 
     @After
@@ -45,7 +45,7 @@ public class GameStateTest {
     public void updatingHighScoreWorks() {
         int previousHighScore = situation.getCurrentHighScore();
         situation.saveNewHighScoreIfNeeded(previousHighScore + 1);
-        situation = new GameState(0, 0, "test.db");
+        situation = new GameState(0, "test.db");
         assertTrue(previousHighScore + 1 == situation.getCurrentHighScore());
     }
 
@@ -53,7 +53,7 @@ public class GameStateTest {
     public void highScoreNotUpdatedWithTooLowValues() {
         int previousHighScore = situation.getCurrentHighScore();
         situation.saveNewHighScoreIfNeeded(previousHighScore - 1);
-        situation = new GameState(0, 0, "test.db");
+        situation = new GameState(0, "test.db");
         assertTrue(previousHighScore == situation.getCurrentHighScore());
     }
 

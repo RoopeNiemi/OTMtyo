@@ -1,10 +1,5 @@
 package pacman.map;
 
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.After;
@@ -15,12 +10,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import pacmangame.pacman.characters.Direction;
 import pacmangame.pacman.map.Graph;
-import pacmangame.pacman.map.Tile;
 
-/**
- *
- * @author User
- */
 public class GraphTest {
 
     Graph graph;
@@ -58,18 +48,18 @@ public class GraphTest {
 
     @Test
     public void turningReturnsTrueWhenPossible() {
-        assertTrue(graph.checkTurn(20, 40, Direction.UP) == true);
-        assertTrue(graph.checkTurn(20, 20, Direction.DOWN) == true);
-        assertTrue(graph.checkTurn(40, 20, Direction.LEFT) == true);
-        assertTrue(graph.checkTurn(20, 40, Direction.RIGHT) == true);
+        assertTrue(graph.checkTurn(20, 40, Direction.UP));
+        assertTrue(graph.checkTurn(20, 20, Direction.DOWN));
+        assertTrue(graph.checkTurn(40, 20, Direction.LEFT));
+        assertTrue(graph.checkTurn(20, 40, Direction.RIGHT));
     }
 
     @Test
     public void continuingCurrentPathWorksIfNotAtExactCoordinatesOfTile() {
-        assertTrue(graph.checkTurn(20, 45, Direction.UP) == true);
-        assertTrue(graph.checkTurn(20, 35, Direction.DOWN) == true);
-        assertTrue(graph.checkTurn(25, 20, Direction.RIGHT) == true);
-        assertTrue(graph.checkTurn(25, 40, Direction.LEFT) == true);
+        assertTrue(graph.checkTurn(20, 45, Direction.UP));
+        assertTrue(graph.checkTurn(20, 35, Direction.DOWN));
+        assertTrue(graph.checkTurn(25, 20, Direction.RIGHT));
+        assertTrue(graph.checkTurn(25, 40, Direction.LEFT));
 
     }
 

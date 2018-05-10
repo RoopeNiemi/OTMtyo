@@ -1,17 +1,8 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package pacmangame.pacman.map;
 
 import java.util.Objects;
 import javafx.scene.paint.Color;
 
-/**
- *
- * @author nroope
- */
 public class Point {
 
     private double centreX, centreY, widthAndHeight;

@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package pacmangame.pacman.pathfinding;
 
 import java.util.ArrayDeque;
@@ -10,10 +5,6 @@ import java.util.HashSet;
 import java.util.Stack;
 import pacmangame.pacman.map.Tile;
 
-/**
- *
- * @author User
- */
 public class Pathfinder {
 
     private ArrayDeque<Tile> tileQueue = new ArrayDeque<>();

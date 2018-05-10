@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package pacmangame.pacman.logic;
 
 import pacmangame.pacman.map.Point;
@@ -13,10 +8,6 @@ import pacmangame.pacman.characters.*;
 import pacmangame.pacman.map.*;
 import pacmangame.pacman.pathfinding.Pathfinder;
 
-/**
- *
- * @author User
- */
 public class GameLogic {
 
     private Player player;
@@ -45,7 +36,7 @@ public class GameLogic {
     public GameLogic(MapLoader mapLoader, int startingPoints, int playerLives) {
         this.player = new Player(180, 300, playerLives);
         this.currentMap = new Graph(mapLoader.loadMap());
-        this.gameState = new GameState(currentMap.getPointsList().size() * 10, startingPoints, "highscore.db");
+        this.gameState = new GameState(startingPoints, "highscore.db");
         initMonsters();
         initTimers();
     }
@@ -177,7 +168,6 @@ public class GameLogic {
         if (this.gameState.getTimesScattered() < 4) {
             getMonsterBehaviourTimer().setThreshold(scatterBehaviourLength);
             this.gameState.addScatterTime();
-            System.out.println("SCATTER ACTIVATED");
             setAllMonstersBehaviourState(Behaviour.SCATTER);
             getMonsterBehaviourTimer().reset();
             getMonsterBehaviourTimer().activate();
@@ -190,7 +180,6 @@ public class GameLogic {
      */
     public void activateChaseMode() {
         getMonsterBehaviourTimer().setThreshold(normalMonsterBehaviourLength);
-        System.out.println("SCATTER DEACTIVATED");
         getMonsterBehaviourTimer().reset();
         setAllMonstersBehaviourState(Behaviour.NORMAL);
         getMonsterBehaviourTimer().activate();
@@ -459,7 +448,6 @@ public class GameLogic {
             if (this.player.getRemainingLife() <= 0) {
                 this.gameState.setGameOver(true);
             }
-
         }
     }
 

@@ -1,18 +1,9 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package pacmangame.pacman.characters;
 
 import pacmangame.pacman.map.Tile;
 import java.util.ArrayDeque;
 import javafx.scene.image.Image;
 
-/**
- *
- * @author User
- */
 public class Monster {
 
     private double x, y, width, movementSpeed;
@@ -23,7 +14,7 @@ public class Monster {
     private Tile nextTile = null;
     private ArrayDeque<Tile> nextPath = new ArrayDeque<>();
     private boolean isInPanic = false;
-    private boolean panicInProgess = false;
+    private boolean panicSpeedLimiter = false;
     private String imagePath = "";
     private final Image up;
     private final Image down;
@@ -132,8 +123,8 @@ public class Monster {
         if (this.x == nextTile.getX() && this.y == nextTile.getY()) {
             this.nextTile = null;
         }
-        if (!this.panicInProgess && this.currentBehaviour == Behaviour.PANIC) {
-            this.panicInProgess = true;
+        if (!this.panicSpeedLimiter && this.currentBehaviour == Behaviour.PANIC) {
+            this.panicSpeedLimiter = true;
         }
     }
 
@@ -148,8 +139,8 @@ public class Monster {
      * @return False if moving the monster failed, else True.
      */
     public boolean move() {
-        if (this.panicInProgess && this.currentBehaviour == Behaviour.PANIC) {
-            this.panicInProgess = false;
+        if (this.panicSpeedLimiter && this.currentBehaviour == Behaviour.PANIC) {
+            this.panicSpeedLimiter = false;
             return false;
         }
         if (this.nextTile == null) {

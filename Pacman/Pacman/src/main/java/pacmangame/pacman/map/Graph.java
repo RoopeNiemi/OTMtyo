@@ -1,18 +1,9 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package pacmangame.pacman.map;
 
 import java.util.ArrayList;
 import java.util.List;
 import pacmangame.pacman.characters.Direction;
 
-/**
- *
- * @author User
- */
 public class Graph {
 
     private int width, height;
@@ -93,11 +84,6 @@ public class Graph {
         points.get(temp).setType(Type.POWER_PELLET);
         temp += 15;
         points.get(temp).setType(Type.POWER_PELLET);
-
-
-        /* Point t = points.get(points.size() - 1);
-        points.clear();
-        points.add(t);*/
     }
 
     /**
