@@ -9,6 +9,8 @@ Pelissä pelaaja pystyy liikkumaan 2D-labyrintissä, tarkoituksenaan syödä kai
 Liikkuminen tapahtuu nuolinäppäimillä siten, että hahmo liikkuu annettuun suuntaan jos se on mahdollista, niin kauan kunnes
 tulee seinä vastaan tai jonossa oleva uusi suunta on mahdollista toteuttaa. 
 
+Jokaisen kentän alussa hirviöt aktivoituvat yksi kerrallaan. 
+
 Pelissä on tietty määrä erikoispisteitä pisteiden seassa. Pelaajan syötyä hedelmän hirviöt joutuvat 5 sekunnin ajaksi paniikin valtaan ja pakenevat pelaajaa. Paniikkivaiheessa hirviöiden nopeus puolittuu, ja pelaaja on sen keston ajan kuolematon. Tällöin pelaajan on mahdollista tilapäisesti "syödä" hirviö, jolloin hirviö palautuu lähtöruutuunsa. 
 
 Pelissä on 4 vihollishirviötä, jotka poikkeavat hieman toisistaan käytöksen osalta. Toiminta tulee olemaan seuraavankaltainen:
