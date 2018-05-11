@@ -23,8 +23,9 @@ Pelissä on 4 vihollishirviötä, jotka poikkeavat hieman toisistaan käytöksen
 Hirviöillä on kaksi normaalia käyttäytymismallia: jahtaamisvaihe kestää 20 sekuntia ja silloin hirviöt toimivat yllä kirjoitetulla tavalla. Lisäksi hirviöillä on 7 sekunnin hajautumisvaihe, jolloin ne hakevat reittiä jokainen kartan eri kulmiin. Tämä vaihe voi toistua 4 kertaa kentän aikana. Kun hajautumisvaihe on toteutunut 4 kertaa kentän aikana, hirviöit pysyvät jahtaamisvaiheessa loppukentän ajan.
 
 
+## Jatkokehitysideoita
 
-
+Ohjelmasta puuttuu joitakin oikean Pacman-pelin ominaisuuksia. Pelistä puuttuu muun muassa ominaisuus, jossa joka kentän kohdalla pelaajan syötyä tarpeeksi pisteitä punaisen hirviön liikkumisnopeus nopeutuu loppukentän ajaksi. Pelissä ei ole myöskään erillisiä lisäpisteitä tuovia hedelmiä. Jonkinlaiset ääniefektit olisivat myös mielenkiintoinen lisä. 
 
 
 
