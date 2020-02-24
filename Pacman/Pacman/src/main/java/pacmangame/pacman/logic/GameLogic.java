@@ -2,8 +2,10 @@ package pacmangame.pacman.logic;
 
 import pacmangame.pacman.map.Point;
 import pacmangame.pacman.map.Type;
+
 import java.util.*;
 import java.util.stream.Collectors;
+
 import pacmangame.pacman.characters.*;
 import pacmangame.pacman.map.*;
 import pacmangame.pacman.pathfinding.Pathfinder;
@@ -16,39 +18,16 @@ public class GameLogic {
     private Monster blue;
     private Monster orange;
     private Pathfinder pathfinder = new Pathfinder();
-    private boolean gameOver = false;
     private Graph currentMap;
-    private GameTimer timer;
     private GameState gameState;
-    private GameTimer monsterBehaviourTimer;
-    private GameTimer monsterActivator;
-    private int highscore = 0;
-    private long panicPhaseLength = 5000000000L;
-    private long normalMonsterBehaviourLength = 20000000000L;
-    private long scatterBehaviourLength = 7000000000L;
+    private GameTimerHandler gameTimerHandler;
 
-    /**
-     *
-     * @param mapLoader
-     * @param startingPoints
-     * @param playerLives
-     */
     public GameLogic(MapLoader mapLoader, int startingPoints, int playerLives) {
         this.player = new Player(180, 300, playerLives);
         this.currentMap = new Graph(mapLoader.loadMap());
         this.gameState = new GameState(startingPoints, "highscore.db");
+        this.gameTimerHandler = new GameTimerHandler();
         initMonsters();
-        initTimers();
-    }
-
-    private void initTimers() {
-        this.timer = new GameTimer();
-        this.monsterActivator = new GameTimer();
-        this.monsterActivator.setThreshold(4000000000L);
-        this.monsterActivator.activate();
-        this.monsterBehaviourTimer = new GameTimer();
-        this.monsterBehaviourTimer.setThreshold(normalMonsterBehaviourLength);
-        this.monsterBehaviourTimer.activate();
     }
 
     private void initMonsters() {
@@ -63,20 +42,11 @@ public class GameLogic {
     }
 
     /**
-     *
      * @return True if game is not over, player has not been hit, and level has
      * not been completed. Else returns false
      */
     public boolean situationNormal() {
         return !this.gameState.isGameOver() && !this.player.gotHit() && !this.gameState.isComplete();
-    }
-
-    /**
-     *
-     * @return GameTimer that handles activating monsters
-     */
-    public GameTimer getMonsterActivator() {
-        return this.monsterActivator;
     }
 
     /**
@@ -96,7 +66,7 @@ public class GameLogic {
      *
      * @param monster Monster that is to be reset
      */
-    public void resetMonsterPosition(Monster monster) {
+    private void resetMonsterPosition(Monster monster) {
         monster.setX(monster.getStartingTile().getX());
         monster.setY(monster.getStartingTile().getY());
         monster.getNextPath().clear();
@@ -112,14 +82,14 @@ public class GameLogic {
      * normal.
      *
      * @param updateFrequency time that is added to the GameTimers handling
-     * behaviour changes
+     *                        behaviour changes
      */
     public void handleBehaviourUpdate(long updateFrequency) {
         if (monsterBehaviourThresholdReached(updateFrequency)) {
-            if (getMonsterBehaviourTimer().getThreshold() == normalMonsterBehaviourLength) {
+            if (gameTimerHandler.monsterBehaviourTimerThresholdNormal()) {
                 scatterIfPossible();
             } else {
-                activateChaseMode();
+                activateNormalMode();
             }
         }
         if (timerThresholdReached(updateFrequency)) {
@@ -134,8 +104,8 @@ public class GameLogic {
      * @return True if the GameTimer handling monster behaviour reaches a
      * threshold. Else false.
      */
-    public boolean monsterBehaviourThresholdReached(long addedTime) {
-        return this.monsterBehaviourTimer.addTime(addedTime);
+    private boolean monsterBehaviourThresholdReached(long addedTime) {
+        return gameTimerHandler.getMonsterBehaviourTimer().addTime(addedTime);
     }
 
     /**
@@ -145,14 +115,14 @@ public class GameLogic {
      * @return True if the GameTimer that handles monster panic phase has
      * reached a threshold.
      */
-    public boolean timerThresholdReached(long addedTime) {
-        return this.timer.addTime(addedTime);
+    private boolean timerThresholdReached(long addedTime) {
+        return gameTimerHandler.getPanicTimer().addTime(addedTime);
     }
 
     private void findMonsterPath(Monster monster, Tile monsterTile, Tile destinationTile) {
-        Stack<Tile> path = pathfinder.findPath(monsterTile, this.currentMap.getGraphMatrix(), destinationTile);
+        Stack<Tile> path = pathfinder.findPath(monsterTile, this.currentMap.getMap(), destinationTile);
         if (path.isEmpty() || path.peek() == null || path.size() == 1 && path.peek() == monsterTile) {
-            path = pathfinder.findPath(monsterTile, this.currentMap.getGraphMatrix(), getRandomDestinationTile(monster));
+            path = pathfinder.findPath(monsterTile, this.currentMap.getMap(), getRandomDestinationTile(monster));
         }
         while (!path.isEmpty() && monster.getNextPath().size() < monster.getPathSize()) {
             monster.getNextPath().addLast(path.pop());
@@ -162,27 +132,25 @@ public class GameLogic {
     /**
      * Sets monsters' behaviour to scatter if monsters have scattered less than
      * 4 times in current game.
-     *
      */
     public void scatterIfPossible() {
         if (this.gameState.getTimesScattered() < 4) {
-            getMonsterBehaviourTimer().setThreshold(scatterBehaviourLength);
+            gameTimerHandler.setBehaviourThresholdToScatter();
             this.gameState.addScatterTime();
             setAllMonstersBehaviourState(Behaviour.SCATTER);
-            getMonsterBehaviourTimer().reset();
-            getMonsterBehaviourTimer().activate();
+            gameTimerHandler.getMonsterBehaviourTimer().reset();
+            gameTimerHandler.getMonsterBehaviourTimer().setActive(true);
         }
     }
 
     /**
      * Sets monsters' behaviour to normal
-     *
      */
-    public void activateChaseMode() {
-        getMonsterBehaviourTimer().setThreshold(normalMonsterBehaviourLength);
-        getMonsterBehaviourTimer().reset();
+    public void activateNormalMode() {
+        gameTimerHandler.setBehaviourThresholdToNormal();
+        gameTimerHandler.getMonsterBehaviourTimer().reset();
         setAllMonstersBehaviourState(Behaviour.NORMAL);
-        getMonsterBehaviourTimer().activate();
+        gameTimerHandler.getMonsterBehaviourTimer().setActive(true);
     }
 
     /**
@@ -191,7 +159,7 @@ public class GameLogic {
      */
     public void endPanicPhase() {
         setAllMonstersBehaviourState(Behaviour.NORMAL);
-        getMonsterBehaviourTimer().activate();
+        gameTimerHandler.getMonsterBehaviourTimer().setActive(true);
     }
 
     /**
@@ -204,12 +172,12 @@ public class GameLogic {
     public void movePlayer() {
         this.player.move();
         checkPointSituation();
-        if (player.getX() <= 0 && player.getY() == this.currentMap.getGraphMatrix()[9][0].getY()) {
-            player.setX(this.currentMap.getGraphMatrix()[9][18].getX() + 18);
+        if (playerAbleToTransitionToRightSide()) {
+            player.setX(currentMap.getRightSideTransitionTile().getX() + 18);
             return;
         }
-        if (player.getX() >= this.currentMap.getGraphMatrix()[9][18].getX() + 18 && player.getY() == this.currentMap.getGraphMatrix()[9][0].getY() && player.getMovementDirection() == Direction.RIGHT) {
-            player.setX(this.currentMap.getGraphMatrix()[9][0].getX());
+        if (playerAbleToTransitionToLeftSide()) {
+            player.setX(currentMap.getLeftSideTransitionTile().getX());
             return;
         }
         if (this.currentMap.checkTurn(player.getX(), player.getY(), player.getQueuedDirection())) {
@@ -221,20 +189,28 @@ public class GameLogic {
         }
     }
 
-    /**
-     *
-     * @return GameTimer that handles monster's panic phase.
-     */
-    public GameTimer getTimer() {
-        return this.timer;
+    private boolean playerAbleToTransitionToRightSide() {
+        final Tile leftTransitionTile = currentMap.getLeftSideTransitionTile();
+        return player.getX() <= leftTransitionTile.getX() && player.getY() == leftTransitionTile.getY();
     }
 
-    /**
-     *
-     * @return GameTimer that handles monsters' normal behaviour.
-     */
-    public GameTimer getMonsterBehaviourTimer() {
-        return this.monsterBehaviourTimer;
+    private boolean playerAbleToTransitionToLeftSide() {
+        final Tile rightTransitionTile = currentMap.getRightSideTransitionTile();
+        return player.getX() >= rightTransitionTile.getX() + 18 && player.getY() == rightTransitionTile.getY() && player.getMovementDirection() == Direction.RIGHT;
+    }
+
+    public void handleLosingHitPoints() {
+        gameTimerHandler.getMonsterBehaviourTimer().setActive(false);
+        getPlayer().loseHitPoints();
+        if (!getPlayer().gotHit()) {
+            gameTimerHandler.getMonsterBehaviourTimer().setActive(true);
+            resetMonsterStartingPositions();
+        }
+    }
+
+    public void handleGameOver() {
+        gameTimerHandler.getPanicTimer().setActive(false);
+        gameTimerHandler.getMonsterBehaviourTimer().setActive(false);
     }
 
     /**
@@ -243,44 +219,46 @@ public class GameLogic {
      * are already active.
      *
      * @param addedTime Time added to the GameTimer that handles activating
-     * monsters.
+     *                  monsters.
      */
     public void monsterActivation(long addedTime) {
-        if (this.monsterActivator.isActive()) {
-            if (this.monsterActivator.addTime(addedTime)) {
-                switch (this.gameState.getActiveMonsters()) {
-                    case 1:
-                        this.pink.activate();
-                        this.monsterActivator.activate();
-                        this.gameState.addActiveMonster();
-                        break;
-                    case 2:
-                        this.blue.activate();
-                        this.monsterActivator.activate();
-                        this.gameState.addActiveMonster();
-                        break;
-                    case 3:
-                        this.orange.activate();
-                        this.gameState.addActiveMonster();
-                        break;
-                }
+        if (isMonsterActivationPossible(addedTime)) {
+            switch (this.gameState.getActiveMonsters()) {
+                case 1:
+                    this.pink.setActive(true);
+                    gameTimerHandler.getMonsterActivator().setActive(true);
+                    this.gameState.addActiveMonster();
+                    break;
+                case 2:
+                    this.blue.setActive(true);
+                    gameTimerHandler.getMonsterActivator().setActive(true);
+                    this.gameState.addActiveMonster();
+                    break;
+                case 3:
+                    this.orange.setActive(true);
+                    this.gameState.addActiveMonster();
+                    break;
             }
         }
     }
 
+    private boolean isMonsterActivationPossible(long addedTime) {
+        GameTimer timer = gameTimerHandler.getMonsterActivator();
+        return timer.isActive() && timer.addTime(addedTime);
+    }
+
     private void checkPointSituation() {
         if (player.getCentreX() <= 379) {
-            Tile playerTile = getTile(player.getCentreX(), player.getCentreY());
-            Stack<Point> deletedPoints = new Stack();
+            Tile playerTile = getTileFromCoordinates(player.getCentreX(), player.getCentreY());
+            Stack<Point> deletedPoints = new Stack<>();
             for (Point currentPoint : playerTile.getTilesPoints()) {
                 if (playerCollidesWithPoint(currentPoint)) {
                     deletedPoints.push(currentPoint);
                     if (currentPoint.getType() == Type.POWER_PELLET) {
                         //Monsters panic, slow down
                         setAllMonstersBehaviourState(Behaviour.PANIC);
-                        monsterBehaviourTimer.deactivate();
-                        this.timer.setThreshold(panicPhaseLength);
-                        this.timer.activate();
+                        gameTimerHandler.getMonsterBehaviourTimer().setActive(false);
+                        gameTimerHandler.getPanicTimer().setActive(true);
                     }
                 }
             }
@@ -318,15 +296,19 @@ public class GameLogic {
      * with player. Does not work if monster is not active or game is over.
      */
     public void updateMonsters() {
-        updateMonster(this.red, getTile(player.getX(), player.getY()), this.currentMap.getTopRightTile());
+        updateMonster(this.red, getPlayerTile(), this.currentMap.getTopRightTile());
         updateMonster(this.orange, orangeMovement(), this.currentMap.getBottomRightTile());
         updateMonster(this.blue, blueMovement(), this.currentMap.getTopLeftTile());
         updateMonster(this.pink, tileInFrontOfPlayer(), this.currentMap.getBottomLeftTile());
     }
 
+    private Tile getPlayerTile() {
+        return getTileFromCoordinates(player.getX(), player.getY());
+    }
+
     private Tile orangeMovement() {
         if (distanceFromPlayer() > 4) {
-            return getTile(player.getX(), player.getY());
+            return getTileFromCoordinates(player.getX(), player.getY());
         } else {
             return this.currentMap.getBottomRightTile();
         }
@@ -334,15 +316,14 @@ public class GameLogic {
 
     private Tile blueMovement() {
         Tile inFrontOfPlayer = tileInFrontOfPlayer();
-        Tile redTile = getTile(this.red.getX(), this.red.getY());
+        Tile redTile = getTileFromCoordinates(this.red.getX(), this.red.getY());
         double xDifference = inFrontOfPlayer.getX() - redTile.getX();
         double yDifference = inFrontOfPlayer.getY() - redTile.getY();
         double destinationTileX = inFrontOfPlayer.getX() + xDifference;
         double destinationTileY = inFrontOfPlayer.getY() + yDifference;
         destinationTileX = checkInBounds(destinationTileX, 340);
         destinationTileY = checkInBounds(destinationTileY, 380);
-        Tile blueDestinationTile = getTile(destinationTileX, destinationTileY);
-        return blueDestinationTile;
+        return getTileFromCoordinates(destinationTileX, destinationTileY);
     }
 
     private double checkInBounds(double value, double max) {
@@ -356,49 +337,81 @@ public class GameLogic {
     }
 
     private int distanceFromPlayer() {
-        int distanceX = Math.abs((int) Math.floor(this.orange.getX() / 20) - (int) Math.floor(this.player.getX() / 20));
-        int distanceY = Math.abs((int) Math.floor(this.orange.getY() / 20) - (int) Math.floor(this.player.getY() / 20));
+        int distanceX = Math.abs((int) Math.floor(this.orange.getX() / Tile.TILE_WIDTH) - (int) Math.floor(this.player.getX() / Tile.TILE_WIDTH));
+        int distanceY = Math.abs((int) Math.floor(this.orange.getY() / Tile.TILE_WIDTH) - (int) Math.floor(this.player.getY() / Tile.TILE_WIDTH));
         return distanceX + distanceY;
     }
 
     private Tile tileInFrontOfPlayer() {
         Direction dir = this.player.getMovementDirection();
-        int playerTileX = (int) Math.floor(getTile(player.getX(), player.getY()).getX() / 20);
-        int playerTileY = (int) Math.floor(getTile(player.getX(), player.getY()).getY() / 20);
-
+        int playerTileX = (int) Math.floor(getTileFromCoordinates(player.getX(), player.getY()).getX() / Tile.TILE_WIDTH);
+        int playerTileY = (int) Math.floor(getTileFromCoordinates(player.getX(), player.getY()).getY() / Tile.TILE_WIDTH);
         switch (dir) {
             case UP:
-                if (playerTileY >= 2) {
-                    return this.currentMap.getGraphMatrix()[playerTileY - 2][playerTileX];
-                } else {
-                    return this.currentMap.getGraphMatrix()[playerTileY + 4][playerTileX];
-                }
+                return tileInFrontOfPlayerMovingUp(playerTileX, playerTileY);
             case DOWN:
-                if (playerTileY <= this.currentMap.getGraphMatrix().length - 3) {
-                    return this.currentMap.getGraphMatrix()[playerTileY + 2][playerTileX];
-                } else {
-                    return this.currentMap.getGraphMatrix()[playerTileY - 4][playerTileX];
-                }
+                return tileInFrontOfPlayerMovingDown(playerTileX, playerTileY);
             case RIGHT:
-                if (playerTileX <= this.currentMap.getGraphMatrix()[0].length - 3) {
-                    return this.currentMap.getGraphMatrix()[playerTileY][playerTileX + 2];
-                } else {
-                    return this.currentMap.getGraphMatrix()[playerTileY][playerTileX - 4];
-                }
+                return tileInFrontOfPlayerMovingRight(playerTileX, playerTileY);
             case LEFT:
-                if (playerTileX >= 2) {
-                    return this.currentMap.getGraphMatrix()[playerTileY][playerTileX - 2];
-                } else {
-                    return this.currentMap.getGraphMatrix()[playerTileY][playerTileX + 4];
-                }
+                return tileInFrontOfPlayerMovingLeft(playerTileX, playerTileY);
             default:
-                return getTile(player.getX(), player.getY());
+                return getTileFromCoordinates(player.getX(), player.getY());
         }
     }
 
+    private Tile tileInFrontOfPlayerMovingUp(int playerTileX, int playerTileY) {
+        if (playerIsFarEnoughFromTopWall(playerTileY)) {
+            return this.currentMap.getMap()[playerTileY - 2][playerTileX];
+        }
+        return this.currentMap.getMap()[playerTileY + 4][playerTileX];
+
+    }
+
+    private Tile tileInFrontOfPlayerMovingDown(int playerTileX, int playerTileY) {
+        if (playerIsFarEnoughFromBottomWall(playerTileY)) {
+            return this.currentMap.getMap()[playerTileY + 2][playerTileX];
+        }
+        return this.currentMap.getMap()[playerTileY - 4][playerTileX];
+
+    }
+
+    private Tile tileInFrontOfPlayerMovingRight(int playerTileX, int playerTileY) {
+        if (playerIsFarEnoughFromRightWall(playerTileX)) {
+            return this.currentMap.getMap()[playerTileY][playerTileX + 2];
+        }
+        return this.currentMap.getMap()[playerTileY][playerTileX - 4];
+
+    }
+
+    private Tile tileInFrontOfPlayerMovingLeft(int playerTileX, int playerTileY) {
+        if (playerIsFarEnoughFromLeftWall(playerTileX)) {
+            return this.currentMap.getMap()[playerTileY][playerTileX - 2];
+        }
+        return this.currentMap.getMap()[playerTileY][playerTileX + 4];
+
+    }
+
+    private boolean playerIsFarEnoughFromTopWall(double playerTileY) {
+        return playerTileY >= 2;
+    }
+
+    private boolean playerIsFarEnoughFromBottomWall(double playerTileY) {
+        return playerTileY <= this.currentMap.getMap().length - 3;
+    }
+
+    private boolean playerIsFarEnoughFromRightWall(double playerTileX) {
+        return playerTileX <= this.currentMap.getMap()[0].length - 3;
+    }
+
+    private boolean playerIsFarEnoughFromLeftWall(double playerTileX) {
+        return playerTileX >= 2;
+    }
+
+
     private Tile getRandomDestinationTile(Monster monster) {
-        Tile monsterTile = getTile(monster.getX(), monster.getY());
-        List<Tile> tiles = getGraph().getMovableTiles().stream().filter(a -> a.getX() != monsterTile.getX() && a.getY() != monsterTile.getY()).collect(Collectors.toCollection(ArrayList::new));
+        Tile monsterTile = getTileFromCoordinates(monster.getX(), monster.getY());
+        List<Tile> tiles = getGraph().getCorridorTiles().stream().filter(a -> a.getX() != monsterTile.getX() && a.getY() != monsterTile.getY()).collect(Collectors.toCollection(ArrayList::new));
         return tiles.get(new Random().nextInt(tiles.size()));
     }
 
@@ -408,20 +421,20 @@ public class GameLogic {
         }
         if (monster.getNextTile() == null && monster.getNextPath().isEmpty()) {
             if (null == monster.getCurrentBehaviour()) {
-                findMonsterPath(monster, getTile(monster.getX(), monster.getY()), getRandomDestinationTile(monster));
+                findMonsterPath(monster, getTileFromCoordinates(monster.getX(), monster.getY()), getRandomDestinationTile(monster));
             } else {
                 switch (monster.getCurrentBehaviour()) {
                     case NORMAL:
-                        findMonsterPath(monster, getTile(monster.getX(), monster.getY()), normalDestination);
+                        findMonsterPath(monster, getTileFromCoordinates(monster.getX(), monster.getY()), normalDestination);
                         break;
                     case SCATTER:
-                        findMonsterPath(monster, getTile(monster.getX(), monster.getY()), scatterDestination);
+                        findMonsterPath(monster, getTileFromCoordinates(monster.getX(), monster.getY()), scatterDestination);
                         break;
                     case RESET:
-                        findMonsterPath(monster, getTile(monster.getX(), monster.getY()), monster.getStartingTile());
+                        findMonsterPath(monster, getTileFromCoordinates(monster.getX(), monster.getY()), monster.getStartingTile());
                         break;
                     default:
-                        findMonsterPath(monster, getTile(monster.getX(), monster.getY()), getRandomDestinationTile(monster));
+                        findMonsterPath(monster, getTileFromCoordinates(monster.getX(), monster.getY()), getRandomDestinationTile(monster));
                         break;
                 }
             }
@@ -435,29 +448,41 @@ public class GameLogic {
             return;
         }
 
-        if (Math.abs(this.player.getCentreX() - monster.getCentreX()) <= 10 && Math.abs(this.player.getCentreY() - monster.getCentreY()) <= 10) {
+        if (playerCollidesWithMonster(monster)) {
             if (monster.getCurrentBehaviour() == Behaviour.PANIC) {
-                monster.setCurrentBehaviour(Behaviour.RESET);
-                monster.getNextPath().clear();
-                monster.setMovementSpeed(4);
-                this.gameState.gainPoint(100);
-                return;
-            }
-            findMonsterPath(monster, getTile(monster.getX(), monster.getY()), getRandomDestinationTile(monster));
-            this.player.loseHitPoint();
-            if (this.player.getRemainingLife() <= 0) {
-                this.gameState.setGameOver(true);
+                playerEatsMonster(monster);
+            } else {
+                findMonsterPath(monster, getMonsterTile(monster), getRandomDestinationTile(monster));
+                this.player.loseHitPoint();
+                if (this.player.getRemainingLife() <= 0) {
+                    this.gameState.setGameOver(true);
+                }
             }
         }
     }
 
-    private Tile getTile(double x, double y) {
+    private boolean playerCollidesWithMonster(Monster monster) {
+        return Math.abs(this.player.getCentreX() - monster.getCentreX()) <= 10 && Math.abs(this.player.getCentreY() - monster.getCentreY()) <= 10;
+    }
+
+    private void playerEatsMonster(Monster monster) {
+        monster.setCurrentBehaviour(Behaviour.RESET);
+        monster.getNextPath().clear();
+        monster.setMovementSpeed(4);
+        this.gameState.gainPoint(100);
+    }
+
+    private Tile getMonsterTile(Monster monster) {
+        return getTileFromCoordinates(monster.getX(), monster.getY());
+    }
+
+    private Tile getTileFromCoordinates(double x, double y) {
         int xK = (int) Math.floor(x / 20);
         if (xK < 0) {
             xK = 0;
         }
         int yK = (int) Math.floor(y / 20);
-        return this.currentMap.getGraphMatrix()[yK][xK];
+        return this.currentMap.getMap()[yK][xK];
     }
 
     public Player getPlayer() {

@@ -56,33 +56,33 @@ public class PathfinderTest {
 
     @Test
     public void returnsEmptyStackWhenStartingTileValueIsZero() {
-        Tile start = map.getGraphMatrix()[0][0];
-        Tile dest = map.getGraphMatrix()[0][1];
-        Stack<Tile> path = pathfinder.findPath(start, map.getGraphMatrix(), dest);
+        Tile start = map.getMap()[0][0];
+        Tile dest = map.getMap()[0][1];
+        Stack<Tile> path = pathfinder.findPath(start, map.getMap(), dest);
         assertTrue(path.isEmpty());
     }
 
     @Test
     public void returnEmptyStackWhenStartingTileAndDestinationTileAreSame() {
-        Tile start = map.getGraphMatrix()[0][1];
-        Tile dest = map.getGraphMatrix()[0][1];
-        Stack<Tile> path = pathfinder.findPath(start, map.getGraphMatrix(), dest);
+        Tile start = map.getMap()[0][1];
+        Tile dest = map.getMap()[0][1];
+        Stack<Tile> path = pathfinder.findPath(start, map.getMap(), dest);
         assertTrue(path.isEmpty());
     }
 
     @Test
     public void pathSizeIsCorrect() {
-        Tile start = map.getGraphMatrix()[3][0];
-        Tile dest = map.getGraphMatrix()[2][2];
-        Stack<Tile> path = pathfinder.findPath(start, map.getGraphMatrix(), dest);
+        Tile start = map.getMap()[3][0];
+        Tile dest = map.getMap()[2][2];
+        Stack<Tile> path = pathfinder.findPath(start, map.getMap(), dest);
         assertTrue(path.size() == 5);
     }
 
     @Test
     public void pathDoesNotContainTilesWithZeroValue() {
-        Tile start = map.getGraphMatrix()[0][3];
-        Tile dest = map.getGraphMatrix()[2][2];
-        Stack<Tile> path = pathfinder.findPath(start, map.getGraphMatrix(), dest);
+        Tile start = map.getMap()[0][3];
+        Tile dest = map.getMap()[2][2];
+        Stack<Tile> path = pathfinder.findPath(start, map.getMap(), dest);
         boolean zeroFound = false;
         while (!path.isEmpty()) {
             if (path.pop().getValue() == 0) {

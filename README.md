@@ -1,51 +1,5 @@
 # Pacman
 
-Helsingin yliopiston Ohjelmistotekniikan menetelmät -kurssia varten tehty sovellus.
+A Pacman-game made during a course in the University of Helsinki
+![alt text](https://github.com/RoopeNiemi/OTMtyo/blob/master/gif/pacmanGIF.gif)
 
-![alt text](https://github.com/RoopeNiemi/OTMtyo/blob/master/dokumentaatio/gif/pacmanGIF.gif)
-
-### Dokumentaatio
-[Vaatimusmäärittely](https://github.com/RoopeNiemi/OTMtyo/tree/master/dokumentaatio/Vaatimusmäärittely.md)
-
-[Arkkitehtuuri](https://github.com/RoopeNiemi/OTMtyo/tree/master/dokumentaatio/arkkitehtuuri.md)
-
-[Työaikakirjanpito](https://github.com/RoopeNiemi/OTMtyo/tree/master/dokumentaatio/työaikakirjanpito.md)
-
-[Testidokumentti](https://github.com/RoopeNiemi/OTMtyo/tree/master/dokumentaatio/testaus.md)
-
-[Käyttöohje](https://github.com/RoopeNiemi/OTMtyo/tree/master/dokumentaatio/kayttoohje.md)
-
-
-### Releaset
-[Viikko 5](https://github.com/RoopeNiemi/OTMtyo/releases/tag/v1.0)
-
-
-[Viikko 6](https://github.com/RoopeNiemi/OTMtyo/releases/tag/v1.1)
-
-[Loppupalautus](https://github.com/RoopeNiemi/OTMtyo/releases/tag/v1.2)
-
-## Komentorivitoiminnot
-
-### Testaus
-Testit suoritetaan komennolla 
-
-    mvn test
-    
-Testikattavuusraportti luodaan komennolla
-
-    mvn jacoco:report
-    
-Kattavuusraporttia voi tarkastella avaamalla selaimella tiedosto target/site/jacoco/index.html
-
-### Checkstyle
-Tiedostoon checkstyle.xml määrittelemät tarkistukset suoritetaan komennolla
-
-    mvn jxr:jxr checkstyle:checkstyle
-    
-    
-### Suoritettavan jarin generointi
-Komento
-
-    mvn package
-
-generoi hakemistoon target suoritettavan jar-tiedoston Pacman-1.0-SNAPSHOT.jar

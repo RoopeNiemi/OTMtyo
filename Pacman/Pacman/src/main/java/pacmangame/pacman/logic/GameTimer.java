@@ -1,8 +1,17 @@
 package pacmangame.pacman.logic;
 
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@NoArgsConstructor
 public class GameTimer {
 
-    private long timerThreshold = 1000000000;
+    public GameTimer(long threshold) {
+        this.threshold = threshold;
+    }
+
+    private long threshold = 1000000000;
     private long time = 0;
     private boolean active = false;
 
@@ -13,62 +22,24 @@ public class GameTimer {
      * @param time Added to the timer.
      * @return True if a threshold is reached, else false.
      */
-    public boolean addTime(long time) {
+    boolean addTime(long time) {
         if (!this.active) {
             return false;
         }
         this.time += time;
-        if (this.time >= timerThreshold) {
+        if (this.time >= threshold) {
             this.time = 0;
-            deactivate();
+            setActive(false);
             return true;
         }
         return false;
     }
 
     /**
-     *
-     * @return True if timer is active, else false.
-     */
-    public boolean isActive() {
-        return this.active;
-    }
-
-    /**
-     *
-     * @return GameTimer's current threshold.
-     */
-    public long getThreshold() {
-        return this.timerThreshold;
-    }
-
-    /**
-     *
-     * @param newThreshold New threshold of the GameTimer
-     */
-    public void setThreshold(long newThreshold) {
-        this.timerThreshold = newThreshold;
-    }
-
-    /**
      * Sets GameTimer's time to 0.
      */
-    public void reset() {
+    void reset() {
         this.time = 0;
-    }
-
-    /**
-     * Activates the GameTimer.
-     */
-    public void activate() {
-        this.active = true;
-    }
-
-    /**
-     * Deactivates the GameTimer.
-     */
-    public void deactivate() {
-        this.active = false;
     }
 
 }

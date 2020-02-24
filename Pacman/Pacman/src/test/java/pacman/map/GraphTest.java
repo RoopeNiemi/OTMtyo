@@ -42,8 +42,8 @@ public class GraphTest {
 
     @Test
     public void graphWidthAndHeightIsCorrect() {
-        assertTrue(graph.getGraphMatrix().length == 3);
-        assertTrue(graph.getGraphMatrix()[0].length == 4);
+        assertTrue(graph.getMap().length == 3);
+        assertTrue(graph.getMap()[0].length == 4);
     }
 
     @Test

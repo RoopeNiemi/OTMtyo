@@ -66,7 +66,7 @@ public class GameLogicTest {
 
     @Test
     public void gameLoadsAMapWhenStarted() {
-        Tile[][] map = logic.getGraph().getGraphMatrix();
+        Tile[][] map = logic.getGraph().getMap();
         assertTrue(map.length > 0 && map[0].length > 0);
     }
 
@@ -151,7 +151,7 @@ public class GameLogicTest {
     @Test
     public void activatingChaseModeWorks() {
         logic.setAllMonstersBehaviourState(Behaviour.SCATTER);
-        logic.activateChaseMode();
+        logic.activateNormalMode();
         assertTrue(logic.getRed().getCurrentBehaviour() == Behaviour.NORMAL);
         assertTrue(logic.getPink().getCurrentBehaviour() == Behaviour.NORMAL);
         assertTrue(logic.getBlue().getCurrentBehaviour() == Behaviour.NORMAL);

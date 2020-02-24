@@ -2,7 +2,9 @@ package pacmangame.pacman.ui;
 
 import pacmangame.pacman.map.Point;
 import pacmangame.pacman.map.Type;
+
 import java.util.ArrayList;
+
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.scene.Scene;
@@ -40,8 +42,8 @@ public class PacmanUi extends Application {
         this.totalPoints = 0;
         this.game = new GameLogic(mapLoader, 0, 2);
         this.currentMap = game.getGraph();
-        game.getRed().activate();
-        highScoreLabel = new Label("HIGH SCORE: " + game.getGameState().getCurrentHighScore());
+        game.getRed().setActive(true);
+        highScoreLabel = new Label("HIGH SCORE: " + game.getGameState().getHighScore());
     }
 
     private void nextLevel() {
@@ -49,17 +51,17 @@ public class PacmanUi extends Application {
         this.totalPoints = game.getGameState().getPoints();
         game = game = new GameLogic(mapLoader, totalPoints, playerLivesLeft);
         currentMap = game.getGraph();
-        game.getRed().activate();
+        game.getRed().setActive(true);
     }
 
     @Override
     public void init() {
         this.pointLabel.setText("0");
         currentMap = game.getGraph();
-        game.getRed().activate();
-        this.highScoreLabel = new Label("HIGH SCORE: " + game.getGameState().getCurrentHighScore());
-        this.width = currentMap.getGraphMatrix()[0].length * 20;
-        this.height = currentMap.getGraphMatrix().length * 20;
+        game.getRed().setActive(true);
+        this.highScoreLabel = new Label("HIGH SCORE: " + game.getGameState().getHighScore());
+        this.width = currentMap.getMap()[0].length * 20;
+        this.height = currentMap.getMap().length * 20;
     }
 
     @Override
@@ -72,7 +74,7 @@ public class PacmanUi extends Application {
         setMouseClicked(scene);
         setKeyPressed(primaryStage, scene);
         initStage(primaryStage, scene);
-        
+
         new AnimationTimer() {
             long prev = 0;
 
@@ -91,20 +93,14 @@ public class PacmanUi extends Application {
                     paintGame(c.getGraphicsContext2D(), game.getGraph(), game.getPlayer());
                 } else {
                     if (game.getPlayer().gotHit()) {
-                        game.getMonsterBehaviourTimer().deactivate();
-                        game.getPlayer().loseHitPoints();
-                        if (!game.getPlayer().gotHit()) {
-                            game.getMonsterBehaviourTimer().activate();
-                            game.resetMonsterStartingPositions();
-                        }
+                        game.handleLosingHitPoints();
                         paintGame(c.getGraphicsContext2D(), currentMap, game.getPlayer());
                         pointLabel.setText("" + game.getGameState().getPoints());
                     } else if (game.getGameState().isComplete()) {
                         nextLevel();
                     } else {
                         if (game.getGameState().isGameOver()) {
-                            game.getTimer().deactivate();
-                            game.getMonsterBehaviourTimer().deactivate();
+                            game.handleGameOver();
                             paintGame(c.getGraphicsContext2D(), currentMap, game.getPlayer());
                             drawGameOverText(c.getGraphicsContext2D());
                         }
@@ -172,9 +168,9 @@ public class PacmanUi extends Application {
         gc.fillText(this.pointLabel.getText(), 10, 30);
         gc.fillText(highScoreLabel.getText(), 120, 30);
         drawRemainingHealth(gc, player);
-        for (int i = 0; i < map.getGraphMatrix().length; i++) {
-            for (int j = 0; j < map.getGraphMatrix()[0].length; j++) {
-                Tile tile = map.getGraphMatrix()[i][j];
+        for (int i = 0; i < map.getMap().length; i++) {
+            for (int j = 0; j < map.getMap()[0].length; j++) {
+                Tile tile = map.getMap()[i][j];
                 if (tile.getValue() == 1) {
                     gc.setFill(Color.BLACK);
                     gc.fillRect(tile.getX(), tile.getY() + scoreBoardHeight, tile.getWidth(), tile.getWidth());

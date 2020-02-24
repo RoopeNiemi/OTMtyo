@@ -23,6 +23,11 @@
             <artifactId>sqlite-jdbc</artifactId>
             <version>3.20.0</version>
         </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.18.10</version>
+        </dependency>
     </dependencies>
     <build>
         <plugins>
@@ -74,7 +79,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
-                <version>1.6</version>
+                <version>3.2.1</version>
                 <executions>
                     <execution>
                         <phase>package</phase>
@@ -82,10 +87,14 @@
                             <goal>shade</goal>
                         </goals>
                         <configuration>
+                            <filters><filter></filter></filters>
+                            <finalName>Pacman</finalName>
                             <transformers>
                                 <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
                                     <mainClass>pacmangame.pacman.ui.PacmanUi</mainClass>
+                                    <manifestEntries><Main-Class>pacmangame.pacman.ui.PacmanUi</Main-Class><Class-Path>.</Class-Path></manifestEntries>
                                 </transformer>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
                             </transformers>
                         </configuration>
                     </execution>

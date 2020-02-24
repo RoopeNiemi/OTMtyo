@@ -7,14 +7,8 @@ public class Tile {
     private double x, y, width, value;
     private Tile pathFrom = null;
     private ArrayList<Point> tilesPoints;
+    public static final double TILE_WIDTH = 20;
 
-    /**
-     *
-     * @param x
-     * @param y
-     * @param width
-     * @param value
-     */
     public Tile(double x, double y, double width, double value) {
         this.x = x;
         this.y = y;
@@ -120,10 +114,7 @@ public class Tile {
         if (Double.doubleToLongBits(this.x) != Double.doubleToLongBits(other.x)) {
             return false;
         }
-        if (Double.doubleToLongBits(this.y) != Double.doubleToLongBits(other.y)) {
-            return false;
-        }
-        return true;
+        return Double.doubleToLongBits(this.y) == Double.doubleToLongBits(other.y);
     }
 
 }

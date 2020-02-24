@@ -4,3 +4,5 @@
 /Pacman/Pacman/nbproject/
 /Pacman/Pacman/highscore.db
 /Pacman/Pacman/test.db
+*.idea
+*.iml

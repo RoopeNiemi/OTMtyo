@@ -1,9 +1,11 @@
 package pacmangame.pacman.characters;
 
+import lombok.Data;
 import pacmangame.pacman.map.Tile;
 import java.util.ArrayDeque;
 import javafx.scene.image.Image;
 
+@Data
 public class Monster {
 
     private double x, y, width, movementSpeed;
@@ -15,7 +17,7 @@ public class Monster {
     private ArrayDeque<Tile> nextPath = new ArrayDeque<>();
     private boolean isInPanic = false;
     private boolean panicSpeedLimiter = false;
-    private String imagePath = "";
+    private String imagePath;
     private final Image up;
     private final Image down;
     private final Image left;
@@ -53,14 +55,6 @@ public class Monster {
     }
 
     /**
-     *
-     * @return True if monster is active, else false.
-     */
-    public boolean isActive() {
-        return this.active;
-    }
-
-    /**
      * Sets monster's behaviour to given behaviour, unless monster is in a reset
      * state.
      *
@@ -76,55 +70,38 @@ public class Monster {
         return this.currentBehaviour;
     }
 
-    public void setMovementSpeed(double i) {
-        this.movementSpeed = i;
-    }
-
-    /**
-     *
-     * @param path Monster's new path.
-     */
-    public void setNextPath(ArrayDeque<Tile> path) {
-        this.nextPath = path;
-    }
-
-    /**
-     *
-     * @return Tile from which the monster started the game.
-     */
-    public Tile getStartingTile() {
-        return this.startingTile;
-    }
-
-    /**
-     *
-     * @return Monster's path size.
-     */
-    public int getPathSize() {
-        return this.pathSize;
-    }
-
     /**
      * Checks monsters current position. If monster is in a reset state and has
      * reached its starting tile, sets monster behaviour and speed to normal. If
      * monster has reached its next tile on a path, sets next tile to null.
      */
     public void checkPosition() {
+        resetPanicIfNecessary();;
+        changeDestinationTileIfNecessary();
+        checkIfNextDestinationReached();
+        if (!this.panicSpeedLimiter && this.currentBehaviour == Behaviour.PANIC) {
+            this.panicSpeedLimiter = true;
+        }
+    }
+
+    private void resetPanicIfNecessary() {
         if (this.currentBehaviour == Behaviour.RESET && this.x == this.startingTile.getX() && this.y == this.startingTile.getY()) {
             this.currentBehaviour = Behaviour.NORMAL;
             this.movementSpeed = 2;
         }
+    }
+
+    private void changeDestinationTileIfNecessary() {
         if (this.movementSpeed == 4 && Math.abs(this.x - nextTile.getX()) <= 2 && Math.abs(this.y - nextTile.getY()) <= 2) {
             this.x = nextTile.getX();
             this.y = nextTile.getY();
             this.nextTile = null;
-            return;
         }
-        if (this.x == nextTile.getX() && this.y == nextTile.getY()) {
+    }
+
+    private void checkIfNextDestinationReached() {
+        if (this.nextTile != null && this.x == nextTile.getX() && this.y == nextTile.getY()) {
             this.nextTile = null;
-        }
-        if (!this.panicSpeedLimiter && this.currentBehaviour == Behaviour.PANIC) {
-            this.panicSpeedLimiter = true;
         }
     }
 
@@ -138,22 +115,19 @@ public class Monster {
      *
      * @return False if moving the monster failed, else True.
      */
-    public boolean move() {
+    public void move() {
         if (this.panicSpeedLimiter && this.currentBehaviour == Behaviour.PANIC) {
             this.panicSpeedLimiter = false;
-            return false;
+            return;
         }
         if (this.nextTile == null) {
-            if (this.nextPath.isEmpty()) {
-                return false;
+            if(this.nextPath.isEmpty()) {
+                return;
             } else {
                 this.nextTile = this.nextPath.pollFirst();
             }
         }
-        double currentTileX = Math.floor(this.x / 20);
-        if (currentTileX < 0) {
-            currentTileX = 0;
-        }
+        double currentTileX = getCurrentTile();
 
         if (nextTile.getX() == 0 && nextTile.getY() == 180 && currentTileX == 18) {
             if (this.x < 376) {
@@ -163,7 +137,7 @@ public class Monster {
                 this.x = 0;
             }
             checkPosition();
-            return true;
+            return;
         }
         if (nextTile.getX() == 360 && nextTile.getY() == 180 && currentTileX == 0) {
             if (this.x > -16) {
@@ -173,8 +147,21 @@ public class Monster {
                 this.x = 376;
             }
             checkPosition();
-            return true;
+            return;
         }
+        setMonsterImageNormalCase();
+        checkPosition();
+    }
+
+    private double getCurrentTile() {
+        double currentTileX = Math.floor(this.x / 20);
+        if (currentTileX < 0) {
+            currentTileX = 0;
+        }
+        return currentTileX;
+    }
+
+    private void setMonsterImageNormalCase() {
         double tileX = nextTile.getX();
         double tileY = nextTile.getY();
         if (tileX > this.x) {
@@ -190,48 +177,6 @@ public class Monster {
             this.y -= this.movementSpeed;
             currentImage = up;
         }
-        checkPosition();
-        return true;
-    }
-
-    public double getX() {
-        return x;
-    }
-
-    /**
-     *
-     * @return Monster's path.
-     */
-    public ArrayDeque<Tile> getNextPath() {
-        return this.nextPath;
-    }
-
-    public void setX(double x) {
-        this.x = x;
-    }
-
-    public double getY() {
-        return y;
-    }
-
-    public void setY(double y) {
-        this.y = y;
-    }
-
-    public double getWidth() {
-        return width;
-    }
-
-    public void setWidth(double width) {
-        this.width = width;
-    }
-
-    public Tile getNextTile() {
-        return nextTile;
-    }
-
-    public void setNextTile(Tile nextTile) {
-        this.nextTile = nextTile;
     }
 
     /**
@@ -250,11 +195,4 @@ public class Monster {
         return this.y + (this.width / 2);
     }
 
-    /**
-     *
-     * @return Monster's current image.
-     */
-    public Image getCurrentImage() {
-        return this.currentImage;
-    }
 }

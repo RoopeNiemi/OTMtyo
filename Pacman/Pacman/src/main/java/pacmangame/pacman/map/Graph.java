@@ -2,23 +2,17 @@ package pacmangame.pacman.map;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import pacmangame.pacman.characters.Direction;
 
 public class Graph {
 
-    private int width, height;
-    private Tile[][] graphMatrix;
-    private ArrayList<Tile> movableTiles = new ArrayList<Tile>();
+    private Tile[][] map;
+    private ArrayList<Tile> corridorTiles = new ArrayList<>();
     private ArrayList<Point> points = new ArrayList<>();
 
-    /**
-     *
-     * @param map
-     */
     public Graph(List<String> map) {
-        this.width = map.get(0).length();
-        this.height = map.size();
-        this.graphMatrix = new Tile[this.height][this.width];
+        this.map = new Tile[map.size()][map.get(0).length()];
         initGraph(map);
     }
 
@@ -26,15 +20,16 @@ public class Graph {
      * Generates points on the map. Also generates Power pellets to fixed
      * locations on map.
      */
-    public void generatePointsAndFruits() {
-        for (int i = 0; i < this.graphMatrix.length; i++) {
-            for (int j = 0; j < this.graphMatrix[0].length; j++) {
+    private void generatePointsAndFruits() {
+        for (int i = 0; i < this.map.length; i++) {
+            for (int j = 0; j < this.map[0].length; j++) {
+                // Monster spawning zone
                 if (i >= 8 && i <= 9 && j >= 7 && j <= 11) {
                     continue;
                 }
-                Tile t = this.graphMatrix[i][j];
+                Tile t = this.map[i][j];
                 if (t.getValue() == 1) {
-                    //Tile centre x and y
+                    //Generate points to the middle of a tile
                     double tileCentreX = t.getX() + t.getWidth() / 2;
                     double tileCentreY = t.getY() + t.getWidth() / 2;
                     Point p = new Point(tileCentreX, tileCentreY, Type.POINT);
@@ -42,7 +37,7 @@ public class Graph {
                     t.addTilePoint(p);
 
                     if (i > 0) {
-                        if (this.graphMatrix[i - 1][j].getValue() == 1) {
+                        if (this.map[i - 1][j].getValue() == 1) {
                             tileCentreX = t.getX() + t.getWidth() / 2;
                             double tileY = t.getY();
                             p = new Point(tileCentreX, tileY, Type.POINT);
@@ -51,7 +46,7 @@ public class Graph {
                         }
                     }
                     if (j > 0) {
-                        if (this.graphMatrix[i][j - 1].getValue() == 1) {
+                        if (this.map[i][j - 1].getValue() == 1) {
                             double tileX = t.getX();
                             tileCentreY = t.getY() + t.getWidth() / 2;
                             p = new Point(tileX, tileCentreY, Type.POINT);
@@ -87,84 +82,71 @@ public class Graph {
     }
 
     /**
-     *
      * @return List of tiles that are not walls.
      */
-    public ArrayList<Tile> getMovableTiles() {
-        return this.movableTiles;
+    public ArrayList<Tile> getCorridorTiles() {
+        return this.corridorTiles;
     }
 
     /**
      * Checks if moving to a given direction is possible. Has special cases for
      * player transferring from one side of the map to another.
      *
-     * @param x Player x-coordinate
-     * @param y Player y-coordinate
-     * @param dir Player direction
+     * @param playerXCoordinate Player x-coordinate
+     * @param playerYCoordinate Player y-coordinate
+     * @param dir               Player direction
      * @return True if moving to given direction is possible.
      */
-    public boolean checkTurn(double x, double y, Direction dir) {
-        int yCrd = (int) Math.floor(y / 20);
-        int xCrd = (int) Math.floor(x / 20);
+    public boolean checkTurn(double playerXCoordinate, double playerYCoordinate, Direction dir) {
+        int yTile = (int) Math.floor(playerYCoordinate / Tile.TILE_WIDTH);
+        int xTile = (int) Math.floor(playerXCoordinate / Tile.TILE_WIDTH);
 
         if (null != dir) {
             switch (dir) {
                 case DOWN:
-                    if (y == this.graphMatrix[yCrd][xCrd].getY() && x == this.graphMatrix[yCrd][xCrd].getX()) {
-                        if (yCrd < this.graphMatrix.length - 1 && this.graphMatrix[yCrd + 1][xCrd].getValue() == 1) {
+                    if (playerInCentreOfTile(playerXCoordinate, playerYCoordinate, xTile, yTile)) {
+                        if (yTile < this.map.length - 1 && this.map[yTile + 1][xTile].getValue() == 1) {
                             return true;
                         }
-                    } else if (yCrd < this.graphMatrix.length - 1 && y < this.graphMatrix[yCrd + 1][xCrd].getY()) {
-                        if (x != this.graphMatrix[yCrd][xCrd].getX()) {
-                            return false;
-                        }
-                        return true;
+                    } else if (yTile < this.map.length - 1 && playerYCoordinate < this.map[yTile + 1][xTile].getY()) {
+                        return playerXCoordinate == this.map[yTile][xTile].getX();
                     }
 
                     break;
                 case UP:
 
-                    if (y == this.graphMatrix[yCrd][xCrd].getY() && x == this.graphMatrix[yCrd][xCrd].getX()) {
-                        if (yCrd > 0 && this.graphMatrix[yCrd - 1][xCrd].getValue() == 1) {
+                    if (playerInCentreOfTile(playerXCoordinate, playerYCoordinate, xTile, yTile)) {
+                        if (yTile > 0 && this.map[yTile - 1][xTile].getValue() == 1) {
                             return true;
                         }
-                    } else if (yCrd > 0 && y > this.graphMatrix[yCrd - 1][xCrd].getY()) {
-                        if (x != this.graphMatrix[yCrd][xCrd].getX()) {
-                            return false;
-                        }
-                        return true;
+                    } else if (yTile > 0 && playerYCoordinate > this.map[yTile - 1][xTile].getY()) {
+                        return playerXCoordinate == this.map[yTile][xTile].getX();
                     }
                     break;
                 case LEFT:
 
-                    if (yCrd == 9 && xCrd == 0) {
+                    if (yTile == 9 && xTile == 0) {
                         return true;
                     }
-                    if (x == this.graphMatrix[yCrd][xCrd].getX() && y == this.graphMatrix[yCrd][xCrd].getY()) {
-                        if (xCrd > 0 && this.graphMatrix[yCrd][xCrd - 1].getValue() == 1) {
+                    if (playerInCentreOfTile(playerXCoordinate, playerYCoordinate, xTile, yTile)) {
+                        if (xTile > 0 && this.map[yTile][xTile - 1].getValue() == 1) {
                             return true;
                         }
-                    } else if (xCrd > 0 && x > this.graphMatrix[yCrd][xCrd - 1].getX()) {
-                        if (y != this.graphMatrix[yCrd][xCrd].getY()) {
-                            return false;
-                        }
-                        return true;
+                    } else if (xTile > 0 && playerXCoordinate > this.map[yTile][xTile - 1].getX()) {
+                        return playerYCoordinate == this.map[yTile][xTile].getY();
                     }
 
                     break;
                 case RIGHT:
-                    if (yCrd == 9 && xCrd == 18) {
+                    if (yTile == 9 && xTile == 18) {
                         return true;
                     }
-                    if (x == this.graphMatrix[yCrd][xCrd].getX() && y == this.graphMatrix[yCrd][xCrd].getY()) {
-                        if (xCrd < this.graphMatrix[0].length - 1 && this.graphMatrix[yCrd][xCrd + 1].getValue() == 1) {
+                    if (playerInCentreOfTile(playerXCoordinate, playerYCoordinate, xTile, yTile)) {
+                        if (xTile < this.map[0].length - 1 && this.map[yTile][xTile + 1].getValue() == 1) {
                             return true;
                         }
-                    } else if (xCrd < this.graphMatrix[0].length - 1 && x < this.graphMatrix[yCrd][xCrd + 1].getX()) {
-                        if (y != this.graphMatrix[yCrd][xCrd].getY()) {
-                            return false;
-                        }
-                        return true;
+                    } else if (xTile < this.map[0].length - 1 && playerXCoordinate < this.map[yTile][xTile + 1].getX()) {
+                        return playerYCoordinate == this.map[yTile][xTile].getY();
                     }
                     break;
                 default:
@@ -174,8 +156,11 @@ public class Graph {
         return false;
     }
 
+    private boolean playerInCentreOfTile(double playerXCoordinate, double playerYCoordinate, int xTile, int yTile) {
+        return playerYCoordinate == this.map[yTile][xTile].getY() && playerXCoordinate == this.map[yTile][xTile].getX();
+    }
+
     /**
-     *
      * @return List of all points left on map
      */
     public ArrayList<Point> getPointsList() {
@@ -183,17 +168,17 @@ public class Graph {
     }
 
     private void initGraph(List<String> map) {
-        movableTiles.clear();
+        corridorTiles.clear();
         double tileWidth = 20;
         for (int i = 0; i < map.size(); i++) {
             char[] characters = map.get(i).toCharArray();
             for (int j = 0; j < characters.length; j++) {
                 if (characters[j] == '1') {
                     Tile t = new Tile(j * tileWidth, i * tileWidth, tileWidth, 1);
-                    graphMatrix[i][j] = t;
-                    movableTiles.add(t);
+                    this.map[i][j] = t;
+                    corridorTiles.add(t);
                 } else {
-                    graphMatrix[i][j] = new Tile(j * tileWidth, i * tileWidth, tileWidth, 0);
+                    this.map[i][j] = new Tile(j * tileWidth, i * tileWidth, tileWidth, 0);
                 }
             }
         }
@@ -202,74 +187,73 @@ public class Graph {
     }
 
     /**
-     *
      * @return Starting tile of red monster.
      */
     public Tile getRedStartingTile() {
-        return this.graphMatrix[7][9];
+        return this.map[7][9];
     }
 
     /**
-     *
      * @return Starting tile of pink monster.
      */
     public Tile getPinkStartingTile() {
-        return this.graphMatrix[9][8];
+        return this.map[9][8];
     }
 
     /**
-     *
      * @return Starting tile of blue monster.
      */
     public Tile getBlueStartingTile() {
-        return this.graphMatrix[9][9];
+        return this.map[9][9];
     }
 
     /**
-     *
      * @return Starting tile of orange monster.
      */
     public Tile getOrangeStartingTile() {
-        return this.graphMatrix[9][10];
+        return this.map[9][10];
     }
 
     /**
-     *
      * @return A two dimensional array of tiles representing the map.
      */
-    public Tile[][] getGraphMatrix() {
-        return this.graphMatrix;
+    public Tile[][] getMap() {
+        return this.map;
     }
 
     /**
-     *
      * @return Tile on the bottom right of map that is not a wall.
      */
     public Tile getBottomRightTile() {
-        return this.graphMatrix[19][17];
+        return this.map[19][17];
     }
 
     /**
-     *
      * @return Tile on the top right of the map that is not a wall.
      */
     public Tile getTopRightTile() {
-        return this.graphMatrix[1][17];
+        return this.map[1][17];
     }
 
     /**
-     *
      * @return Tile on the bottom left of the map that is not a wall.
      */
     public Tile getBottomLeftTile() {
-        return this.graphMatrix[19][1];
+        return this.map[19][1];
     }
 
     /**
-     *
      * @return Tile on the top left of the map that is not a wall.
      */
     public Tile getTopLeftTile() {
-        return this.graphMatrix[1][1];
+        return this.map[1][1];
+    }
+
+    public Tile getRightSideTransitionTile() {
+        return this.map[9][18];
+    }
+
+    public Tile getLeftSideTransitionTile() {
+        return this.map[9][0];
     }
 }
